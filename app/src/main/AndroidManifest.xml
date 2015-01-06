@@ -7,7 +7,7 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/Theme.AppCompat" > <!--  Theme.AppCompat.Light   AppTheme -->
+        android:theme="@style/Theme.AppTheme" > <!--  Theme.AppCompat.Light   AppTheme -->
         <activity
             android:name=".Main"
             android:label="Smp" >
