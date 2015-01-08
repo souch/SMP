@@ -1,13 +1,11 @@
-Android  Sorted Music Player
+## Android  Sorted Music Player
 
 Sort songs by folders. The folders can be fold/unfold. 
-Inside folders, song are sorted in a smart way.
-Gui aims to be easy to use while driving. 
+Gui aims to be easy to use while driving.
+Works on old slow small devices (from froyo 2.2)
 
-
-Features (+ -> implemented):
+## Features (+ -> implemented):
 - light, speed, easy gui
-- support at least android >= 2.3 
 - stacked filter 
   folder
   album
@@ -32,5 +30,11 @@ Features (+ -> implemented):
 - long press on back button shut everything
 
 
+## Credits
 
+Lot's of time saved thanks to Sue Smith's [tutorials on creating a Music Player on Android](http://code.tutsplus.com/tutorials/create-a-music-player-on-android-project-setup--mobile-22764).
+
+## License
+
+Simple Music Player is licensed under the GPLv3. See file LICENSE for more details.
 

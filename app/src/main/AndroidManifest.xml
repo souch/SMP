@@ -2,13 +2,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="souch.smp" >
     <uses-sdk android:minSdkVersion="10"  android:targetSdkVersion="10" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/Theme.AppTheme" >
-        <uses-permission android:name="android.permission.WAKE_LOCK" />
+
 
         <activity
             android:name=".Main"
@@ -21,7 +22,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service android:name=".service" />
+        <service android:name=".MusicService" />
 
         <activity
             android:name=".Settings"
