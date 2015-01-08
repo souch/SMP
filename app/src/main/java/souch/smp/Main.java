@@ -1,12 +1,9 @@
 package souch.smp;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Service;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.database.Cursor;
@@ -19,20 +16,21 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.MediaController;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-
-public class Main extends Activity {
-
+public class Main extends Activity implements MediaController.MediaPlayerControl {
     private ArrayList<Song> songList;
     private ListView songView;
 
     private MusicService musicSrv;
     private Intent playIntent;
     private boolean musicBound = false;
+
+    private MusicController controller;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +48,8 @@ public class Main extends Activity {
         });
         SongAdapter songAdt = new SongAdapter(this, songList);
         songView.setAdapter(songAdt);
+
+        setController();
     }
 
     @Override
@@ -60,6 +60,28 @@ public class Main extends Activity {
             bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
             startService(playIntent);
         }
+    }
+
+
+    private void setController(){
+        //set the controller up
+        controller = new MusicController(this);
+        controller.setPrevNextListeners(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                playNext();
+            }
+        }, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                playPrev();
+            }
+        });
+
+        controller.setMediaPlayer(this);
+        controller.setAnchorView(findViewById(R.id.song_list));
+        controller.setEnabled(true);
+
     }
 
     //connect to the service
@@ -146,12 +168,89 @@ public class Main extends Activity {
         musicSrv.playSong();
     }
 
-/*
-    public void next(View view) {
-        // Do something in response to button
-        Intent intent = new Intent(this, Settings.class);
-        startActivity(intent);
+    @Override
+    public void start() {
+        musicSrv.go();
     }
-    */
 
+    @Override
+    public void pause() {
+        musicSrv.pausePlayer();
+    }
+
+    @Override
+    public int getDuration() {
+        if(musicSrv != null && musicBound && musicSrv.isPlaying())
+            return musicSrv.getDur();
+        else return 0;
+    }
+
+    @Override
+    public int getCurrentPosition() {
+        if(musicSrv != null && musicBound && musicSrv.isPlaying())
+            return musicSrv.getPosn();
+        else return 0;
+    }
+
+    @Override
+    public void seekTo(int pos) {
+        musicSrv.seek(pos);
+    }
+
+    @Override
+    public boolean isPlaying() {
+        if(musicSrv != null && musicBound)
+            return musicSrv.isPlaying();
+        return false;
+    }
+
+    @Override
+    public int getBufferPercentage() {
+        return 0;
+    }
+
+    @Override
+    public boolean canPause() {
+        return true;
+    }
+
+    @Override
+    public boolean canSeekBackward() {
+        return true;
+    }
+
+    @Override
+    public boolean canSeekForward() {
+        return true;
+    }
+
+    @Override
+    public int getAudioSessionId() {
+        return 0;
+    }
+
+
+    //play next
+    private void playNext(){
+        musicSrv.playNext();
+        controller.show(0);
+    }
+
+    //play previous
+    private void playPrev(){
+        musicSrv.playPrev();
+        controller.show(0);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_BACK:
+                stopService(playIntent);
+                musicSrv = null;
+                System.exit(0);
+                return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 }

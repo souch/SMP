@@ -4,9 +4,15 @@ Sort songs by folders. The folders can be fold/unfold.
 Gui aims to be easy to use while driving.
 Works on old slow small devices (from froyo 2.2)
 
-## Features (+ -> implemented):
-- light, speed, easy gui
-- stacked filter 
+### Features:
+- None for now :-)
+
+### Help:
+- press on back button shut everything
+- press on home button to shut the app and keep the music in background
+
+### Todo (perhaps :-):
+- stacked filter
   folder
   album
   artist
@@ -18,7 +24,6 @@ Works on old slow small devices (from froyo 2.2)
 - quick jump with letter in the right (like in contact)
 - Shake to go to next song
 - do not go to screensaver
-- big button
 - zoom make letter (and button) bigger or smaller
 - speak the title
 - show current pos in list
@@ -27,14 +32,12 @@ Works on old slow small devices (from froyo 2.2)
 - swipe to go to list of song <-> song details
 - mp3 tag editor
 - help + infobulle
-- long press on back button shut everything
 
-
-## Credits
+### Credits
 
 Lot's of time saved thanks to Sue Smith's [tutorials on creating a Music Player on Android](http://code.tutsplus.com/tutorials/create-a-music-player-on-android-project-setup--mobile-22764).
 
-## License
+### License
 
 Simple Music Player is licensed under the GPLv3. See file LICENSE for more details.
 

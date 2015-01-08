@@ -5,7 +5,7 @@ android {
     buildToolsVersion "21.1.2"
     defaultConfig {
         applicationId "souch.smp"
-        minSdkVersion 10
+        minSdkVersion 8
         targetSdkVersion 10
         versionCode 1
         versionName '0.1'
