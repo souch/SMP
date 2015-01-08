@@ -1,5 +1,7 @@
 package souch.smp;
 
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentUris;
 import android.content.Intent;
@@ -27,6 +29,8 @@ public class MusicService extends Service implements
 
     private final IBinder musicBind = new MusicBinder();
 
+    private String songTitle = "";
+    private static final int NOTIFY_ID = 1;
 
     public void onCreate(){
         //create the service
@@ -68,6 +72,7 @@ public class MusicService extends Service implements
 
         //get song
         Song playSong = songs.get(songPosn);
+        songTitle = playSong.getTitle();
         //get id
         long currSong = playSong.getID();
         //set uri
@@ -108,6 +113,21 @@ public class MusicService extends Service implements
     public void onPrepared(MediaPlayer mp) {
         //start playback
         mp.start();
+
+        Intent notificationIntent = new Intent(this, Main.class);
+        notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendInt = PendingIntent.getActivity(this, 0,
+                notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Notification notification = new Notification(R.drawable.ic_action_play, songTitle, System.currentTimeMillis());
+        notification.setLatestEventInfo(this, "Playing", songTitle, pendInt);
+
+        startForeground(NOTIFY_ID, notification);
+    }
+
+    @Override
+    public void onDestroy() {
+        stopForeground(true);
     }
 
     public int getPosn(){
