@@ -1,31 +1,44 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent">
 
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/song_list"
-        android:layout_above="@+id/imageButton"
+        android:layout_above="@+id/prev_button"
         android:layout_alignParentLeft="true" />
 
     <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_action_play"
-        android:onClick="playPause"
+        android:src="@drawable/ic_action_prev"
+        android:onClick="playPrev"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:id="@+id/imageButton" />
+        android:id="@+id/prev_button" />
 
-    <!--
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_action_next"
-            android:onClick="next"
-            android:layout_gravity="bottom" />
-    -->
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_action_play"
+        android:onClick="playOrPause"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@+id/prev_button"
+        android:id="@+id/play_button" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_action_next"
+        android:onClick="playNext"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@+id/play_button"
+        android:id="@+id/next_button" />
+
 </RelativeLayout>
+
+        <!--
+
+    -->
 
