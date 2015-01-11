@@ -17,7 +17,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -28,11 +27,11 @@ import java.util.Comparator;
 public class Main extends Activity {
     private ArrayList<Song> songList;
     private ListView songView;
+    private SongAdapter songAdt;
 
     private MusicService musicSrv;
     private Intent playIntent;
     private boolean musicBound = false;
-    private MutableInteger songPicked;
 
 
     //private boolean paused = false;
@@ -45,8 +44,6 @@ public class Main extends Activity {
 
         songView = (ListView) findViewById(R.id.song_list);
         songList = new ArrayList<Song>();
-        songPicked = new MutableInteger();
-        songPicked.value = -1;
 
         getSongList();
         Collections.sort(songList, new Comparator<Song>() {
@@ -54,7 +51,7 @@ public class Main extends Activity {
                 return a.getArtist().compareTo(b.getArtist());
             }
         });
-        SongAdapter songAdt = new SongAdapter(this, songList, songPicked);
+        songAdt = new SongAdapter(this, songList, this);
         songView.setAdapter(songAdt);
         songView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -63,11 +60,9 @@ public class Main extends Activity {
                 Toast.makeText(getApplicationContext(),
                         "Click ListItem Number " + position + " id: " + id, Toast.LENGTH_LONG).show();
 
-                songPicked.value = position;
-                ImageView currPlay = (ImageView) view.findViewById(R.id.curr_play);
-                currPlay.setImageResource(R.drawable.ic_curr_play);
-                //Toast.makeText(getApplicationContext(), "iv" + iv, Toast.LENGTH_LONG).show();
-
+                // not useful??
+                //ImageView currPlay = (ImageView) view.findViewById(R.id.curr_play);
+                //currPlay.setImageResource(R.drawable.ic_curr_play);
 
                 musicSrv.setSong(position);
                 musicSrv.playSong();
@@ -202,6 +197,7 @@ public class Main extends Activity {
         }
 
         updatePlayButton();
+        songAdt.notifyDataSetChanged();
 
         /*
         Intent intent = new Intent(this, Settings.class);
@@ -213,12 +209,22 @@ public class Main extends Activity {
         musicSrv.playNext();
         playbackPaused = false;
         updatePlayButton();
+        songAdt.notifyDataSetChanged();
     }
 
     public void playPrev(View view){
         musicSrv.playPrev();
         playbackPaused = false;
         updatePlayButton();
+        songAdt.notifyDataSetChanged();
+    }
+
+    public void gotoPlay(View view) {
+        int gotoSong = getSong() - 3; // -3 to show a bit of songs before the cur song
+        if(gotoSong < 0)
+            gotoSong = 0;
+        songView.setSelection(gotoSong);
+        //songView.smoothScrollToPosition(gotoSong);
     }
 
     public int getDuration() {
@@ -227,11 +233,23 @@ public class Main extends Activity {
         else return 0;
     }
 
+    public boolean getPlaybackPaused() {
+        return playbackPaused;
+    }
+
     public int getCurrentPosition() {
         if(musicSrv != null && musicBound && musicSrv.isPlaying())
             return musicSrv.getPosn();
         else return 0;
     }
+
+    // todo: diff between getCurrentPosition ?
+    public int getSong() {
+        if(musicSrv != null && musicBound)
+            return musicSrv.getSong();
+        else return -1;
+    }
+
 
     public void seekTo(int pos) {
         musicSrv.seek(pos);

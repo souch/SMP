@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -15,12 +14,12 @@ import java.util.ArrayList;
 public class SongAdapter extends BaseAdapter {
     private ArrayList<Song> songs;
     private LayoutInflater songInf;
-    private MutableInteger songPicked;
+    private Main main;
 
-    public SongAdapter(Context c, ArrayList<Song> theSongs, MutableInteger sgPicked){
+    public SongAdapter(Context c, ArrayList<Song> theSongs, Main mn){
         songs = theSongs;
         songInf = LayoutInflater.from(c);
-        songPicked = sgPicked;
+        main = mn;
     }
 
     @Override
@@ -54,7 +53,16 @@ public class SongAdapter extends BaseAdapter {
         //get title and artist strings
         songView.setText(currSong.getTitle());
         artistView.setText(currSong.getArtist() + " - " + currSong.getAlbum());
-        currPlay.setImageResource(position == songPicked.value ? R.drawable.ic_curr_play : R.drawable.ic_transparent);
+
+        int currIcon = R.drawable.ic_transparent;
+        if(position == main.getSong()) {
+            if(main.getPlaybackPaused())
+                currIcon = R.drawable.ic_curr_pause;
+            else
+                currIcon = R.drawable.ic_curr_play;
+        }
+        currPlay.setImageResource(currIcon);
+
         //set position as tag
         itemView.setTag(position);
         return itemView;

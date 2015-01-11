@@ -38,6 +38,15 @@
         android:layout_toRightOf="@+id/play_button"
         android:id="@+id/next_button" />
 
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_action_goto_play"
+        android:onClick="gotoPlay"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@+id/next_button"
+        android:id="@+id/goto_button" />
+
 </RelativeLayout>
 
         <!--

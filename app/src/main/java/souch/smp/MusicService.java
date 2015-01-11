@@ -49,6 +49,9 @@ public class MusicService extends Service implements
     public void setSong(int songIndex){
         songPosn = songIndex;
     }
+    public int getSong() {
+        return songPosn;
+    }
 
     public class MusicBinder extends Binder {
         MusicService getService() {
@@ -101,10 +104,12 @@ public class MusicService extends Service implements
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-        if(player.getCurrentPosition() > 0){
+        // todo: why getCurrentPosition?
+        //if(player.getCurrentPosition() > 0){
             mp.reset();
             playNext();
-        }
+        //}
+        // todo: gui must update pos
     }
 
     @Override

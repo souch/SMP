@@ -1,18 +1,23 @@
 ## Android  Sorted Music Player
 
 Group songs by folder or artist or album.
+
 Gui aims to be easy to use while driving.
+
 Works on old slow small devices (from froyo 2.2)
 
-### Features
+### Detailed features
 - sorted by artist
 - notification when on stage
+- show current played song in list
+- bluetooth
 
 ### Help
 - press on back button shut everything
 - press on home button to shut the app and keep the music in background
 
 ### Todo (perhaps :-)
+- fast on big music list
 - the folder hierarchy is shown
 - the groups can be fold/unfold
 - stacked filter
@@ -25,10 +30,9 @@ Works on old slow small devices (from froyo 2.2)
 - select main music directory
 - quick jump with letter in the right (like in contact)
 - Shake to go to next song
-- do not go to screensaver
+- button that disable/enable screensaver
 - zoom make letter (and button) bigger or smaller
 - speak the title
-- show current pos in list
 - cursor for song pos 
 - cursor for volume ? ( half/full?)
 - swipe to go to list of song <-> song details
