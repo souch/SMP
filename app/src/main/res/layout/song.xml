@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:onClick="songPicked"
-    android:orientation="vertical"
-    android:padding="5dp" >
+    android:padding="5dp"
+    >
 
     <TextView
         android:id="@+id/song_title"
@@ -13,37 +12,23 @@
         android:layout_height="wrap_content"
         android:textColor="#FFFFFFFF"
         android:textSize="16sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:layout_alignRight="@+id/song_artist" />
 
     <TextView
         android:id="@+id/song_artist"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:textColor="#FFFFFFFF"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        android:layout_below="@+id/song_title" />
 
-</LinearLayout>
-
-<!--
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:weightSum="1"
-    android:padding="5dp">
-
-    <TextView
+    <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="New Text"
-        android:id="@+id/tab" />
+        android:id="@+id/curr_play"
+        android:src="@drawable/ic_transparent"
+        android:layout_alignParentTop="true"
+        android:layout_alignRight="@+id/song_title" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="New Text"
-        android:id="@+id/desc" />
-
-</LinearLayout>
--->
+</RelativeLayout>

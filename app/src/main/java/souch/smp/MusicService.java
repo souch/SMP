@@ -118,8 +118,6 @@ public class MusicService extends Service implements
         //start playback
         mp.start();
 
-
-
         Intent notificationIntent = new Intent(this, Main.class);
         notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendInt = PendingIntent.getActivity(this, 0,

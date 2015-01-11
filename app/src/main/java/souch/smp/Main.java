@@ -15,8 +15,11 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,6 +32,7 @@ public class Main extends Activity {
     private MusicService musicSrv;
     private Intent playIntent;
     private boolean musicBound = false;
+    private MutableInteger songPicked;
 
 
     //private boolean paused = false;
@@ -41,6 +45,8 @@ public class Main extends Activity {
 
         songView = (ListView) findViewById(R.id.song_list);
         songList = new ArrayList<Song>();
+        songPicked = new MutableInteger();
+        songPicked.value = -1;
 
         getSongList();
         Collections.sort(songList, new Comparator<Song>() {
@@ -48,9 +54,31 @@ public class Main extends Activity {
                 return a.getArtist().compareTo(b.getArtist());
             }
         });
-        SongAdapter songAdt = new SongAdapter(this, songList);
+        SongAdapter songAdt = new SongAdapter(this, songList, songPicked);
         songView.setAdapter(songAdt);
+        songView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+                Toast.makeText(getApplicationContext(),
+                        "Click ListItem Number " + position + " id: " + id, Toast.LENGTH_LONG).show();
+
+                songPicked.value = position;
+                ImageView currPlay = (ImageView) view.findViewById(R.id.curr_play);
+                currPlay.setImageResource(R.drawable.ic_curr_play);
+                //Toast.makeText(getApplicationContext(), "iv" + iv, Toast.LENGTH_LONG).show();
+
+
+                musicSrv.setSong(position);
+                musicSrv.playSong();
+                if (playbackPaused) {
+                    playbackPaused = false;
+                }
+                updatePlayButton();
+            }
+        });
     }
+
 
     @Override
     protected void onStart() {
@@ -162,15 +190,6 @@ public class Main extends Activity {
             playButton.setImageResource(R.drawable.ic_action_play);
         else
             playButton.setImageResource(R.drawable.ic_action_pause);
-    }
-
-    public void songPicked(View view){
-        musicSrv.setSong(Integer.parseInt(view.getTag().toString()));
-        musicSrv.playSong();
-        if(playbackPaused){
-            playbackPaused = false;
-        }
-        updatePlayButton();
     }
 
     public void playOrPause(View view) {

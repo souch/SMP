@@ -7,7 +7,9 @@
         android:layout_height="match_parent"
         android:id="@+id/song_list"
         android:layout_above="@+id/prev_button"
-        android:layout_alignParentLeft="true" />
+        android:layout_alignParentLeft="true"
+        android:choiceMode="singleChoice"
+        />
 
     <ImageButton
         android:layout_width="wrap_content"

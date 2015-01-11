@@ -1,17 +1,20 @@
 ## Android  Sorted Music Player
 
-Sort songs by folders. The folders can be fold/unfold. 
+Group songs by folder or artist or album.
 Gui aims to be easy to use while driving.
 Works on old slow small devices (from froyo 2.2)
 
-### Features:
-- None for now :-)
+### Features
+- sorted by artist
+- notification when on stage
 
-### Help:
+### Help
 - press on back button shut everything
 - press on home button to shut the app and keep the music in background
 
-### Todo (perhaps :-):
+### Todo (perhaps :-)
+- the folder hierarchy is shown
+- the groups can be fold/unfold
 - stacked filter
   folder
   album
@@ -19,7 +22,6 @@ Works on old slow small devices (from froyo 2.2)
   song title
   track number (id tag or name)
 - guess "smart" track number (2 < 11, song file name vs id tag, ...)
-- notification when on stage
 - select main music directory
 - quick jump with letter in the right (like in contact)
 - Shake to go to next song
