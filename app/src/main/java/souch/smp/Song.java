@@ -5,14 +5,12 @@ public class Song {
     private String title;
     private String artist;
     private String album;
-    public boolean toggled;
 
     public Song(long songID, String songTitle, String songArtist, String songAlbum) {
-        id=songID;
-        title=songTitle;
-        artist=songArtist;
-        album=songAlbum;
-        toggled=false;
+        id = songID;
+        title = songTitle;
+        artist = songArtist;
+        album = songAlbum;
     }
 
     public long getID(){return id;}

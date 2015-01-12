@@ -10,18 +10,17 @@
         android:label="@string/app_name"
         android:theme="@style/Theme.AppTheme" >
 
-
         <activity
             android:name=".Main"
-            android:label="Smp"
+            android:label="SicMu Player"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <service android:name=".MusicService" />
 
         <activity
@@ -32,6 +31,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="souch.smp.Main" />
         </activity>
+
     </application>
 
 </manifest>

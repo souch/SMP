@@ -33,9 +33,30 @@ public class Main extends Activity {
     private Intent playIntent;
     private boolean musicBound = false;
 
+    boolean firstStart;
+
 
     //private boolean paused = false;
     private boolean playbackPaused = false;
+
+    //connect to the service
+    private ServiceConnection musicConnection = new ServiceConnection(){
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            MusicService.MusicBinder binder = (MusicService.MusicBinder) service;
+            //get service
+            musicSrv = binder.getService();
+            //pass list
+            musicSrv.setList(songList);
+            musicBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            musicBound = false;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +65,8 @@ public class Main extends Activity {
 
         songView = (ListView) findViewById(R.id.song_list);
         songList = new ArrayList<Song>();
+
+        firstStart = true;
 
         getSongList();
         Collections.sort(songList, new Comparator<Song>() {
@@ -57,13 +80,14 @@ public class Main extends Activity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                Toast.makeText(getApplicationContext(),
-                        "Click ListItem Number " + position + " id: " + id, Toast.LENGTH_LONG).show();
+                //Toast.makeText(getApplicationContext(),
+                //        "Click ListItem Number " + position + " id: " + id, Toast.LENGTH_LONG).show();
 
                 // not useful??
                 //ImageView currPlay = (ImageView) view.findViewById(R.id.curr_play);
                 //currPlay.setImageResource(R.drawable.ic_curr_play);
 
+                firstStart = false;
                 musicSrv.setSong(position);
                 musicSrv.playSong();
                 if (playbackPaused) {
@@ -85,19 +109,21 @@ public class Main extends Activity {
         }
     }
 
-    /*
+
+/*
     @Override
     protected void onPause(){
-        super.onPause();
-        paused = true;
+        //paused = true;
     }
 
     @Override
     protected void onResume(){
         super.onResume();
+
         if(paused){
             paused = false;
         }
+
     }
 
     @Override
@@ -105,25 +131,6 @@ public class Main extends Activity {
         super.onStop();
     }
 */
-
-    //connect to the service
-    private ServiceConnection musicConnection = new ServiceConnection(){
-
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            MusicService.MusicBinder binder = (MusicService.MusicBinder) service;
-            //get service
-            musicSrv = binder.getService();
-            //pass list
-            musicSrv.setList(songList);
-            musicBound = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            musicBound = false;
-        }
-    };
 
     public void getSongList() {
         ContentResolver musicResolver = getContentResolver();
@@ -192,17 +199,21 @@ public class Main extends Activity {
             playbackPaused = true;
             musicSrv.pausePlayer();
         } else {
-            musicSrv.go();
+            if (firstStart) {
+                // the app has just been launched
+                musicSrv.playSong();
+            }
+            else {
+                // previously paused
+                musicSrv.go();
+            }
+            firstStart = false;
             playbackPaused = false;
         }
 
         updatePlayButton();
         songAdt.notifyDataSetChanged();
 
-        /*
-        Intent intent = new Intent(this, Settings.class);
-        startActivity(intent);
-        */
     }
 
     public void playNext(View view){
@@ -227,32 +238,31 @@ public class Main extends Activity {
         //songView.smoothScrollToPosition(gotoSong);
     }
 
-    public int getDuration() {
-        if(musicSrv != null && musicBound && musicSrv.isPlaying())
-            return musicSrv.getDur();
-        else return 0;
-    }
-
-    public boolean getPlaybackPaused() {
-        return playbackPaused;
-    }
-
-    public int getCurrentPosition() {
-        if(musicSrv != null && musicBound && musicSrv.isPlaying())
-            return musicSrv.getPosn();
-        else return 0;
-    }
-
-    // todo: diff between getCurrentPosition ?
     public int getSong() {
         if(musicSrv != null && musicBound)
             return musicSrv.getSong();
         else return -1;
     }
 
+    public boolean getPlaybackPaused() {
+        return playbackPaused;
+    }
+
+    public int getDuration() {
+        if(musicSrv != null && musicBound && musicSrv.isPlaying())
+            return musicSrv.getDuration();
+        else return 0;
+    }
+
+
+    public int getCurrentPosition() {
+        if(musicSrv != null && musicBound && musicSrv.isPlaying())
+            return musicSrv.getCurrentPosition();
+        else return 0;
+    }
 
     public void seekTo(int pos) {
-        musicSrv.seek(pos);
+        musicSrv.seekTo(pos);
     }
 
     public boolean isPlaying() {
@@ -276,5 +286,9 @@ public class Main extends Activity {
     }
 
 
+    /*
+     Intent intent = new Intent(this, Settings.class);
+      startActivity(intent);
+    */
 }
 

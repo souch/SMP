@@ -1,20 +1,23 @@
-## Android  Sorted Music Player
+## SicMu Player for Android (or Simple/Sorted/Souch Music Player)
 
-Group songs by folder or artist or album.
+Present song in list by grouping folders or artists.
 
 Gui aims to be easy to use while driving.
 
 Works on old slow small devices (from froyo 2.2)
 
+Not eyes candy nor advanced mega bass settings.
+
 ### Detailed features
 - sorted by artist
-- notification when on stage
+- notification when playing
 - show current played song in list
 - bluetooth
 
 ### Help
 - press on back button shut everything
 - press on home button to shut the app and keep the music in background
+- press the button to the right of next to go to curr played song
 
 ### Todo (perhaps :-)
 - fast on big music list
@@ -33,7 +36,6 @@ Works on old slow small devices (from froyo 2.2)
 - button that disable/enable screensaver
 - zoom make letter (and button) bigger or smaller
 - speak the title
-- cursor for song pos 
 - cursor for volume ? ( half/full?)
 - swipe to go to list of song <-> song details
 - mp3 tag editor
@@ -42,6 +44,7 @@ Works on old slow small devices (from froyo 2.2)
 ### Credits
 
 Lot's of time saved thanks to Sue Smith's [tutorials on creating a Music Player on Android](http://code.tutsplus.com/tutorials/create-a-music-player-on-android-project-setup--mobile-22764).
+Some icons done by Daniele De Santis (Creative Commons (Attribution 3.0 Unported)), found on iconfinder.com.
 
 ### License
 

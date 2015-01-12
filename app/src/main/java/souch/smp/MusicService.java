@@ -106,9 +106,9 @@ public class MusicService extends Service implements
     public void onCompletion(MediaPlayer mp) {
         // todo: why getCurrentPosition?
         //if(player.getCurrentPosition() > 0){
-            mp.reset();
-            playNext();
-        //}
+        mp.reset();
+        playNext();
+
         // todo: gui must update pos
     }
 
@@ -128,8 +128,8 @@ public class MusicService extends Service implements
         PendingIntent pendInt = PendingIntent.getActivity(this, 0,
                 notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        Notification notification = new Notification(R.drawable.ic_action_play, songTitle, System.currentTimeMillis());
-        notification.setLatestEventInfo(this, "Playing", songTitle, pendInt);
+        Notification notification = new Notification(R.drawable.ic_launcher, songTitle, System.currentTimeMillis());
+        notification.setLatestEventInfo(this, "SicMu playing", songTitle, pendInt);
 
         startForeground(NOTIFY_ID, notification);
     }
@@ -139,11 +139,11 @@ public class MusicService extends Service implements
         stopForeground(true);
     }
 
-    public int getPosn(){
+    public int getCurrentPosition(){
         return player.getCurrentPosition();
     }
 
-    public int getDur(){
+    public int getDuration(){
         return player.getDuration();
     }
 
@@ -155,7 +155,7 @@ public class MusicService extends Service implements
         player.pause();
     }
 
-    public void seek(int posn){
+    public void seekTo(int posn){
         player.seekTo(posn);
     }
 
@@ -172,7 +172,7 @@ public class MusicService extends Service implements
 
     public void playNext(){
         songPosn++;
-        if(songPosn > songs.size())
+        if(songPosn >= songs.size())
             songPosn = 0;
         playSong();
     }
