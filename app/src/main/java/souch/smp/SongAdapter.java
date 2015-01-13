@@ -39,6 +39,13 @@ public class SongAdapter extends BaseAdapter {
         return 0;
     }
 
+    private String convertToMinute(long duration) {
+        long seconds = duration / 1000;
+        long minutes = seconds / 60;
+        seconds = seconds % 60;
+        return String.valueOf(minutes) + (seconds < 10 ? ":0" : ":") + String.valueOf(seconds);
+    }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         //map to song layout
@@ -46,12 +53,14 @@ public class SongAdapter extends BaseAdapter {
         //get title and artist views
         TextView songView = (TextView) itemView.findViewById(R.id.song_title);
         TextView artistView = (TextView) itemView.findViewById(R.id.song_artist);
+        TextView durationView = (TextView) itemView.findViewById(R.id.song_duration);
         ImageView currPlay = (ImageView) itemView.findViewById(R.id.curr_play);
         //get song using position
         Song currSong = songs.get(position);
         //get title and artist strings
         songView.setText(currSong.getTitle());
         artistView.setText(currSong.getArtist() + " - " + currSong.getAlbum());
+        durationView.setText(convertToMinute(currSong.getDuration()));
 
         int currIcon = R.drawable.ic_transparent;
         if(position == main.getSong()) {

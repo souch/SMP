@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:padding="5dp"
+    android:padding="3dp"
     >
 
     <TextView
@@ -12,15 +12,16 @@
         android:layout_height="wrap_content"
         android:textColor="#FFFFFFFF"
         android:textSize="16sp"
-        android:textStyle="bold"
-        android:layout_alignRight="@+id/song_artist" />
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/song_artist"
-        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
         android:textColor="#FFFFFFFF"
         android:textSize="16sp"
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@+id/song_duration"
         android:layout_below="@+id/song_title" />
 
     <ImageView
@@ -30,5 +31,16 @@
         android:src="@drawable/ic_transparent"
         android:layout_alignParentTop="true"
         android:layout_alignRight="@+id/song_title" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#FFFFFFFF"
+        android:text="00:00"
+        android:textSize="16sp"
+        android:id="@+id/song_duration"
+        android:layout_below="@+id/song_title"
+        android:layout_alignParentRight="true"
+        />
 
 </RelativeLayout>

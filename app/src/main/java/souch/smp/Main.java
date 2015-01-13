@@ -6,11 +6,13 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,6 +25,8 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Main extends Activity {
     private ArrayList<Song> songList;
@@ -33,11 +37,26 @@ public class Main extends Activity {
     private Intent playIntent;
     private boolean musicBound = false;
 
-    boolean firstStart;
+    // SiMu just started, and no song has been started
+    boolean justStarted;
+
+    Timer timer;
+    final long timerDelayMs = 1000;
+
+    // todo: how currSong is handled is a mess
+
+    // the song pos in list known by the activity
+    int currSong;
+    // curr song played pos in ms.
+    //int currPos;
+
+    final String currSongPref = "currSong";
+
+
 
 
     //private boolean paused = false;
-    private boolean playbackPaused = false;
+    private boolean playbackPaused = true;
 
     //connect to the service
     private ServiceConnection musicConnection = new ServiceConnection(){
@@ -66,7 +85,7 @@ public class Main extends Activity {
         songView = (ListView) findViewById(R.id.song_list);
         songList = new ArrayList<Song>();
 
-        firstStart = true;
+        justStarted = true;
 
         getSongList();
         Collections.sort(songList, new Comparator<Song>() {
@@ -74,6 +93,10 @@ public class Main extends Activity {
                 return a.getArtist().compareTo(b.getArtist());
             }
         });
+        restorePreferences();
+        if (currSong >= songList.size())
+            currSong = 0;
+
         songAdt = new SongAdapter(this, songList, this);
         songView.setAdapter(songAdt);
         songView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -87,50 +110,89 @@ public class Main extends Activity {
                 //ImageView currPlay = (ImageView) view.findViewById(R.id.curr_play);
                 //currPlay.setImageResource(R.drawable.ic_curr_play);
 
-                firstStart = false;
+                justStarted = false;
+                currSong = position;
                 musicSrv.setSong(position);
                 musicSrv.playSong();
-                if (playbackPaused) {
-                    playbackPaused = false;
-                }
+                playbackPaused = false;
                 updatePlayButton();
             }
         });
+
+        gotoCurrSong(null);
     }
 
 
     @Override
     protected void onStart() {
         super.onStart();
-        if(playIntent == null){
+        if (playIntent == null) {
             playIntent = new Intent(this, MusicService.class);
             bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
             startService(playIntent);
         }
+
     }
 
+    final Runnable updateInfo = new Runnable() {
+        public void run() {
+            // retrieve the song pos of the service
+            int songPos = getSong();
+            // compare it to what we know from the activity
+            if (!justStarted && songPos != -1 && songPos != currSong) {
+                currSong = songPos;
+                songAdt.notifyDataSetChanged();
+            }
 
-/*
-    @Override
-    protected void onPause(){
-        //paused = true;
-    }
+            //currPos = getCurrentPosition();
+        }
+    };
 
     @Override
     protected void onResume(){
         super.onResume();
 
-        if(paused){
-            paused = false;
-        }
-
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                // updateInfo must be run in activity thread
+                runOnUiThread(updateInfo);
+            }
+        }, timerDelayMs, timerDelayMs);
     }
+
+    @Override
+    protected void onPause(){
+        super.onPause();
+        timer.cancel();
+    }
+
+
+    private void restorePreferences() {
+        SharedPreferences settings = getPreferences(0);
+        currSong = settings.getInt(currSongPref, 0);
+
+        Log.d("yo", "pref load song: " + currSong);
+    }
+
+    private void savePreferences() {
+        SharedPreferences settings = getPreferences(0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putInt(currSongPref, getSong());
+        editor.commit();
+
+        Log.d("yo", "pref save song: " + getSong());
+    }
+
 
     @Override
     protected void onStop() {
         super.onStop();
+
+        savePreferences();
     }
-*/
+
 
     public void getSongList() {
         ContentResolver musicResolver = getContentResolver();
@@ -147,13 +209,16 @@ public class Main extends Activity {
                     (MediaStore.Audio.Media.ARTIST);
             int albumColumn = musicCursor.getColumnIndex
                     (MediaStore.Audio.Media.ALBUM);
+            int durationColumn = musicCursor.getColumnIndex
+                    (MediaStore.Audio.Media.DURATION);
             //add songs to list
             do {
                 long thisId = musicCursor.getLong(idColumn);
                 String thisTitle = musicCursor.getString(titleColumn);
                 String thisArtist = musicCursor.getString(artistColumn);
                 String thisAlbum = musicCursor.getString(albumColumn);
-                songList.add(new Song(thisId, thisTitle, thisArtist, thisAlbum));
+                long thisDuration = musicCursor.getInt(durationColumn);
+                songList.add(new Song(thisId, thisTitle, thisArtist, thisAlbum, thisDuration));
             }
             while (musicCursor.moveToNext());
         }
@@ -199,38 +264,46 @@ public class Main extends Activity {
             playbackPaused = true;
             musicSrv.pausePlayer();
         } else {
-            if (firstStart) {
+            if (justStarted) {
                 // the app has just been launched
+                musicSrv.setSong(currSong);
                 musicSrv.playSong();
             }
             else {
                 // previously paused
                 musicSrv.go();
             }
-            firstStart = false;
+            justStarted = false;
             playbackPaused = false;
         }
 
         updatePlayButton();
         songAdt.notifyDataSetChanged();
-
     }
 
     public void playNext(View view){
+        if (justStarted) {
+            musicSrv.setSong(currSong);
+        }
         musicSrv.playNext();
+        currSong = musicSrv.getSong();
         playbackPaused = false;
         updatePlayButton();
         songAdt.notifyDataSetChanged();
     }
 
     public void playPrev(View view){
+        if (justStarted) {
+            musicSrv.setSong(currSong);
+        }
         musicSrv.playPrev();
+        currSong = musicSrv.getSong();
         playbackPaused = false;
         updatePlayButton();
         songAdt.notifyDataSetChanged();
     }
 
-    public void gotoPlay(View view) {
+    public void gotoCurrSong(View view) {
         int gotoSong = getSong() - 3; // -3 to show a bit of songs before the cur song
         if(gotoSong < 0)
             gotoSong = 0;
@@ -238,10 +311,11 @@ public class Main extends Activity {
         //songView.smoothScrollToPosition(gotoSong);
     }
 
+    // safe getSong : return guessed song pos if musicSrv down
     public int getSong() {
-        if(musicSrv != null && musicBound)
+        if(!justStarted && musicSrv != null && musicBound)
             return musicSrv.getSong();
-        else return -1;
+        else return currSong;
     }
 
     public boolean getPlaybackPaused() {
@@ -277,6 +351,7 @@ public class Main extends Activity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         switch (keyCode) {
             case KeyEvent.KEYCODE_BACK:
+                savePreferences();
                 stopService(playIntent);
                 musicSrv = null;
                 System.exit(0);

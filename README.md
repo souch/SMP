@@ -1,6 +1,6 @@
-## SicMu Player for Android (or Simple/Sorted/Souch Music Player)
+## SicMu Player for Android
 
-Present song in list by grouping folders or artists.
+Present song in list by grouping folders or/and artists and albums.
 
 Gui aims to be easy to use while driving.
 
@@ -44,7 +44,8 @@ Not eyes candy nor advanced mega bass settings.
 ### Credits
 
 Lot's of time saved thanks to Sue Smith's [tutorials on creating a Music Player on Android](http://code.tutsplus.com/tutorials/create-a-music-player-on-android-project-setup--mobile-22764).
-Some icons done by Daniele De Santis (Creative Commons (Attribution 3.0 Unported)), found on iconfinder.com.
+
+Use some icons done by Daniele De Santis (Creative Commons (Attribution 3.0 Unported)), found on iconfinder.com.
 
 ### License
 

@@ -19,40 +19,39 @@
     <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/action_prev"
-        style="@style/PlayButton"
-        android:onClick="playPrev"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:id="@+id/prev_button" />
-
-    <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:src="@drawable/action_play"
-        style="@style/PlayButton"
+        style="@style/BottomButton"
         android:onClick="playOrPause"
         android:layout_alignParentBottom="true"
-        android:layout_toRightOf="@+id/prev_button"
-
+        android:layout_alignParentLeft="true"
         android:id="@+id/play_button" />
 
     <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:src="@drawable/action_prev"
+        style="@style/BottomButton"
+        android:onClick="playPrev"
+        android:layout_toRightOf="@+id/play_button"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/prev_button" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:src="@drawable/action_next"
-        style="@style/PlayButton"
+        style="@style/BottomButton"
         android:onClick="playNext"
         android:layout_alignParentBottom="true"
-        android:layout_toRightOf="@+id/play_button"
+        android:layout_toRightOf="@+id/prev_button"
         android:id="@+id/next_button" />
 
     <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/action_goto_play"
-        style="@style/PlayButton"
-        android:onClick="gotoPlay"
+        style="@style/BottomButton"
+        android:onClick="gotoCurrSong"
         android:layout_alignParentBottom="true"
         android:layout_toRightOf="@+id/next_button"
         android:id="@+id/goto_button" />
