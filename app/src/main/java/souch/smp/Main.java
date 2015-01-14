@@ -63,6 +63,8 @@ public class Main extends Activity {
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
+            Log.d("Main", "onServiceConnected");
+
             MusicService.MusicBinder binder = (MusicService.MusicBinder) service;
             //get service
             musicSrv = binder.getService();
@@ -73,6 +75,7 @@ public class Main extends Activity {
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
+            Log.d("Main", "onServiceDisconnected");
             musicBound = false;
         }
     };
@@ -80,6 +83,7 @@ public class Main extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d("Main", "onCreate");
         setContentView(R.layout.activity_main);
 
         songView = (ListView) findViewById(R.id.song_list);
@@ -106,10 +110,6 @@ public class Main extends Activity {
                 //Toast.makeText(getApplicationContext(),
                 //        "Click ListItem Number " + position + " id: " + id, Toast.LENGTH_LONG).show();
 
-                // not useful??
-                //ImageView currPlay = (ImageView) view.findViewById(R.id.curr_play);
-                //currPlay.setImageResource(R.drawable.ic_curr_play);
-
                 justStarted = false;
                 currSong = position;
                 musicSrv.setSong(position);
@@ -120,19 +120,68 @@ public class Main extends Activity {
         });
 
         gotoCurrSong(null);
+
+        if (playIntent == null) {
+            playIntent = new Intent(this, MusicService.class);
+            //startService(playIntent);
+            bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
+        }
+    }
+
+/*
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d("Main", "onStart");
+    }
+*/
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+        Log.d("Main", "onResume");
+
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                // updateInfo must be run in activity thread
+                runOnUiThread(updateInfo);
+            }
+        }, timerDelayMs, timerDelayMs);
     }
 
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        if (playIntent == null) {
-            playIntent = new Intent(this, MusicService.class);
-            bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
-            startService(playIntent);
-        }
+    protected void onPause(){
+        super.onPause();
+        Log.d("Main", "onPause");
 
+        timer.cancel();
     }
+
+/*
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d("Main", "onStop");
+    }
+*/
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d("Main", "onDestroy");
+
+        savePreferences();
+
+        if(musicBound) {
+            unbindService(musicConnection);
+            musicBound = false;
+            musicSrv = null;
+        }
+    }
+
 
     final Runnable updateInfo = new Runnable() {
         public void run() {
@@ -147,27 +196,6 @@ public class Main extends Activity {
             //currPos = getCurrentPosition();
         }
     };
-
-    @Override
-    protected void onResume(){
-        super.onResume();
-
-        timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                // updateInfo must be run in activity thread
-                runOnUiThread(updateInfo);
-            }
-        }, timerDelayMs, timerDelayMs);
-    }
-
-    @Override
-    protected void onPause(){
-        super.onPause();
-        timer.cancel();
-    }
-
 
     private void restorePreferences() {
         SharedPreferences settings = getPreferences(0);
@@ -186,12 +214,6 @@ public class Main extends Activity {
     }
 
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-        savePreferences();
-    }
 
 
     public void getSongList() {
@@ -351,15 +373,11 @@ public class Main extends Activity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         switch (keyCode) {
             case KeyEvent.KEYCODE_BACK:
-                savePreferences();
-                stopService(playIntent);
-                musicSrv = null;
-                System.exit(0);
+                finish();
                 return true;
         }
         return super.onKeyDown(keyCode, event);
     }
-
 
     /*
      Intent intent = new Intent(this, Settings.class);

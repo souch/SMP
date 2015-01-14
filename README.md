@@ -4,15 +4,17 @@ Present song in list by grouping folders or/and artists and albums.
 
 Gui aims to be easy to use while driving.
 
-Works on old slow small devices (from froyo 2.2)
+Works on old slow small devices (from Android froyo 2.2)
 
-Not eyes candy nor advanced mega bass settings.
+No eyes candy graphics nor advanced mega bass settings.
 
 ### Detailed features
+- play mp3, ogg, flac, midi, wav, mp4, 3gp... see Android MediaPlayer Supported Media Formats (depends on android version).
 - sorted by artist
 - notification when playing
 - show current played song in list
 - bluetooth
+- On start go to last song played.
 
 ### Help
 - press on back button shut everything

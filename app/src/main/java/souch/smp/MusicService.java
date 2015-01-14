@@ -19,7 +19,6 @@ public class MusicService extends Service implements
         MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener,
         MediaPlayer.OnCompletionListener {
 
-
     //media player
     private MediaPlayer player;
     //song list
@@ -42,6 +41,25 @@ public class MusicService extends Service implements
         initMusicPlayer();
     }
 
+    public class MusicBinder extends Binder {
+        MusicService getService() {
+            return MusicService.this;
+        }
+    }
+
+    @Override
+    public IBinder onBind(Intent arg0) {
+        return musicBind;
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.d("MusicService", "onDestroy");
+        player.stop();
+        player.release();
+        stopForeground(true);
+    }
+
     public void setList(ArrayList<Song> theSongs){
         songs = theSongs;
     }
@@ -51,12 +69,6 @@ public class MusicService extends Service implements
     }
     public int getSong() {
         return songPosn;
-    }
-
-    public class MusicBinder extends Binder {
-        MusicService getService() {
-            return MusicService.this;
-        }
     }
 
     public void initMusicPlayer(){
@@ -91,18 +103,6 @@ public class MusicService extends Service implements
     }
 
     @Override
-    public IBinder onBind(Intent arg0) {
-        return musicBind;
-    }
-
-    @Override
-    public boolean onUnbind(Intent intent){
-        player.stop();
-        player.release();
-        return false;
-    }
-
-    @Override
     public void onCompletion(MediaPlayer mp) {
         // todo: why getCurrentPosition?
         //if(player.getCurrentPosition() > 0){
@@ -134,10 +134,6 @@ public class MusicService extends Service implements
         startForeground(NOTIFY_ID, notification);
     }
 
-    @Override
-    public void onDestroy() {
-        stopForeground(true);
-    }
 
     public int getCurrentPosition(){
         return player.getCurrentPosition();
