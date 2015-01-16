@@ -1,6 +1,6 @@
 ## SicMu Player for Android
 
-Present song in list by grouping folders or/and artists and albums.
+Present song in list by grouping folders or genre or/and artists and albums.
 
 Gui aims to be easy to use while driving.
 

@@ -64,15 +64,19 @@ public class SongAdapter extends BaseAdapter {
 
         int currIcon = R.drawable.ic_transparent;
         if(position == main.getSong()) {
-            if(main.getPlaybackPaused())
+            if(main.getPlaybackPaused()) {
                 currIcon = R.drawable.ic_curr_pause;
-            else
+            }
+            else {
                 currIcon = R.drawable.ic_curr_play;
+            }
         }
         currPlay.setImageResource(currIcon);
+        // useful only for the tests
+        currPlay.setTag(currIcon);
 
-        //set position as tag
-        itemView.setTag(position);
+        //set position as tag (not useful for now)
+        //itemView.setTag(position);
         return itemView;
     }
 
