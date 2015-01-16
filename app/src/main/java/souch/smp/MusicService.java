@@ -55,7 +55,7 @@ public class MusicService extends Service implements
     @Override
     public void onDestroy() {
         Log.d("MusicService", "onDestroy");
-        player.stop();
+        //player.stop();
         player.release();
         stopForeground(true);
     }
@@ -81,8 +81,7 @@ public class MusicService extends Service implements
         player.setOnErrorListener(this);
     }
 
-    public void playSong(){
-        //play a song
+    public void playSong() {
         player.reset();
 
         //get song
@@ -104,12 +103,7 @@ public class MusicService extends Service implements
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-        // todo: why getCurrentPosition?
-        //if(player.getCurrentPosition() > 0){
-        mp.reset();
         playNext();
-
-        // todo: gui must update pos
     }
 
     @Override
