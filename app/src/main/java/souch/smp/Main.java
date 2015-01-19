@@ -91,6 +91,10 @@ public class Main extends Activity {
 
         justStarted = true;
 
+        // useful only for testing
+        ImageButton playButton = (ImageButton) findViewById(R.id.play_button);
+        playButton.setTag(R.drawable.ic_action_play);
+
         getSongList();
         Collections.sort(songList, new Comparator<Song>() {
             public int compare(Song a, Song b) {
@@ -275,10 +279,14 @@ public class Main extends Activity {
 
     private void updatePlayButton() {
         ImageButton playButton = (ImageButton) findViewById(R.id.play_button);
-        if(playbackPaused)
+        if(playbackPaused) {
             playButton.setImageResource(R.drawable.ic_action_play);
-        else
+            playButton.setTag(R.drawable.ic_action_play);
+        }
+        else {
             playButton.setImageResource(R.drawable.ic_action_pause);
+            playButton.setTag(R.drawable.ic_action_pause);
+        }
     }
 
     public void playOrPause(View view) {

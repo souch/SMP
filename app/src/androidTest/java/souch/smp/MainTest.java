@@ -3,10 +3,10 @@ package souch.smp;
 import android.os.SystemClock;
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.robotium.solo.Solo;
 
@@ -18,9 +18,11 @@ import java.util.ArrayList;
 public class MainTest extends ActivityInstrumentationTestCase2<Main> {
     private Solo solo;
     private Main main;
-    final int minSong = 4;
+
+    private final int maxAcceptableUserDelay = 2000;
+    private final int minSong = 4;
     // posSong of the prev test
-    int prevPosSong;
+    private int prevPosSong;
 
     public MainTest() {
         super(Main.class);
@@ -36,7 +38,7 @@ public class MainTest extends ActivityInstrumentationTestCase2<Main> {
 
 
     // simple test of playing the first song
-    public void testPlayOneSong() throws Exception {
+    public void test1PlayOneSong() throws Exception {
         checkEnoughSong();
         checkLoadPref();
 
@@ -44,48 +46,86 @@ public class MainTest extends ActivityInstrumentationTestCase2<Main> {
         int linePos = 1;
         solo.scrollToTop();
         solo.clickInList(linePos);
-        // set the song pos for the next test of loadpref
-        prevPosSong = linePos;
 
         // gives the whole thing 2 second to start
-        SystemClock.sleep(2000);
-        Assert.assertTrue(getMusicSrv().isPlaying());
+        checkPlayOk(linePos, true);
 
-        checkCurrPlayOk(linePos);
+        // set the song pos for the next test of loadpref
+        prevPosSong = getMusicSrv().getSong();
     }
 
 
     // the the curr play icon is shown at the right pos
-    public void testCurrPlay() throws Exception {
+    public void test2PlayButton() throws Exception {
         checkEnoughSong();
         checkLoadPref();
 
         int linePos = 3;
         solo.scrollToTop();
         solo.clickInList(linePos);
-        prevPosSong = linePos;
-
         // gives the whole thing 2 second to start
-        SystemClock.sleep(2000);
-        Assert.assertTrue(getMusicSrv().isPlaying());
+        checkPlayOk(linePos, true);
 
+        // pause
+        clickOnButton(R.id.play_button);
+        checkPlayOk(linePos, false);
 
-        checkCurrPlayOk(linePos);
+        // next should go to next and unpause
+        clickOnButton(R.id.next_button);
+        linePos++;
+        checkPlayOk(linePos, true);
 
-        /*
-        solo.clickOnScreen(5, 50);
-        ImageView currPlay = (ImageView) solo.getView(R.id.curr_play);
-        Log.d("MainTest", "currPlay.getTag(); " + currPlay.getTag());
-        Log.d("MainTest", "currPlay.getTag(); " + currPlay.getId());
-        */
-        //ListView songView = (ListView) solo.getView(R.id.song_list);
+        clickOnButton(R.id.next_button);
+        linePos++;
+        checkPlayOk(linePos, true);
+
+        clickOnButton(R.id.prev_button);
+        linePos--;
+        checkPlayOk(linePos, true);
+
+        solo.scrollToTop();
+        solo.clickInList(1);
+        linePos = 1;
+        checkPlayOk(linePos, true);
+        // going backward at the top go to the bottom
+        clickOnButton(R.id.prev_button);
+        linePos = getNbSong() - 1;
+        checkPlayOk(linePos, true);
+
+        clickOnButton(R.id.goto_button);
+        checkPlayOk(linePos, true);
+        ListView songList = (ListView) solo.getView(R.id.song_list);
+        Assert.assertTrue(songList.getCount() - 1 == songList.getLastVisiblePosition());
+
+        // going forward at the bottom go to the top
+        clickOnButton(R.id.next_button);
+        linePos = 0;
+        checkPlayOk(linePos, true);
+
+        clickOnButton(R.id.goto_button);
+        checkPlayOk(linePos, true);
+        Assert.assertTrue(0 == songList.getFirstVisiblePosition());
+
+        // pick a song
+        linePos = 4;
+        solo.clickInList(linePos);
+        checkPlayOk(linePos, true);
+
+        prevPosSong = linePos;
     }
 
-    public void testLoadPref() throws Exception {
+
+    public void testZLoadPref() throws Exception {
         checkEnoughSong();
         checkLoadPref();
     }
 
+    private void clickOnButton(int id) {
+        // this does not work:
+        //solo.clickOnButton(R.id.play_button);
+        // this works:
+        solo.clickOnView((ImageButton) solo.getView(id));
+    }
 
     // test that there is enough song for performing other tests
     public void checkEnoughSong() throws Exception {
@@ -101,6 +141,7 @@ public class MainTest extends ActivityInstrumentationTestCase2<Main> {
         return songList.size();
     }
 
+    // reduce the number of song available
     private void changeNbSong(int nbSong) throws Exception {
         Assert.assertTrue(nbSong >= 0);
         Assert.assertTrue(nbSong <= minSong);
@@ -118,28 +159,50 @@ public class MainTest extends ActivityInstrumentationTestCase2<Main> {
 
     // check that the curr icon is well set
     // linePos start from 1
-    private void checkCurrPlayOk(int linePos) {
-        Log.d("MainTest", "ic:" + R.drawable.ic_curr_pause + " - play:" + R.drawable.ic_curr_play + " - trans:" + R.drawable.ic_transparent);
-        ListView songList = (ListView) solo.getView(R.id.song_list);
+    private void checkPlayOk(int linePos, boolean isPlaying) throws Exception {
+        Log.d("MainTest", "checkPlayOk linePos:" + linePos + " playing: " + isPlaying);
+        SystemClock.sleep(maxAcceptableUserDelay);
+        Assert.assertTrue(getMusicSrv().isPlaying() == isPlaying);
+
+
+        // check the play button (play or pause)
+        int ic_action = R.drawable.ic_action_pause;
+        if(!isPlaying)
+            ic_action = R.drawable.ic_action_play;
+        // this make the listview scroll forever and make the test fail. don't know why :
+        //Assert.assertTrue(((int) solo.getButton(R.id.play_button).getTag()) == ic_action);
+        // this works
+        Assert.assertTrue(((int) ((ImageButton) solo.getView(R.id.play_button)).getTag()) == ic_action);
+
+
+        // check the image that show the current song (played or paused) in the list
         int songPos = linePos > 0 ? linePos - 1 : linePos; // clickInList start from 1, getChildAt from 0
+        //Log.d("MainTest", "ic:" + R.drawable.ic_curr_pause + " - play:" + R.drawable.ic_curr_play + " - trans:" + R.drawable.ic_transparent);
+        ListView songList = (ListView) solo.getView(R.id.song_list);
         int i;
-        for(i = 0; i < songList.getLastVisiblePosition(); i++) {
+        Log.d("MainTest", "songList.getCount():" + songList.getCount() + " songList.firstpos:" + songList.getFirstVisiblePosition() + " lastpos: " + songList.getLastVisiblePosition());
+        for(i = songList.getFirstVisiblePosition(); i < songList.getLastVisiblePosition(); i++) {
             RelativeLayout songItem = (RelativeLayout) songList.getChildAt(i);
+            // fixme: I don't understand why songItem is null
+            if(songItem == null) {
+                Log.w("MainTest", "!!! songItem null; i:" + i);
+                continue;
+            }
             ImageView currPlay = (ImageView) songItem.findViewById(R.id.curr_play);
 
+            /*
             Log.d("MainTest", "i: " + i);
             Log.d("MainTest", "currPlay.getTag(): " + currPlay.getTag());
             TextView title = (TextView) songItem.findViewById(R.id.song_title);
             Log.d("MainTest", "title: " + title.getText());
+            */
 
-            Assert.assertTrue(((int) currPlay.getTag()) == (i != songPos ? R.drawable.ic_transparent : R.drawable.ic_curr_play));
+            int ic_curr = R.drawable.ic_curr_play;
+            if(!isPlaying)
+                ic_curr = R.drawable.ic_curr_pause;
+
+            Assert.assertTrue(((int) currPlay.getTag()) == (i != songPos ? R.drawable.ic_transparent : ic_curr));
         }
-/*
-        TextView title = (TextView) songItem.findViewById(R.id.song_title);
-        Log.d("MainTest", "title: " + title.getText());
-        Log.d("MainTest", "currPlay.getTag(): " + currPlay.getTag());
-        Log.d("MainTest", "ic:" + R.drawable.ic_curr_pause + " - play:" + R.drawable.ic_curr_play + " - trens:" + R.drawable.ic_transparent);
-*/
     }
 
     public void checkLoadPref() throws Exception {
@@ -166,10 +229,4 @@ public class MainTest extends ActivityInstrumentationTestCase2<Main> {
     public void tearDown() throws Exception {
         solo.finishOpenedActivities();
     }
-
-/*
-    public void testOnKeyDown() throws Exception {
-        //solo.goBack();
-    }
-    */
 }
