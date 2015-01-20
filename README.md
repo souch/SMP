@@ -35,19 +35,24 @@ No eyes candy graphics nor advanced mega bass settings.
 - select main music directory
 - quick jump with letter in the right (like in contact)
 - Shake to go to next song
-- button that disable/enable screensaver
+- button that disable/enable lockscreen
 - zoom make letter (and button) bigger or smaller
-- speak the title
+- speak the title ?
 - cursor for volume ? ( half/full?)
 - swipe to go to list of song <-> song details
-- mp3 tag editor
-- help + infobulle
+- mp3 tag editor ?
+- help + infobulle ?
 
 ### Credits
 
 Lot's of time saved thanks to Sue Smith's [tutorials on creating a Music Player on Android](http://code.tutsplus.com/tutorials/create-a-music-player-on-android-project-setup--mobile-22764).
 
 Use some icons done by Daniele De Santis (Creative Commons (Attribution 3.0 Unported)), found on iconfinder.com.
+
+### Developer
+
+Compiled with Android Studio.
+Robotium non regression tests are available in the androidTest folder.
 
 ### License
 
