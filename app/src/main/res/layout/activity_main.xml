@@ -9,7 +9,14 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:choiceMode="singleChoice"
-        />
+        android:fastScrollEnabled="true"
+        android:scrollbars="vertical"
+        android:scrollbarThumbVertical="@drawable/scrollbar_vertical_thumb"
+           />
+    <!--
+    android:fadeScrollbars="true"
+    android:scrollbarThumbVertical="@drawable/scrollbar_vertical_thumb"
+        -->
 
     <!--
     icon ic_action_prev, ic_action_play, ic_action_pause, ic_action_next

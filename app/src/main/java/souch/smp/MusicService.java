@@ -29,11 +29,18 @@ public class MusicService extends Service implements
     private int songPosn;
     // need for focus
     private boolean wasPlaying;
+    // a song has finish to play
+    private boolean completed;
 
     private final IBinder musicBind = new MusicBinder();
 
     private AudioManager audioManager;
 
+    // don't use musicSrv.isPlaying() cause it is asynchronous (isPlaying is set to true when
+    // .start in onPrepared called)
+    private boolean playing;
+    // tell if mediaplayer can be unpaused
+    private boolean prepared;
 
     private String songTitle = "";
     private static final int NOTIFY_ID = 1;
@@ -43,6 +50,9 @@ public class MusicService extends Service implements
         super.onCreate();
         //initialize position
         songPosn = 0;
+        playing = false;
+        prepared = false;
+        completed = false;
 
         wasPlaying = false;
         player = null;
@@ -70,7 +80,25 @@ public class MusicService extends Service implements
         return player;
     }
 
+    public void initMusicPlayer(){
+        player = new MediaPlayer();
+        //set player properties
+        player.setWakeMode(getApplicationContext(),
+                PowerManager.PARTIAL_WAKE_LOCK);
+        player.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        player.setOnPreparedListener(this);
+        player.setOnCompletionListener(this);
+        player.setOnErrorListener(this);
+        wasPlaying = false;
+        playing = false;
+        prepared = false;
+        completed = false;
+    }
+
     private void releaseAudio() {
+        playing = false;
+        prepared = false;
+
         if (player != null) {
             if (player.isPlaying()) {
                 player.stop();
@@ -92,8 +120,10 @@ public class MusicService extends Service implements
         switch (focusChange) {
             case AudioManager.AUDIOFOCUS_GAIN:
                 // resume playback
-                if (wasPlaying)
+                if (wasPlaying) {
                     getPlayer().start();
+                    playing = true;
+                }
                 //player.setVolume(1.0f, 1.0f);
                 break;
 
@@ -113,6 +143,7 @@ public class MusicService extends Service implements
                 else {
                     wasPlaying = false;
                 }
+                playing = false;
                 break;
 
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
@@ -126,6 +157,7 @@ public class MusicService extends Service implements
                 else {
                     wasPlaying = false;
                 }
+                playing = false;
 
                 break;
         }
@@ -160,20 +192,10 @@ public class MusicService extends Service implements
         return songPosn;
     }
 
-    public void initMusicPlayer(){
-        player = new MediaPlayer();
-        //set player properties
-        player.setWakeMode(getApplicationContext(),
-                PowerManager.PARTIAL_WAKE_LOCK);
-        player.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        player.setOnPreparedListener(this);
-        player.setOnCompletionListener(this);
-        player.setOnErrorListener(this);
-        wasPlaying = false;
-    }
-
     public void playSong() {
         getPlayer().reset();
+        playing = true;
+        prepared = false;
 
         //get song
         Song playSong = songs.get(songPosn);
@@ -194,11 +216,14 @@ public class MusicService extends Service implements
 
     @Override
     public void onCompletion(MediaPlayer mp) {
+        prepared = false;
+        completed = true;
         playNext();
     }
 
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
+        //playing = false;
         mp.reset();
         return false;
     }
@@ -207,6 +232,7 @@ public class MusicService extends Service implements
     public void onPrepared(MediaPlayer mp) {
         //start playback
         mp.start();
+        prepared = true;
 
         Intent notificationIntent = new Intent(this, Main.class);
         notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -217,6 +243,28 @@ public class MusicService extends Service implements
         notification.setLatestEventInfo(this, "SicMu playing", songTitle, pendInt);
 
         startForeground(NOTIFY_ID, notification);
+    }
+
+    // the mediaplayer has been asked to play
+    public boolean getPlaying() {
+        return playing;
+    }
+
+    // tell if the mediaplayer can unpause
+    public boolean getPrepared() {
+        return prepared;
+    }
+
+    //
+    public boolean getAndSetCompleted() {
+        boolean isCompleted = completed;
+        completed = false;
+        return isCompleted;
+    }
+
+    // the mediaplayer is playing
+    public boolean isPlaying() {
+        return player != null && player.isPlaying();
     }
 
     public int getCurrentPosition(){
@@ -231,19 +279,6 @@ public class MusicService extends Service implements
         return player.getDuration();
     }
 
-    public boolean isPlaying(){
-        if(player == null)
-            return false;
-        return player.isPlaying();
-    }
-
-    public void pausePlayer(){
-        if(player == null)
-            return;
-
-        player.pause();
-    }
-
     public void seekTo(int posn){
         if(player == null)
             return;
@@ -251,8 +286,18 @@ public class MusicService extends Service implements
         player.seekTo(posn);
     }
 
+    // unpause
     public void go(){
+        playing = true;
         getPlayer().start();
+    }
+
+    public void pausePlayer(){
+        if(player == null)
+            return;
+
+        playing = false;
+        player.pause();
     }
 
     public void playPrev(){

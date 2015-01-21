@@ -6,7 +6,7 @@ Gui aims to be easy to use while driving.
 
 Works on old slow small devices (from Android froyo 2.2)
 
-No eyes candy graphics nor advanced mega bass settings.
+No eyes candy graphics nor advanced mega bass settings. No customizable playlist.
 
 ### Detailed features
 - play mp3, ogg, flac, midi, wav, mp4, 3gp... see Android MediaPlayer Supported Media Formats (depends on android version).

@@ -114,6 +114,7 @@ public class MainTest extends ActivityInstrumentationTestCase2<Main> {
         prevPosSong = linePos;
     }
 
+    // todo: see if the listview update curr pause when musicservice goes to next song automatically.
 
     public void testZLoadPref() throws Exception {
         checkEnoughSong();
@@ -124,7 +125,7 @@ public class MainTest extends ActivityInstrumentationTestCase2<Main> {
         // this does not work:
         //solo.clickOnButton(R.id.play_button);
         // this works:
-        solo.clickOnView((ImageButton) solo.getView(id));
+        solo.clickOnView(solo.getView(id));
     }
 
     // test that there is enough song for performing other tests
@@ -172,7 +173,7 @@ public class MainTest extends ActivityInstrumentationTestCase2<Main> {
         // this make the listview scroll forever and make the test fail. don't know why :
         //Assert.assertTrue(((int) solo.getButton(R.id.play_button).getTag()) == ic_action);
         // this works
-        Assert.assertTrue(((int) ((ImageButton) solo.getView(R.id.play_button)).getTag()) == ic_action);
+        Assert.assertTrue(((int) (solo.getView(R.id.play_button)).getTag()) == ic_action);
 
 
         // check the image that show the current song (played or paused) in the list

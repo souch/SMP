@@ -16,6 +16,7 @@ public class SongAdapter extends BaseAdapter {
     private LayoutInflater songInf;
     private Main main;
 
+
     public SongAdapter(Context c, ArrayList<Song> theSongs, Main mn){
         songs = theSongs;
         songInf = LayoutInflater.from(c);
@@ -64,12 +65,10 @@ public class SongAdapter extends BaseAdapter {
 
         int currIcon = R.drawable.ic_transparent;
         if(position == main.getSong()) {
-            if(main.getPlaybackPaused()) {
-                currIcon = R.drawable.ic_curr_pause;
-            }
-            else {
+            if(main.getPlaying())
                 currIcon = R.drawable.ic_curr_play;
-            }
+            else
+                currIcon = R.drawable.ic_curr_pause;
         }
         currPlay.setImageResource(currIcon);
         // useful only for the tests

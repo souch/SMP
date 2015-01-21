@@ -20,7 +20,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,30 +34,15 @@ public class Main extends Activity {
 
     private MusicService musicSrv;
     private Intent playIntent;
-    private boolean musicBound = false;
+    private boolean serviceBound = false;
 
-    // SiMu just started, and no song has been started
-    boolean justStarted;
+    private Timer timer;
+    private final long updateInterval = 1000;
 
-    Timer timer;
-    final long timerDelayMs = 1000;
-
-    // todo: how currSong is handled is a mess
-
-    // the song pos in list known by the activity
-    int currSong;
-    // curr song played pos in ms.
-    //int currPos;
-
+    // save/load song pos preference name
     final String currSongPref = "currSong";
 
-
-
-
-    //private boolean paused = false;
-    private boolean playbackPaused = true;
-
-    //connect to the service
+    // connect to the service
     private ServiceConnection musicConnection = new ServiceConnection(){
 
         @Override
@@ -66,17 +50,20 @@ public class Main extends Activity {
             Log.d("Main", "onServiceConnected");
 
             MusicService.MusicBinder binder = (MusicService.MusicBinder) service;
-            //get service
+            // get service
             musicSrv = binder.getService();
-            //pass list
+            serviceBound = true;
+            // pass list
             musicSrv.setList(songList);
-            musicBound = true;
+            restorePreferences();
+            songAdt.notifyDataSetChanged();
+            gotoCurrSong(null);
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
             Log.d("Main", "onServiceDisconnected");
-            musicBound = false;
+            serviceBound = false;
         }
     };
 
@@ -87,23 +74,18 @@ public class Main extends Activity {
         setContentView(R.layout.activity_main);
 
         songView = (ListView) findViewById(R.id.song_list);
-        songList = new ArrayList<Song>();
-
-        justStarted = true;
 
         // useful only for testing
         ImageButton playButton = (ImageButton) findViewById(R.id.play_button);
         playButton.setTag(R.drawable.ic_action_play);
 
+        songList = new ArrayList<Song>();
         getSongList();
         Collections.sort(songList, new Comparator<Song>() {
             public int compare(Song a, Song b) {
                 return a.getArtist().compareTo(b.getArtist());
             }
         });
-        restorePreferences();
-        if (currSong >= songList.size())
-            currSong = 0;
 
         songAdt = new SongAdapter(this, songList, this);
         songView.setAdapter(songAdt);
@@ -111,19 +93,17 @@ public class Main extends Activity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
+                if(!serviceBound)
+                    return;
                 //Toast.makeText(getApplicationContext(),
                 //        "Click ListItem Number " + position + " id: " + id, Toast.LENGTH_LONG).show();
 
-                justStarted = false;
-                currSong = position;
                 musicSrv.setSong(position);
                 musicSrv.playSong();
-                playbackPaused = false;
                 updatePlayButton();
+                songAdt.notifyDataSetChanged();
             }
         });
-
-        gotoCurrSong(null);
 
         if (playIntent == null) {
             playIntent = new Intent(this, MusicService.class);
@@ -152,7 +132,7 @@ public class Main extends Activity {
                 // updateInfo must be run in activity thread
                 runOnUiThread(updateInfo);
             }
-        }, timerDelayMs, timerDelayMs);
+        }, updateInterval*2, updateInterval);
     }
 
 
@@ -179,21 +159,21 @@ public class Main extends Activity {
 
         savePreferences();
 
-        if(musicBound) {
+        if(serviceBound) {
             unbindService(musicConnection);
-            musicBound = false;
+            serviceBound = false;
             musicSrv = null;
         }
     }
 
-
     final Runnable updateInfo = new Runnable() {
         public void run() {
-            // retrieve the song pos of the service
-            int songPos = getSong();
-            // compare it to what we know from the activity
-            if (!justStarted && songPos != -1 && songPos != currSong) {
-                currSong = songPos;
+            if(!serviceBound)
+                return;
+
+            // useful when musicservice go to next song
+            if(musicSrv.getAndSetCompleted()) {
+                Log.d("Main", "updateInfo");
                 songAdt.notifyDataSetChanged();
             }
 
@@ -203,21 +183,25 @@ public class Main extends Activity {
 
     private void restorePreferences() {
         SharedPreferences settings = getPreferences(0);
-        currSong = settings.getInt(currSongPref, 0);
-
-        Log.d("yo", "pref load song: " + currSong);
+        int savedSong = settings.getInt(currSongPref, 0);
+        // the songlist must have changed
+        if (savedSong >= songList.size())
+            savedSong = 0;
+        Log.d("Main", "pref load song: " + savedSong);
+        musicSrv.setSong(savedSong);
     }
 
     private void savePreferences() {
+        if (!serviceBound)
+            return;
+
         SharedPreferences settings = getPreferences(0);
         SharedPreferences.Editor editor = settings.edit();
-        editor.putInt(currSongPref, getSong());
+        editor.putInt(currSongPref, musicSrv.getSong());
         editor.commit();
 
-        Log.d("yo", "pref save song: " + getSong());
+        Log.d("Main", "pref save song: " + musicSrv.getSong());
     }
-
-
 
 
     public void getSongList() {
@@ -279,32 +263,31 @@ public class Main extends Activity {
 
     private void updatePlayButton() {
         ImageButton playButton = (ImageButton) findViewById(R.id.play_button);
-        if(playbackPaused) {
-            playButton.setImageResource(R.drawable.ic_action_play);
-            playButton.setTag(R.drawable.ic_action_play);
-        }
-        else {
+        if(getPlaying()) {
             playButton.setImageResource(R.drawable.ic_action_pause);
             playButton.setTag(R.drawable.ic_action_pause);
+        }
+        else {
+            playButton.setImageResource(R.drawable.ic_action_play);
+            playButton.setTag(R.drawable.ic_action_play);
         }
     }
 
     public void playOrPause(View view) {
-        if (isPlaying()) {
-            playbackPaused = true;
+        if(!serviceBound)
+            return;
+
+        if (getPlaying()) {
             musicSrv.pausePlayer();
-        } else {
-            if (justStarted) {
-                // the app has just been launched
-                musicSrv.setSong(currSong);
-                musicSrv.playSong();
-            }
-            else {
+        }
+        else {
+            if (musicSrv.getPrepared()) {
                 // previously paused
                 musicSrv.go();
             }
-            justStarted = false;
-            playbackPaused = false;
+            else {
+                musicSrv.playSong();
+            }
         }
 
         updatePlayButton();
@@ -312,55 +295,65 @@ public class Main extends Activity {
     }
 
     public void playNext(View view){
-        if (justStarted) {
-            musicSrv.setSong(currSong);
-        }
+        if(!serviceBound)
+            return;
+
         musicSrv.playNext();
-        currSong = musicSrv.getSong();
-        playbackPaused = false;
         updatePlayButton();
         songAdt.notifyDataSetChanged();
     }
 
     public void playPrev(View view){
-        if (justStarted) {
-            musicSrv.setSong(currSong);
-        }
+        if(!serviceBound)
+            return;
+
         musicSrv.playPrev();
-        currSong = musicSrv.getSong();
-        playbackPaused = false;
         updatePlayButton();
         songAdt.notifyDataSetChanged();
     }
 
     public void gotoCurrSong(View view) {
-        int gotoSong = getSong() - 3; // -3 to show a bit of songs before the cur song
+        if(!serviceBound)
+            return;
+
+        int gotoSong = musicSrv.getSong() - 3; // -3 to show a bit of songs before the cur song
         if(gotoSong < 0)
             gotoSong = 0;
+
+        Log.d("Main", "gotoCurrSong:" + gotoSong);
         songView.setSelection(gotoSong);
         //songView.smoothScrollToPosition(gotoSong);
     }
 
     // safe getSong : return guessed song pos if musicSrv down
     public int getSong() {
-        if(!justStarted && musicSrv != null && musicBound)
+        if(serviceBound)
+            return musicSrv.getSong();
+        else
+            return -1;
+        /*
+        if(!justStarted && musicSrv != null && serviceBound)
             return musicSrv.getSong();
         else return currSong;
+        */
     }
 
-    public boolean getPlaybackPaused() {
-        return playbackPaused;
+    public boolean getPlaying() {
+        boolean playing = serviceBound && musicSrv.getPlaying();
+        //Log.d("Main", "getPlaying:" + playing);
+        return playing;
     }
 
+    /*
     public int getDuration() {
-        if(musicSrv != null && musicBound && musicSrv.isPlaying())
+        if(musicSrv != null && serviceBound && musicSrv.isPlaying())
             return musicSrv.getDuration();
         else return 0;
     }
 
 
     public int getCurrentPosition() {
-        if(musicSrv != null && musicBound && musicSrv.isPlaying())
+        if(musicSrv != null && serviceBound && musicSrv.isPlaying())
             return musicSrv.getCurrentPosition();
         else return 0;
     }
@@ -368,13 +361,7 @@ public class Main extends Activity {
     public void seekTo(int pos) {
         musicSrv.seekTo(pos);
     }
-
-    public boolean isPlaying() {
-        if(musicSrv != null && musicBound)
-            return musicSrv.isPlaying();
-        return false;
-    }
-
+*/
 
     // exit nicely
     @Override
