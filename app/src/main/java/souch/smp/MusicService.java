@@ -33,23 +33,17 @@ public class MusicService extends Service implements
     private int songPosn;
     // need for focus
     private boolean wasPlaying;
-    // a song has finish to play
-    private boolean completed;
+    // sthg happened and the Main do not know it : a song has finish to play
+    private boolean changed;
 
     private final IBinder musicBind = new MusicBinder();
 
     private AudioManager audioManager;
 
-    public MediaPlayerState state;
+    // current state of the MediaPlayer
+    private PlayerState state;
 
-    // not in (idle, end, error) MediaPlayer state
-    private boolean initialized;
-    // don't use musicSrv.isPlaying() cause it is asynchronous (isPlaying is set to true when
-    // .start in onPrepared called)
-    private boolean playing;
-    // tell if MediaPlayer can be unpaused
-    private boolean started;
-    // set to false iif seekTo has been called but the seek is still not done
+    // set to false if seekTo() has been called but the seek is still not done
     private boolean seekFinished;
 
     private String songTitle = "";
@@ -59,15 +53,10 @@ public class MusicService extends Service implements
         super.onCreate();
         songPosn = 0;
 
-        state = new MediaPlayerState();
+        state = new PlayerState();
 
-        /*playing = false;
-        started = false;
-        initialized = false;*/
-
-        completed = false;
+        changed = false;
         seekFinished = true;
-
         wasPlaying = false;
 
         player = null;
@@ -98,22 +87,14 @@ public class MusicService extends Service implements
             player.setOnCompletionListener(this);
             player.setOnErrorListener(this);
             player.setOnSeekCompleteListener(this);
-            // commented cause should already be in these states :
-            /*
-            initialized = false;
-            wasPlaying = false;
-            playing = false;
-            started = false;
-            completed = false;
-            */
         }
         return player;
     }
 
     private void releaseAudio() {
-        state.setState(MediaPlayerState.Nope);
+        state.setState(PlayerState.Nope);
         seekFinished = true;
-        completed = false;
+        changed = false;
         wasPlaying = false;
 
         if (player != null) {
@@ -139,7 +120,7 @@ public class MusicService extends Service implements
                 // resume playback
                 if (wasPlaying) {
                     getPlayer().start();
-                    state.setState(MediaPlayerState.Started);
+                    state.setState(PlayerState.Started);
                 }
                 //player.setVolume(1.0f, 1.0f);
                 break;
@@ -155,7 +136,7 @@ public class MusicService extends Service implements
                 // is likely to resume
                 if (getPlayer().isPlaying()) {
                     getPlayer().pause();
-                    state.setState(MediaPlayerState.Paused);
+                    state.setState(PlayerState.Paused);
                     wasPlaying = true;
                 }
                 else {
@@ -169,7 +150,7 @@ public class MusicService extends Service implements
                 if (getPlayer().isPlaying()) {
                     //player.setVolume(0.1f, 0.1f);
                     getPlayer().pause();
-                    state.setState(MediaPlayerState.Paused);
+                    state.setState(PlayerState.Paused);
                     wasPlaying = true;
                 }
                 else {
@@ -182,7 +163,7 @@ public class MusicService extends Service implements
     @Override
     public void onSeekComplete(MediaPlayer mp) {
         // on My 2.3.6 phone, the phone seems bugged : calling now getCurrentPosition gives
-        // last position.
+        // last position. 1 second after it is ok, so wait a bit.
         if(Build.VERSION.SDK_INT <= 10) {
             Timer delaySeekCompleted = new Timer();
             delaySeekCompleted.schedule(new TimerTask() {
@@ -230,7 +211,7 @@ public class MusicService extends Service implements
 
     public void playSong() {
         getPlayer().reset();
-        state.setState(MediaPlayerState.Idle);
+        state.setState(PlayerState.Idle);
 
         // get song
         Song playSong = songs.get(songPosn);
@@ -246,15 +227,15 @@ public class MusicService extends Service implements
         catch(Exception e){
             Log.e("MUSIC SERVICE", "Error setting data source", e);
         }
-        state.setState(MediaPlayerState.Initialized);
+        state.setState(PlayerState.Initialized);
         getPlayer().prepareAsync();
-        state.setState(MediaPlayerState.Preparing);
+        state.setState(PlayerState.Preparing);
     }
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-        state.setState(MediaPlayerState.PlaybackCompleted);
-        completed = true;
+        state.setState(PlayerState.PlaybackCompleted);
+        changed = true;
         playNext();
     }
 
@@ -262,7 +243,7 @@ public class MusicService extends Service implements
     public boolean onError(MediaPlayer mp, int what, int extra) {
         // todo: check if this func is ok
         mp.reset();
-        state.setState(MediaPlayerState.Idle);
+        state.setState(PlayerState.Idle);
         return false;
     }
 
@@ -270,7 +251,7 @@ public class MusicService extends Service implements
     public void onPrepared(MediaPlayer mp) {
         //start playback
         mp.start();
-        state.setState(MediaPlayerState.Started);
+        state.setState(PlayerState.Started);
 
         Intent notificationIntent = new Intent(this, Main.class);
         notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -283,28 +264,14 @@ public class MusicService extends Service implements
         startForeground(NOTIFY_ID, notification);
     }
 
-    /*
-    // tell if the MediaPlayer has been asked to play
-    public boolean getPlaying() {
-        return playing;
-    }
-    // tell if the MediaPlayer can unpause
-    public boolean getStarted() {
-        return started;
-    }
-    public boolean getInitialized() {
-        return initialized;
-    }
-    */
-
     public boolean isPlaying() {
         return player != null && player.isPlaying();
     }
 
-    public boolean getAndSetCompleted() {
-        boolean isCompleted = completed;
-        completed = false;
-        return isCompleted;
+    public boolean getChanged() {
+        boolean hasChanged = changed;
+        changed = false;
+        return hasChanged;
     }
 
     // get curr position in second
@@ -336,18 +303,16 @@ public class MusicService extends Service implements
 
     // unpause
     public void go(){
-        playing = true;
         getPlayer().start();
-        state.setState(MediaPlayerState.Started);
+        state.setState(PlayerState.Started);
     }
 
     public void pausePlayer(){
         if(player == null)
             return;
 
-        playing = false;
         player.pause();
-        state.setState(MediaPlayerState.Paused);
+        state.setState(PlayerState.Paused);
     }
 
     public void playPrev(){
@@ -362,5 +327,9 @@ public class MusicService extends Service implements
         if(songPosn >= songs.size())
             songPosn = 0;
         playSong();
+    }
+
+    public boolean isInState(int states) {
+        return state.compare(states);
     }
 }

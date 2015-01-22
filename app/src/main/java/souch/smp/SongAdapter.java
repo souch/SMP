@@ -58,7 +58,7 @@ public class SongAdapter extends BaseAdapter {
 
         int currIcon = R.drawable.ic_transparent;
         if(position == main.getSong()) {
-            if(main.getState().compare1State(MediaPlayerState.Paused))
+            if(main.isInState(PlayerState.Paused))
                 currIcon = R.drawable.ic_curr_pause;
             else
                 currIcon = R.drawable.ic_curr_play;

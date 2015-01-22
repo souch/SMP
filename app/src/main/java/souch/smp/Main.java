@@ -143,11 +143,11 @@ public class Main extends Activity {
 
         @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
-            int[] states = {MediaPlayerState.Prepared,
-                    MediaPlayerState.Started,
-                    MediaPlayerState.Paused,
-                    MediaPlayerState.PlaybackCompleted};
-            if(serviceBound && musicSrv.state.compareXState(states)) {
+            int states = PlayerState.Prepared |
+                    PlayerState.Started |
+                    PlayerState.Paused |
+                    PlayerState.PlaybackCompleted;
+            if(serviceBound && musicSrv.isInState(states)) {
                 Log.d("Main", "onStopTrackingTouch setProgress" + Song.secondsToMinutes(seekBar.getProgress()));
                 seekBar.setProgress(seekBar.getProgress());
                 // valid state : {Prepared, Started, Paused, PlaybackCompleted}
@@ -226,20 +226,18 @@ public class Main extends Activity {
             }
 
             Song currSong = songList.get(musicSrv.getSong());
-            int[] seekableStates = {MediaPlayerState.Preparing,
-                    MediaPlayerState.Prepared,
-                    MediaPlayerState.Started,
-                    MediaPlayerState.Paused,
-                    MediaPlayerState.PlaybackCompleted};
-            boolean seekableState = musicSrv.state.compareXState(seekableStates);
+            int seekableStates = PlayerState.Preparing |
+                    PlayerState.Prepared |
+                    PlayerState.Started |
+                    PlayerState.Paused |
+                    PlayerState.PlaybackCompleted;
 
             // useful when MusicService go to next song
-            if(musicSrv.getAndSetCompleted()) {
+            if(musicSrv.getChanged()) {
                 Log.d("Main", "updateInfo");
                 songAdt.notifyDataSetChanged();
 
-
-                if(seekableState) {
+                if(musicSrv.isInState(seekableStates)) {
                     seekbar.setMax(currSong.getDuration());
                     duration.setText(Song.secondsToMinutes(currSong.getDuration()));
                     duration.setVisibility(TextView.VISIBLE);
@@ -248,7 +246,7 @@ public class Main extends Activity {
             }
 
             // getCurrentPosition {Idle, Initialized, Prepared, Started, Paused, Stopped, PlaybackCompleted}
-            if(seekableState) {
+            if(musicSrv.isInState(seekableStates)) {
                 if(!touchSeekbar && musicSrv.getSeekFinished()) {
                     Log.d("Main", "updateInfo setProgress" + Song.secondsToMinutes(musicSrv.getCurrentPosition()));
                     seekbar.setProgress(musicSrv.getCurrentPosition());
@@ -343,8 +341,8 @@ public class Main extends Activity {
 
     private void updatePlayButton() {
         ImageButton playButton = (ImageButton) findViewById(R.id.play_button);
-        if(!musicSrv.state.compare1State(MediaPlayerState.Nope)) {
-            if(!musicSrv.state.compare1State(MediaPlayerState.Paused)) {
+        if(!musicSrv.isInState(PlayerState.Nope)) {
+            if(!musicSrv.isInState(PlayerState.Paused)) {
                 playButton.setImageResource(R.drawable.ic_action_pause);
                 playButton.setTag(R.drawable.ic_action_pause);
             }
@@ -354,12 +352,12 @@ public class Main extends Activity {
             }
         }
 
-        int[] seekableStates = {MediaPlayerState.Preparing,
-                MediaPlayerState.Prepared,
-                MediaPlayerState.Started,
-                MediaPlayerState.Paused,
-                MediaPlayerState.PlaybackCompleted};
-        boolean seekableState = musicSrv.state.compareXState(seekableStates);
+        int seekableStates = PlayerState.Preparing |
+                PlayerState.Prepared |
+                PlayerState.Started |
+                PlayerState.Paused |
+                PlayerState.PlaybackCompleted;
+        boolean seekableState = musicSrv.isInState(seekableStates);
         if(serviceBound && seekableState) {
             Song currSong = songList.get(musicSrv.getSong());
             duration.setText(currSong.secondsToMinutes(currSong.getDuration()));
@@ -375,11 +373,11 @@ public class Main extends Activity {
         if(!serviceBound)
             return;
 
-        if (musicSrv.state.compare1State(MediaPlayerState.Started)) {
+        if (musicSrv.isInState(PlayerState.Started)) {
             musicSrv.pausePlayer();
         }
         else {
-            if (musicSrv.state.compare1State(MediaPlayerState.Paused)) {
+            if (musicSrv.isInState(PlayerState.Paused)) {
                 // previously paused
                 musicSrv.go();
             }
@@ -423,30 +421,18 @@ public class Main extends Activity {
         //songView.smoothScrollToPosition(gotoSong);
     }
 
-    // safe getSong : return guessed song pos if musicSrv down
     public int getSong() {
         if(serviceBound)
             return musicSrv.getSong();
         else
             return -1;
-        /*
-        if(!justStarted && musicSrv != null && serviceBound)
-            return musicSrv.getSong();
-        else return currSong;
-        */
     }
 
-    public MediaPlayerState getState() {
-        if(serviceBound) {
-            return musicSrv.state;
-        }
-        else {
-            Log.w("Main", "getState(): should not happen!!");
-            return new MediaPlayerState();
-        }
+    public boolean isInState(int states) {
+        return serviceBound && musicSrv.isInState(states);
     }
 
-    // exit nicely
+    // exit "nicely"
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         switch (keyCode) {

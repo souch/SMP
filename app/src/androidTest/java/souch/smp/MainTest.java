@@ -1,5 +1,6 @@
 package souch.smp;
 
+import android.media.MediaPlayer;
 import android.os.SystemClock;
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
@@ -116,9 +117,20 @@ public class MainTest extends ActivityInstrumentationTestCase2<Main> {
 
     // todo: see if the listview update curr pause when musicservice goes to next song automatically.
 
+    // todo: seekbar tests
+
     public void testZLoadPref() throws Exception {
         checkEnoughSong();
         checkLoadPref();
+    }
+
+    public void testPlayerState() throws Exception {
+        PlayerState ps = new PlayerState();
+        Assert.assertTrue(ps.getState() == PlayerState.Nope);
+        Assert.assertTrue(ps.compare(PlayerState.Nope));
+        ps.setState(PlayerState.Initialized);
+        Assert.assertTrue(ps.compare(PlayerState.Nope | PlayerState.Initialized | PlayerState.End));
+        Assert.assertFalse(ps.compare(PlayerState.Nope | PlayerState.End));
     }
 
     private void clickOnButton(int id) {
