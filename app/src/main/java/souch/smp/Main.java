@@ -9,6 +9,7 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.MediaStore;
@@ -20,6 +21,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,6 +41,12 @@ public class Main extends Activity {
 
     private Timer timer;
     private final long updateInterval = 1000;
+    private SeekBar seekbar;
+    // tell whether the seekbar is currently touch by a user
+    private boolean touchSeekbar;
+    private TextView duration;
+    private TextView currDuration;
+
 
     // save/load song pos preference name
     final String currSongPref = "currSong";
@@ -110,7 +119,39 @@ public class Main extends Activity {
             //startService(playIntent);
             bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
         }
+
+        duration = (TextView) findViewById(R.id.duration);
+        currDuration = (TextView) findViewById(R.id.curr_duration);
+        touchSeekbar = false;
+        seekbar = (SeekBar) findViewById(R.id.seek_bar);
+        seekbar.setOnSeekBarChangeListener(seekBarChangeListener);
     }
+
+    private SeekBar.OnSeekBarChangeListener seekBarChangeListener
+            = new SeekBar.OnSeekBarChangeListener() {
+
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            if(seekbar.getVisibility() == TextView.VISIBLE) {
+                currDuration.setText(Song.secondsToMinutes(seekBar.getProgress()));
+            }
+        }
+
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+            touchSeekbar = true;
+        }
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+            if(serviceBound && musicSrv.getInitialized()) {
+                Log.d("Main", "onStopTrackingTouch setProgress" + Song.secondsToMinutes(seekBar.getProgress()));
+                seekBar.setProgress(seekBar.getProgress());
+                musicSrv.seekTo(seekBar.getProgress());
+            }
+
+            touchSeekbar = false;
+        }
+    };
 
 /*
     @Override
@@ -166,18 +207,44 @@ public class Main extends Activity {
         }
     }
 
+    private void hideSeekBarInfo() {
+        duration.setVisibility(TextView.INVISIBLE);
+        seekbar.setVisibility(TextView.INVISIBLE);
+        currDuration.setText("SicMu Player");
+    }
+
     final Runnable updateInfo = new Runnable() {
         public void run() {
-            if(!serviceBound)
+            if(!serviceBound) {
+                hideSeekBarInfo();
                 return;
+            }
 
-            // useful when musicservice go to next song
+            Song currSong = songList.get(musicSrv.getSong());
+
+            // useful when MusicService go to next song
             if(musicSrv.getAndSetCompleted()) {
                 Log.d("Main", "updateInfo");
                 songAdt.notifyDataSetChanged();
+
+                if(musicSrv.getInitialized()) {
+                    seekbar.setMax(currSong.getDuration());
+                    duration.setText(Song.secondsToMinutes(currSong.getDuration()));
+                    duration.setVisibility(TextView.VISIBLE);
+                    seekbar.setVisibility(TextView.VISIBLE);
+                }
             }
 
-            //currPos = getCurrentPosition();
+            if(musicSrv.getInitialized()) {
+                if(!touchSeekbar && musicSrv.getSeekFinished()) {
+                    Log.d("Main", "updateInfo setProgress" + Song.secondsToMinutes(musicSrv.getCurrentPosition()));
+                    seekbar.setProgress(musicSrv.getCurrentPosition());
+                }
+            }
+            else {
+                // todo: cleanup hideSeekBarInfo calls
+                hideSeekBarInfo();
+            }
         }
     };
 
@@ -227,8 +294,8 @@ public class Main extends Activity {
                 String thisTitle = musicCursor.getString(titleColumn);
                 String thisArtist = musicCursor.getString(artistColumn);
                 String thisAlbum = musicCursor.getString(albumColumn);
-                long thisDuration = musicCursor.getInt(durationColumn);
-                songList.add(new Song(thisId, thisTitle, thisArtist, thisAlbum, thisDuration));
+                int thisDuration = musicCursor.getInt(durationColumn);
+                songList.add(new Song(thisId, thisTitle, thisArtist, thisAlbum, thisDuration / 1000));
             }
             while (musicCursor.moveToNext());
         }
@@ -271,6 +338,16 @@ public class Main extends Activity {
             playButton.setImageResource(R.drawable.ic_action_play);
             playButton.setTag(R.drawable.ic_action_play);
         }
+
+        if(serviceBound && musicSrv.getInitialized()) {
+            Song currSong = songList.get(musicSrv.getSong());
+            duration.setText(currSong.secondsToMinutes(currSong.getDuration()));
+            duration.setVisibility(TextView.VISIBLE);
+            seekbar.setMax(currSong.getDuration());
+            seekbar.setProgress(musicSrv.getCurrentPosition());
+            seekbar.setVisibility(TextView.VISIBLE);
+            currDuration.setText(Song.secondsToMinutes(musicSrv.getCurrentPosition()));
+        }
     }
 
     public void playOrPause(View view) {
@@ -281,7 +358,7 @@ public class Main extends Activity {
             musicSrv.pausePlayer();
         }
         else {
-            if (musicSrv.getPrepared()) {
+            if (musicSrv.getStarted()) {
                 // previously paused
                 musicSrv.go();
             }
@@ -343,25 +420,6 @@ public class Main extends Activity {
         //Log.d("Main", "getPlaying:" + playing);
         return playing;
     }
-
-    /*
-    public int getDuration() {
-        if(musicSrv != null && serviceBound && musicSrv.isPlaying())
-            return musicSrv.getDuration();
-        else return 0;
-    }
-
-
-    public int getCurrentPosition() {
-        if(musicSrv != null && serviceBound && musicSrv.isPlaying())
-            return musicSrv.getCurrentPosition();
-        else return 0;
-    }
-
-    public void seekTo(int pos) {
-        musicSrv.seekTo(pos);
-    }
-*/
 
     // exit nicely
     @Override

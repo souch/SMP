@@ -10,16 +10,20 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.util.Log;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MusicService extends Service implements
         MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener,
-        MediaPlayer.OnCompletionListener, AudioManager.OnAudioFocusChangeListener {
+        MediaPlayer.OnCompletionListener, MediaPlayer.OnSeekCompleteListener,
+        AudioManager.OnAudioFocusChangeListener {
 
     //media player
     private MediaPlayer player;
@@ -36,31 +40,36 @@ public class MusicService extends Service implements
 
     private AudioManager audioManager;
 
+    // not in (idle, end, error) MediaPlayer state
+    private boolean initialized;
     // don't use musicSrv.isPlaying() cause it is asynchronous (isPlaying is set to true when
     // .start in onPrepared called)
     private boolean playing;
-    // tell if mediaplayer can be unpaused
-    private boolean prepared;
+    // tell if MediaPlayer can be unpaused
+    private boolean started;
+    // set to false iif seekTo has been called but the seek is still not done
+    private boolean seekFinished;
 
     private String songTitle = "";
     private static final int NOTIFY_ID = 1;
 
     public void onCreate() {
-        //create the service
         super.onCreate();
-        //initialize position
         songPosn = 0;
+
         playing = false;
-        prepared = false;
+        started = false;
         completed = false;
+        initialized = false;
+        seekFinished = true;
 
         wasPlaying = false;
         player = null;
         audioManager = null;
     }
 
-    // create audiomanager and Mediaplayer at the last moment
-    // assure they are initialized
+    // create AudioManager and MediaPlayer at the last moment
+    // this func assure they are initialized
     private MediaPlayer getPlayer() {
         if (audioManager == null) {
             audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
@@ -74,30 +83,33 @@ public class MusicService extends Service implements
         }
 
         if (player == null) {
-            //create player
-            initMusicPlayer();
+            player = new MediaPlayer();
+            //set player properties
+            player.setWakeMode(getApplicationContext(),
+                    PowerManager.PARTIAL_WAKE_LOCK);
+            player.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            player.setOnPreparedListener(this);
+            player.setOnCompletionListener(this);
+            player.setOnErrorListener(this);
+            player.setOnSeekCompleteListener(this);
+            // commented cause should already be in these states :
+            /*
+            initialized = false;
+            wasPlaying = false;
+            playing = false;
+            started = false;
+            completed = false;
+            */
         }
         return player;
     }
 
-    public void initMusicPlayer(){
-        player = new MediaPlayer();
-        //set player properties
-        player.setWakeMode(getApplicationContext(),
-                PowerManager.PARTIAL_WAKE_LOCK);
-        player.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        player.setOnPreparedListener(this);
-        player.setOnCompletionListener(this);
-        player.setOnErrorListener(this);
-        wasPlaying = false;
-        playing = false;
-        prepared = false;
-        completed = false;
-    }
-
     private void releaseAudio() {
         playing = false;
-        prepared = false;
+        started = false;
+        initialized = false;
+        seekFinished = true;
+        completed = false;
 
         if (player != null) {
             if (player.isPlaying()) {
@@ -158,9 +170,28 @@ public class MusicService extends Service implements
                     wasPlaying = false;
                 }
                 playing = false;
-
                 break;
         }
+    }
+
+    @Override
+    public void onSeekComplete(MediaPlayer mp) {
+        // on My 2.3.6 phone, the phone seems bugged : calling now getCurrentPosition gives
+        // last position.
+        if(Build.VERSION.SDK_INT <= 10) {
+            Timer delaySeekCompleted = new Timer();
+            delaySeekCompleted.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    seekFinished = true;
+                }
+            }, 1000);
+        }
+        // on a 4.1 phone no bug : calling getCurrentPosition now gives the new seeked position
+        else {
+            seekFinished = true;
+        }
+        Log.d("MusicService", "onSeekComplete setProgress" + Song.secondsToMinutes(getCurrentPosition()));
     }
 
 
@@ -193,16 +224,17 @@ public class MusicService extends Service implements
     }
 
     public void playSong() {
+        initialized = false;
+        started = false;
         getPlayer().reset();
         playing = true;
-        prepared = false;
 
-        //get song
+        // get song
         Song playSong = songs.get(songPosn);
         songTitle = playSong.getTitle();
-        //get id
+        // get id
         long currSong = playSong.getID();
-        //set uri
+        // set uri
         Uri trackUri = ContentUris.withAppendedId(
                 android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, currSong);
         try{
@@ -211,19 +243,22 @@ public class MusicService extends Service implements
         catch(Exception e){
             Log.e("MUSIC SERVICE", "Error setting data source", e);
         }
+        initialized = true;
         getPlayer().prepareAsync();
     }
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-        prepared = false;
+        started = false;
         completed = true;
         playNext();
     }
 
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
+        // todo: check if this func is ok
         //playing = false;
+        initialized = false;
         mp.reset();
         return false;
     }
@@ -232,7 +267,7 @@ public class MusicService extends Service implements
     public void onPrepared(MediaPlayer mp) {
         //start playback
         mp.start();
-        prepared = true;
+        started = true;
 
         Intent notificationIntent = new Intent(this, Main.class);
         notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -245,45 +280,56 @@ public class MusicService extends Service implements
         startForeground(NOTIFY_ID, notification);
     }
 
-    // the mediaplayer has been asked to play
+    // tell if the MediaPlayer has been asked to play
     public boolean getPlaying() {
         return playing;
     }
 
-    // tell if the mediaplayer can unpause
-    public boolean getPrepared() {
-        return prepared;
+    // tell if the MediaPlayer can unpause
+    public boolean getStarted() {
+        return started;
     }
 
-    //
+    public boolean getInitialized() {
+        return initialized;
+    }
+
+    // the MediaPlayer is playing
+    public boolean isPlaying() {
+        return player != null && player.isPlaying();
+    }
+
     public boolean getAndSetCompleted() {
         boolean isCompleted = completed;
         completed = false;
         return isCompleted;
     }
 
-    // the mediaplayer is playing
-    public boolean isPlaying() {
-        return player != null && player.isPlaying();
-    }
-
+    // get curr position in second
     public int getCurrentPosition(){
         if(player == null)
             return 0;
-        return player.getCurrentPosition();
+        return player.getCurrentPosition() / 1000;
     }
 
+    // get song total duration in second
     public int getDuration(){
         if(player == null)
             return 0;
-        return player.getDuration();
+        return player.getDuration() / 1000;
     }
 
+    // move to this song pos in second
     public void seekTo(int posn){
         if(player == null)
             return;
 
-        player.seekTo(posn);
+        seekFinished = false;
+        player.seekTo(posn * 1000);
+    }
+
+    public boolean getSeekFinished() {
+        return seekFinished;
     }
 
     // unpause

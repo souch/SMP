@@ -5,9 +5,9 @@ public class Song {
     private String title;
     private String artist;
     private String album;
-    private long duration;
+    private int duration;
 
-    public Song(long songID, String songTitle, String songArtist, String songAlbum, long dur) {
+    public Song(long songID, String songTitle, String songArtist, String songAlbum, int dur) {
         id = songID;
         title = songTitle;
         artist = songArtist;
@@ -19,5 +19,12 @@ public class Song {
     public String getTitle(){return title;}
     public String getArtist(){return artist;}
     public String getAlbum(){return album;}
-    public long getDuration(){return duration;}
+    public int getDuration(){return duration;}
+
+    static public String secondsToMinutes(int duration){
+        long seconds = duration;
+        long minutes = seconds / 60;
+        seconds = seconds % 60;
+        return String.valueOf(minutes) + (seconds < 10 ? ":0" : ":") + String.valueOf(seconds);
+    }
 }
