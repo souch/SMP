@@ -40,6 +40,8 @@ public class MusicService extends Service implements
 
     private AudioManager audioManager;
 
+    public MediaPlayerState state;
+
     // not in (idle, end, error) MediaPlayer state
     private boolean initialized;
     // don't use musicSrv.isPlaying() cause it is asynchronous (isPlaying is set to true when
@@ -57,13 +59,17 @@ public class MusicService extends Service implements
         super.onCreate();
         songPosn = 0;
 
-        playing = false;
+        state = new MediaPlayerState();
+
+        /*playing = false;
         started = false;
+        initialized = false;*/
+
         completed = false;
-        initialized = false;
         seekFinished = true;
 
         wasPlaying = false;
+
         player = null;
         audioManager = null;
     }
@@ -105,11 +111,10 @@ public class MusicService extends Service implements
     }
 
     private void releaseAudio() {
-        playing = false;
-        started = false;
-        initialized = false;
+        state.setState(MediaPlayerState.Nope);
         seekFinished = true;
         completed = false;
+        wasPlaying = false;
 
         if (player != null) {
             if (player.isPlaying()) {
@@ -122,7 +127,7 @@ public class MusicService extends Service implements
             audioManager.abandonAudioFocus(this);
             audioManager = null;
         }
-        wasPlaying = false;
+
         stopForeground(true);
     }
 
@@ -134,7 +139,7 @@ public class MusicService extends Service implements
                 // resume playback
                 if (wasPlaying) {
                     getPlayer().start();
-                    playing = true;
+                    state.setState(MediaPlayerState.Started);
                 }
                 //player.setVolume(1.0f, 1.0f);
                 break;
@@ -150,12 +155,12 @@ public class MusicService extends Service implements
                 // is likely to resume
                 if (getPlayer().isPlaying()) {
                     getPlayer().pause();
+                    state.setState(MediaPlayerState.Paused);
                     wasPlaying = true;
                 }
                 else {
                     wasPlaying = false;
                 }
-                playing = false;
                 break;
 
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
@@ -164,12 +169,12 @@ public class MusicService extends Service implements
                 if (getPlayer().isPlaying()) {
                     //player.setVolume(0.1f, 0.1f);
                     getPlayer().pause();
+                    state.setState(MediaPlayerState.Paused);
                     wasPlaying = true;
                 }
                 else {
                     wasPlaying = false;
                 }
-                playing = false;
                 break;
         }
     }
@@ -224,10 +229,8 @@ public class MusicService extends Service implements
     }
 
     public void playSong() {
-        initialized = false;
-        started = false;
         getPlayer().reset();
-        playing = true;
+        state.setState(MediaPlayerState.Idle);
 
         // get song
         Song playSong = songs.get(songPosn);
@@ -243,13 +246,14 @@ public class MusicService extends Service implements
         catch(Exception e){
             Log.e("MUSIC SERVICE", "Error setting data source", e);
         }
-        initialized = true;
+        state.setState(MediaPlayerState.Initialized);
         getPlayer().prepareAsync();
+        state.setState(MediaPlayerState.Preparing);
     }
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-        started = false;
+        state.setState(MediaPlayerState.PlaybackCompleted);
         completed = true;
         playNext();
     }
@@ -257,9 +261,8 @@ public class MusicService extends Service implements
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
         // todo: check if this func is ok
-        //playing = false;
-        initialized = false;
         mp.reset();
+        state.setState(MediaPlayerState.Idle);
         return false;
     }
 
@@ -267,7 +270,7 @@ public class MusicService extends Service implements
     public void onPrepared(MediaPlayer mp) {
         //start playback
         mp.start();
-        started = true;
+        state.setState(MediaPlayerState.Started);
 
         Intent notificationIntent = new Intent(this, Main.class);
         notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -280,21 +283,20 @@ public class MusicService extends Service implements
         startForeground(NOTIFY_ID, notification);
     }
 
+    /*
     // tell if the MediaPlayer has been asked to play
     public boolean getPlaying() {
         return playing;
     }
-
     // tell if the MediaPlayer can unpause
     public boolean getStarted() {
         return started;
     }
-
     public boolean getInitialized() {
         return initialized;
     }
+    */
 
-    // the MediaPlayer is playing
     public boolean isPlaying() {
         return player != null && player.isPlaying();
     }
@@ -336,6 +338,7 @@ public class MusicService extends Service implements
     public void go(){
         playing = true;
         getPlayer().start();
+        state.setState(MediaPlayerState.Started);
     }
 
     public void pausePlayer(){
@@ -344,6 +347,7 @@ public class MusicService extends Service implements
 
         playing = false;
         player.pause();
+        state.setState(MediaPlayerState.Paused);
     }
 
     public void playPrev(){

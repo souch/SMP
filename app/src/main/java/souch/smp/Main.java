@@ -9,7 +9,6 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.MediaStore;
@@ -141,11 +140,17 @@ public class Main extends Activity {
         public void onStartTrackingTouch(SeekBar seekBar) {
             touchSeekbar = true;
         }
+
         @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
-            if(serviceBound && musicSrv.getInitialized()) {
+            int[] states = {MediaPlayerState.Prepared,
+                    MediaPlayerState.Started,
+                    MediaPlayerState.Paused,
+                    MediaPlayerState.PlaybackCompleted};
+            if(serviceBound && musicSrv.state.compareXState(states)) {
                 Log.d("Main", "onStopTrackingTouch setProgress" + Song.secondsToMinutes(seekBar.getProgress()));
                 seekBar.setProgress(seekBar.getProgress());
+                // valid state : {Prepared, Started, Paused, PlaybackCompleted}
                 musicSrv.seekTo(seekBar.getProgress());
             }
 
@@ -221,13 +226,20 @@ public class Main extends Activity {
             }
 
             Song currSong = songList.get(musicSrv.getSong());
+            int[] seekableStates = {MediaPlayerState.Preparing,
+                    MediaPlayerState.Prepared,
+                    MediaPlayerState.Started,
+                    MediaPlayerState.Paused,
+                    MediaPlayerState.PlaybackCompleted};
+            boolean seekableState = musicSrv.state.compareXState(seekableStates);
 
             // useful when MusicService go to next song
             if(musicSrv.getAndSetCompleted()) {
                 Log.d("Main", "updateInfo");
                 songAdt.notifyDataSetChanged();
 
-                if(musicSrv.getInitialized()) {
+
+                if(seekableState) {
                     seekbar.setMax(currSong.getDuration());
                     duration.setText(Song.secondsToMinutes(currSong.getDuration()));
                     duration.setVisibility(TextView.VISIBLE);
@@ -235,7 +247,8 @@ public class Main extends Activity {
                 }
             }
 
-            if(musicSrv.getInitialized()) {
+            // getCurrentPosition {Idle, Initialized, Prepared, Started, Paused, Stopped, PlaybackCompleted}
+            if(seekableState) {
                 if(!touchSeekbar && musicSrv.getSeekFinished()) {
                     Log.d("Main", "updateInfo setProgress" + Song.secondsToMinutes(musicSrv.getCurrentPosition()));
                     seekbar.setProgress(musicSrv.getCurrentPosition());
@@ -245,7 +258,7 @@ public class Main extends Activity {
                 // todo: cleanup hideSeekBarInfo calls
                 hideSeekBarInfo();
             }
-        }
+        };
     };
 
     private void restorePreferences() {
@@ -330,16 +343,24 @@ public class Main extends Activity {
 
     private void updatePlayButton() {
         ImageButton playButton = (ImageButton) findViewById(R.id.play_button);
-        if(getPlaying()) {
-            playButton.setImageResource(R.drawable.ic_action_pause);
-            playButton.setTag(R.drawable.ic_action_pause);
-        }
-        else {
-            playButton.setImageResource(R.drawable.ic_action_play);
-            playButton.setTag(R.drawable.ic_action_play);
+        if(!musicSrv.state.compare1State(MediaPlayerState.Nope)) {
+            if(!musicSrv.state.compare1State(MediaPlayerState.Paused)) {
+                playButton.setImageResource(R.drawable.ic_action_pause);
+                playButton.setTag(R.drawable.ic_action_pause);
+            }
+            else {
+                playButton.setImageResource(R.drawable.ic_action_play);
+                playButton.setTag(R.drawable.ic_action_play);
+            }
         }
 
-        if(serviceBound && musicSrv.getInitialized()) {
+        int[] seekableStates = {MediaPlayerState.Preparing,
+                MediaPlayerState.Prepared,
+                MediaPlayerState.Started,
+                MediaPlayerState.Paused,
+                MediaPlayerState.PlaybackCompleted};
+        boolean seekableState = musicSrv.state.compareXState(seekableStates);
+        if(serviceBound && seekableState) {
             Song currSong = songList.get(musicSrv.getSong());
             duration.setText(currSong.secondsToMinutes(currSong.getDuration()));
             duration.setVisibility(TextView.VISIBLE);
@@ -354,11 +375,11 @@ public class Main extends Activity {
         if(!serviceBound)
             return;
 
-        if (getPlaying()) {
+        if (musicSrv.state.compare1State(MediaPlayerState.Started)) {
             musicSrv.pausePlayer();
         }
         else {
-            if (musicSrv.getStarted()) {
+            if (musicSrv.state.compare1State(MediaPlayerState.Paused)) {
                 // previously paused
                 musicSrv.go();
             }
@@ -415,10 +436,14 @@ public class Main extends Activity {
         */
     }
 
-    public boolean getPlaying() {
-        boolean playing = serviceBound && musicSrv.getPlaying();
-        //Log.d("Main", "getPlaying:" + playing);
-        return playing;
+    public MediaPlayerState getState() {
+        if(serviceBound) {
+            return musicSrv.state;
+        }
+        else {
+            Log.w("Main", "getState(): should not happen!!");
+            return new MediaPlayerState();
+        }
     }
 
     // exit nicely
