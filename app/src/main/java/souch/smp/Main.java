@@ -187,16 +187,18 @@ public class Main extends Activity {
         super.onPause();
         Log.d("Main", "onPause");
 
+        savePreferences();
         timer.cancel();
     }
 
-/*
+
     @Override
     protected void onStop() {
         super.onStop();
         Log.d("Main", "onStop");
+        savePreferences();
     }
-*/
+
 
     @Override
     protected void onDestroy() {
@@ -243,6 +245,11 @@ public class Main extends Activity {
                     duration.setVisibility(TextView.VISIBLE);
                     seekbar.setVisibility(TextView.VISIBLE);
                 }
+
+                if(musicSrv.isInState(PlayerState.Nope)) {
+                    // the MediaPlayer has been destroyed
+                    updatePlayButton();
+                }
             }
 
             // getCurrentPosition {Idle, Initialized, Prepared, Started, Paused, Stopped, PlaybackCompleted}
@@ -252,11 +259,7 @@ public class Main extends Activity {
                     seekbar.setProgress(musicSrv.getCurrentPosition());
                 }
             }
-            else {
-                // todo: cleanup hideSeekBarInfo calls
-                hideSeekBarInfo();
-            }
-        };
+        }
     };
 
     private void restorePreferences() {
@@ -350,22 +353,28 @@ public class Main extends Activity {
                 playButton.setImageResource(R.drawable.ic_action_play);
                 playButton.setTag(R.drawable.ic_action_play);
             }
-        }
 
-        int seekableStates = PlayerState.Preparing |
-                PlayerState.Prepared |
-                PlayerState.Started |
-                PlayerState.Paused |
-                PlayerState.PlaybackCompleted;
-        boolean seekableState = musicSrv.isInState(seekableStates);
-        if(serviceBound && seekableState) {
-            Song currSong = songList.get(musicSrv.getSong());
-            duration.setText(currSong.secondsToMinutes(currSong.getDuration()));
-            duration.setVisibility(TextView.VISIBLE);
-            seekbar.setMax(currSong.getDuration());
-            seekbar.setProgress(musicSrv.getCurrentPosition());
-            seekbar.setVisibility(TextView.VISIBLE);
-            currDuration.setText(Song.secondsToMinutes(musicSrv.getCurrentPosition()));
+            int seekableStates = PlayerState.Preparing |
+                    PlayerState.Prepared |
+                    PlayerState.Started |
+                    PlayerState.Paused |
+                    PlayerState.PlaybackCompleted;
+            boolean seekableState = musicSrv.isInState(seekableStates);
+            if(serviceBound && seekableState) {
+                Song currSong = songList.get(musicSrv.getSong());
+                duration.setText(Song.secondsToMinutes(currSong.getDuration()));
+                duration.setVisibility(TextView.VISIBLE);
+                seekbar.setMax(currSong.getDuration());
+                seekbar.setProgress(musicSrv.getCurrentPosition());
+                seekbar.setVisibility(TextView.VISIBLE);
+                currDuration.setText(Song.secondsToMinutes(musicSrv.getCurrentPosition()));
+            }
+        }
+        else {
+            // MediaPlayer has been destroyed or first start
+            playButton.setImageResource(R.drawable.ic_action_play);
+            playButton.setTag(R.drawable.ic_action_play);
+            hideSeekBarInfo();
         }
     }
 

@@ -1,7 +1,5 @@
 package souch.smp;
 
-import java.util.BitSet;
-
 public class PlayerState {
     static public final int Nope        = 0b1;
     static public final int Idle        = 0b10;

@@ -15,6 +15,7 @@ No eyes candy graphics nor advanced mega bass settings. No customizable playlist
 - show current played song in list
 - bluetooth
 - On start go to last song played.
+- seek bar
 
 ### Help
 - press on back button shut everything

@@ -33,7 +33,7 @@ public class MusicService extends Service implements
     private int songPosn;
     // need for focus
     private boolean wasPlaying;
-    // sthg happened and the Main do not know it : a song has finish to play
+    // sthg happened and the Main do not know it : a song has finish to play, another app gain focus
     private boolean changed;
 
     private final IBinder musicBind = new MusicBinder();
@@ -94,7 +94,7 @@ public class MusicService extends Service implements
     private void releaseAudio() {
         state.setState(PlayerState.Nope);
         seekFinished = true;
-        changed = false;
+        changed = true;
         wasPlaying = false;
 
         if (player != null) {
