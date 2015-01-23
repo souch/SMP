@@ -20,7 +20,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="16sp"
-            android:text="SicMu Player"
+            android:text="@string/app_name"
             android:id="@+id/curr_duration"
             android:layout_gravity="left|center_vertical"
             android:visibility="visible" />
@@ -32,10 +32,7 @@
             android:onClick="playOrPause"
             android:layout_weight="10"
             android:layout_gravity="center_vertical"
-            android:paddingLeft="12dp"
-            android:paddingRight="12dp"
             android:visibility="invisible" />
-
 
         <TextView
             android:layout_width="wrap_content"

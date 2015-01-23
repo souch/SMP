@@ -6,7 +6,7 @@ Gui aims to be easy to use while driving.
 
 Works on old slow small devices (from Android froyo 2.2)
 
-No eyes candy graphics nor advanced mega bass settings. No customizable playlist.
+No eyes candy graphics nor advanced mega bass settings.
 
 ### Detailed features
 - play mp3, ogg, flac, midi, wav, mp4, 3gp... see Android MediaPlayer Supported Media Formats (depends on android version).
@@ -43,17 +43,20 @@ No eyes candy graphics nor advanced mega bass settings. No customizable playlist
 - swipe to go to list of song <-> song details
 - mp3 tag editor ?
 - help + infobulle ?
+- playlist?
 
 ### Credits
 
 Lot's of time saved thanks to Sue Smith's [tutorials on creating a Music Player on Android](http://code.tutsplus.com/tutorials/create-a-music-player-on-android-project-setup--mobile-22764).
 
-Use some icons done by Daniele De Santis (Creative Commons (Attribution 3.0 Unported)), found on iconfinder.com.
+Use some icons done by Daniele De Santis (Creative Commons Attribution 3.0 Unported), found on iconfinder.com.
+Seekbar style created by Jérôme Van Der Linden (Creative Commons Attribution 3.0 Unported), found on http://android-holo-colors.com.
 
 ### Developer
 
 Compiled with Android Studio.
 Robotium non regression tests are available in the androidTest folder.
+Tested on Gingerbread (2.3.6), Nexus 4 JellyBean (4.1.2).
 
 ### License
 

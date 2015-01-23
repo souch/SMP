@@ -158,18 +158,10 @@ public class Main extends Activity {
         }
     };
 
-/*
     @Override
     protected void onStart() {
         super.onStart();
         Log.d("Main", "onStart");
-    }
-*/
-
-    @Override
-    protected void onResume(){
-        super.onResume();
-        Log.d("Main", "onResume");
 
         timer = new Timer();
         timer.schedule(new TimerTask() {
@@ -181,21 +173,26 @@ public class Main extends Activity {
         }, updateInterval*2, updateInterval);
     }
 
+    /*
+    @Override
+    protected void onResume(){
+        super.onResume();
+        Log.d("Main", "onResume");
+    }
+
 
     @Override
     protected void onPause(){
         super.onPause();
         Log.d("Main", "onPause");
-
-        savePreferences();
-        timer.cancel();
     }
-
+*/
 
     @Override
     protected void onStop() {
         super.onStop();
         Log.d("Main", "onStop");
+        timer.cancel();
         savePreferences();
     }
 
@@ -217,7 +214,7 @@ public class Main extends Activity {
     private void hideSeekBarInfo() {
         duration.setVisibility(TextView.INVISIBLE);
         seekbar.setVisibility(TextView.INVISIBLE);
-        currDuration.setText("SicMu Player");
+        currDuration.setText(R.string.app_name);
     }
 
     final Runnable updateInfo = new Runnable() {
