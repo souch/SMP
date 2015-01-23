@@ -7,7 +7,8 @@
 
   <style name="_AppTheme" parent="android:Theme.Holo.Light">
 
-    <item name="android:seekBarStyle">@style/SeekBarAppTheme</item>
+      <item name="android:seekBarStyle">@style/SeekBarAppTheme</item>
+      <item name="android:fastScrollThumbDrawable">@drawable/fastscroll_thumb_holo</item>
 
   </style>
 

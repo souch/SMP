@@ -67,7 +67,7 @@
         android:choiceMode="singleChoice"
         android:fastScrollEnabled="true"
         android:scrollbars="vertical"
-        android:scrollbarThumbVertical="@drawable/scrollbar_vertical_thumb"
+        android:scrollbarThumbVertical="@drawable/fastscroll_thumb_holo"
         android:layout_below="@+id/action_bar" />
     <!--
     android:fadeScrollbars="true"
