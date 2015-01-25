@@ -3,9 +3,12 @@ package souch.smp;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -13,10 +16,13 @@ import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -24,6 +30,9 @@ public class MusicService extends Service implements
         MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener,
         MediaPlayer.OnCompletionListener, MediaPlayer.OnSeekCompleteListener,
         AudioManager.OnAudioFocusChangeListener {
+
+    // save/load song pos preference name
+    final String currSongPref = "currSong";
 
     //media player
     private MediaPlayer player;
@@ -50,8 +59,8 @@ public class MusicService extends Service implements
     private static final int NOTIFY_ID = 1;
 
     public void onCreate() {
+        Log.d("MusicService", "onCreate()");
         super.onCreate();
-        songPosn = 0;
 
         state = new PlayerState();
 
@@ -61,6 +70,47 @@ public class MusicService extends Service implements
 
         player = null;
         audioManager = null;
+
+        songs = new ArrayList<Song>();
+        initSongs();
+        Collections.sort(songs, new Comparator<Song>() {
+            public int compare(Song a, Song b) {
+                return a.getArtist().compareTo(b.getArtist());
+            }
+        });
+
+        restorePreferences();
+    }
+
+
+    public void initSongs() {
+        ContentResolver musicResolver = getContentResolver();
+        Uri musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        Cursor musicCursor = musicResolver.query(musicUri, null, null, null, null);
+
+        if(musicCursor!=null && musicCursor.moveToFirst()){
+            //get columns
+            int titleColumn = musicCursor.getColumnIndex
+                    (MediaStore.Audio.Media.TITLE);
+            int idColumn = musicCursor.getColumnIndex
+                    (MediaStore.Audio.Media._ID);
+            int artistColumn = musicCursor.getColumnIndex
+                    (MediaStore.Audio.Media.ARTIST);
+            int albumColumn = musicCursor.getColumnIndex
+                    (MediaStore.Audio.Media.ALBUM);
+            int durationColumn = musicCursor.getColumnIndex
+                    (MediaStore.Audio.Media.DURATION);
+            //add songs to list
+            do {
+                long thisId = musicCursor.getLong(idColumn);
+                String thisTitle = musicCursor.getString(titleColumn);
+                String thisArtist = musicCursor.getString(artistColumn);
+                String thisAlbum = musicCursor.getString(albumColumn);
+                int thisDuration = musicCursor.getInt(durationColumn);
+                songs.add(new Song(thisId, thisTitle, thisArtist, thisAlbum, thisDuration / 1000));
+            }
+            while (musicCursor.moveToNext());
+        }
     }
 
     // create AudioManager and MediaPlayer at the last moment
@@ -109,7 +159,7 @@ public class MusicService extends Service implements
             audioManager = null;
         }
 
-        stopForeground(true);
+        stopNotification();
     }
 
 
@@ -195,11 +245,27 @@ public class MusicService extends Service implements
     @Override
     public void onDestroy() {
         Log.d("MusicService", "onDestroy");
+        savePreferences();
         releaseAudio();
     }
 
-    public void setList(ArrayList<Song> theSongs){
-        songs = theSongs;
+    private void restorePreferences() {
+        SharedPreferences settings = getSharedPreferences("MusicService", 0);
+        int savedSong = settings.getInt(currSongPref, 0);
+        // the songs must have changed
+        if (savedSong >= songs.size())
+            savedSong = 0;
+        songPosn = savedSong;
+        Log.d("MusicService", "restorePreferences load song: " + savedSong);
+    }
+
+    private void savePreferences() {
+        Log.d("MusicService", "savePreferences save song: " + songPosn);
+
+        SharedPreferences settings = getSharedPreferences("MusicService", 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putInt(currSongPref, songPosn);
+        editor.commit();
     }
 
     public void setSong(int songIndex){
@@ -207,6 +273,9 @@ public class MusicService extends Service implements
     }
     public int getSong() {
         return songPosn;
+    }
+    public ArrayList<Song> getSongs() {
+        return songs;
     }
 
     public void playSong() {
@@ -226,6 +295,9 @@ public class MusicService extends Service implements
         }
         catch(Exception e){
             Log.e("MUSIC SERVICE", "Error setting data source", e);
+            state.setState(PlayerState.Error);
+            // todo: improve error handling
+            return;
         }
         state.setState(PlayerState.Initialized);
         getPlayer().prepareAsync();
@@ -242,17 +314,21 @@ public class MusicService extends Service implements
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
         // todo: check if this func is ok
+        /*
         mp.reset();
         state.setState(PlayerState.Idle);
+        */
         return false;
     }
 
     @Override
     public void onPrepared(MediaPlayer mp) {
-        //start playback
+        // start playback
         mp.start();
         state.setState(PlayerState.Started);
+    }
 
+    public void startNotification() {
         Intent notificationIntent = new Intent(this, Main.class);
         notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendInt = PendingIntent.getActivity(this, 0,
@@ -262,6 +338,10 @@ public class MusicService extends Service implements
         notification.setLatestEventInfo(this, "SicMu playing", songTitle, pendInt);
 
         startForeground(NOTIFY_ID, notification);
+    }
+
+    public void stopNotification() {
+        stopForeground(true);
     }
 
     public boolean isPlaying() {
@@ -302,12 +382,12 @@ public class MusicService extends Service implements
     }
 
     // unpause
-    public void go(){
+    public void start(){
         getPlayer().start();
         state.setState(PlayerState.Started);
     }
 
-    public void pausePlayer(){
+    public void pause(){
         if(player == null)
             return;
 
@@ -329,7 +409,31 @@ public class MusicService extends Service implements
         playSong();
     }
 
+
     public boolean isInState(int states) {
         return state.compare(states);
+    }
+
+    // !playingStopped == playingLaunched || playingPaused
+
+    public boolean playingLaunched() {
+        final int states = PlayerState.Initialized |
+                PlayerState.Idle |
+                PlayerState.PlaybackCompleted |
+                PlayerState.Prepared |
+                PlayerState.Preparing |
+                PlayerState.Started;
+        return state.compare(states);
+    }
+
+    public boolean playingStopped() {
+        final int states = PlayerState.Nope |
+              PlayerState.Error |
+              PlayerState.End;
+        return state.compare(states);
+    }
+
+    public boolean playingPaused() {
+        return state.compare(PlayerState.Paused);
     }
 }

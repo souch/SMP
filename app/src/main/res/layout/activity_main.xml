@@ -50,6 +50,7 @@
             android:id="@+id/settings"
             style="@style/BottomButton"
             android:src="@drawable/ic_actionbar_overflow"
+            android:onClick="settings"
             android:layout_gravity="center_vertical|right"
             android:paddingLeft="20dp"
             android:paddingRight="16dp" />
@@ -114,7 +115,7 @@
         android:layout_height="wrap_content"
         android:src="@drawable/action_goto_play"
         style="@style/BottomButton"
-        android:onClick="gotoCurrSong"
+        android:onClick="scrollToCurrSong"
         android:layout_alignParentBottom="true"
         android:layout_toRightOf="@+id/next_button"
         android:id="@+id/goto_button" />

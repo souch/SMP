@@ -143,12 +143,12 @@ public class MainTest extends ActivityInstrumentationTestCase2<Main> {
     // test that there is enough song for performing other tests
     public void checkEnoughSong() throws Exception {
         int nbSong = getNbSong();
-        Log.d("MainTest", "songList size: " + nbSong);
+        Log.d("MainTest", "songs size: " + nbSong);
         Assert.assertTrue(nbSong >= minSong);
     }
 
     private int getNbSong() throws Exception {
-        Field field = main.getClass().getDeclaredField("songList");
+        Field field = main.getClass().getDeclaredField("songs");
         field.setAccessible(true);
         ArrayList<Song> songList = (ArrayList<Song>) field.get(main);
         return songList.size();
@@ -159,7 +159,7 @@ public class MainTest extends ActivityInstrumentationTestCase2<Main> {
         Assert.assertTrue(nbSong >= 0);
         Assert.assertTrue(nbSong <= minSong);
 
-        Field field = main.getClass().getDeclaredField("songList");
+        Field field = main.getClass().getDeclaredField("songs");
         field.setAccessible(true);
         ArrayList<Song> songList = (ArrayList<Song>) field.get(main);
         Assert.assertTrue(nbSong <= songList.size());
