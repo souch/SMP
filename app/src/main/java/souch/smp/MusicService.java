@@ -55,7 +55,6 @@ public class MusicService extends Service implements
     // set to false if seekTo() has been called but the seek is still not done
     private boolean seekFinished;
 
-    private String songTitle = "";
     private static final int NOTIFY_ID = 1;
 
     public void onCreate() {
@@ -282,11 +281,8 @@ public class MusicService extends Service implements
         getPlayer().reset();
         state.setState(PlayerState.Idle);
 
-        // get song
-        Song playSong = songs.get(songPosn);
-        songTitle = playSong.getTitle();
         // get id
-        long currSong = playSong.getID();
+        long currSong = songs.get(songPosn).getID();
         // set uri
         Uri trackUri = ContentUris.withAppendedId(
                 android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, currSong);
@@ -334,8 +330,13 @@ public class MusicService extends Service implements
         PendingIntent pendInt = PendingIntent.getActivity(this, 0,
                 notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        Notification notification = new Notification(R.drawable.ic_launcher, songTitle, System.currentTimeMillis());
-        notification.setLatestEventInfo(this, "SicMu playing", songTitle, pendInt);
+        Song playSong = songs.get(songPosn);
+        Notification notification = new Notification(R.drawable.ic_launcher,
+                playSong.getTitle(),
+                System.currentTimeMillis());
+        notification.setLatestEventInfo(this, "SicMu playing", playSong.getTitle() +
+                " - " + playSong.getArtist() +
+                " - " + playSong.getAlbum(), pendInt);
 
         startForeground(NOTIFY_ID, notification);
     }
