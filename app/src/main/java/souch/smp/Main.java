@@ -5,6 +5,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -14,6 +15,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -45,6 +47,9 @@ public class Main extends Activity {
     private TextView duration;
     private TextView currDuration;
 
+    // true if the user want to disable lockscreen
+    private boolean noLock;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +73,9 @@ public class Main extends Activity {
         touchSeekbar = false;
         seekbar = (SeekBar) findViewById(R.id.seek_bar);
         seekbar.setOnSeekBarChangeListener(seekBarChangeListener);
+
+        restorePreferences();
+        applyLock();
     }
 
 
@@ -192,12 +200,14 @@ public class Main extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         Log.d("Main", "onDestroy");
+        savePreferences();
 
         if (serviceBound) {
             unbindService(musicConnection);
             serviceBound = false;
             musicSrv = null;
         }
+
     }
 
     final Runnable updateInfo = new Runnable() {
@@ -359,6 +369,23 @@ public class Main extends Activity {
         //songView.smoothScrollToPosition(gotoSong);
     }
 
+    public void lockUnlock(View view) {
+        noLock = !noLock;
+        applyLock();
+    }
+
+    public void applyLock() {
+        ImageButton lockButton = (ImageButton) findViewById(R.id.lock_button);
+        if(noLock) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
+            lockButton.setImageResource(R.drawable.ic_action_unlocked);
+        }
+        else {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
+            lockButton.setImageResource(R.drawable.ic_action_locked);
+        }
+    }
+
     public int getSong() {
         if(serviceBound)
             return musicSrv.getSong();
@@ -385,6 +412,22 @@ public class Main extends Activity {
                 return true;
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+
+    private void restorePreferences() {
+        SharedPreferences settings = getSharedPreferences("Main", 0);
+        noLock = settings.getBoolean("noLock", false);
+        Log.d("MusicService", "restorePreferences noLock: " + noLock);
+    }
+
+    private void savePreferences() {
+        Log.d("MusicService", "savePreferences noLock: " + noLock);
+
+        SharedPreferences settings = getSharedPreferences("Main", 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putBoolean("noLock", noLock);
+        editor.commit();
     }
 
     /*

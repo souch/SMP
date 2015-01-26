@@ -21,6 +21,7 @@ No eyes candy graphics nor advanced mega bass settings.
 - press on back button shut everything
 - press on home button to shut the app and keep the music in background
 - press the button to the right of next to go to curr played song
+- press on lock to disable lock screen (the screen does not lock only when the app is on top)
 
 ### Todo (perhaps :-)
 - fast on big music list

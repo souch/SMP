@@ -115,6 +115,20 @@
         android:layout_toRightOf="@+id/next_button"
         android:id="@+id/goto_button" />
 
+    <!--
+    icon ic_action_locked and ic_action_unlocked
+    done by WPZOOM (Creative Commons (Attribution-Share Alike 3.0 Unported))
+    found on iconfinder.com. Color and dimension has been changed.
+    -->
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_action_locked"
+        style="@style/BottomButton"
+        android:onClick="lockUnlock"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@+id/goto_button"
+        android:id="@+id/lock_button" />
 
 </RelativeLayout>
 
