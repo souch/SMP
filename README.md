@@ -14,14 +14,15 @@ No eyes candy graphics nor advanced mega bass settings.
 - notification when playing
 - show current played song in list
 - bluetooth
-- On start go to last song played.
+- On start go to last song played
 - seek bar
+- button that disable/enable lockscreen
 
 ### Help
 - press on back button shut everything
 - press on home button to shut the app and keep the music in background
 - press the button to the right of next to go to curr played song
-- press on lock to disable lock screen (the screen does not lock only when the app is on top)
+- close the padlock to disable lock screen (it prevents locking only when the app is on top).
 
 ### Todo (perhaps :-)
 - fast on big music list
@@ -37,7 +38,6 @@ No eyes candy graphics nor advanced mega bass settings.
 - select main music directory
 - quick jump with letter in the right (like in contact)
 - Shake to go to next song
-- button that disable/enable lockscreen
 - zoom make letter (and button) bigger or smaller
 - speak the title ?
 - cursor for volume ? ( half/full?)
