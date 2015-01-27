@@ -4,6 +4,7 @@
     <style name="Theme.AppTheme" parent="@android:style/Theme.Black.NoTitleBar">
         <!-- Customize your theme here. @android:style/Theme.Black.NoTitleBar -->
         <item name="android:seekBarStyle">@style/SeekBarAppTheme</item>
+
     </style>
 
     <style name="BottomButton" parent="android:Widget">
@@ -26,5 +27,8 @@
         <item name="android:paddingRight">16dip</item>
     </style>
 
+    <style name="PreferenceTheme">
+        <item name="android:textColor">@color/apptheme_color</item>
+    </style>
 
 </resources>

@@ -1,41 +1,42 @@
 package souch.smp;
 
-import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.preference.PreferenceActivity;
 
-
-public class Settings extends Activity {
+public class Settings extends PreferenceActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_settings);
+        addPreferencesFromResource(R.xml.preferences);
+
     }
 
+    private void getPreferences() {
+/*
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        //getMenuInflater().inflate(R.menu.menu_settings, menu);
-        return true;
+        ((TextView)findViewById(R.id.tvLogin)).setText("Nom d'utilisateur : " + preferences.getString("login", ""));
+
+        ((TextView)findViewById(R.id.tvPassword)).setText("Mot de passe : " + preferences.getString("password", ""));
+
+        ((TextView)findViewById(R.id.tvRingtone)).setText("Sonnerie : " + preferences.getString("sonnerie", ""));
+
+        ((TextView)findViewById(R.id.tvVibrate)).setText("Vibreur : " + preferences.getBoolean("vibrate", false));
+*/
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-
-        if (id == R.id.action_settings) {
-            return true;
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+/*
+        if(requestCode == CODE_RETOUR) {
+            Toast.makeText(this, "Modifications terminées", Toast.LENGTH_SHORT).show();
+            getPreferences();
         }
 
-
-        return super.onOptionsItemSelected(item);
+        super.onActivityResult(requestCode, resultCode, data);
+*/
     }
 }

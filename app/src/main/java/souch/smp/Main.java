@@ -298,17 +298,12 @@ public class Main extends Activity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-
-        //noinspection SimplifiableIfStatement
+        final int id = item.getItemId();
         if (id == R.id.action_settings) {
+            Intent intent = new Intent(this, Settings.class);
+            startActivity(intent);
             return true;
         }
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_rescan) {
             rescan();
             return true;
@@ -429,10 +424,5 @@ public class Main extends Activity {
         editor.putBoolean("noLock", noLock);
         editor.commit();
     }
-
-    /*
-     Intent intent = new Intent(this, Settings.class);
-      startActivity(intent);
-    */
 }
 

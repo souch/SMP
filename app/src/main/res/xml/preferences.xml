@@ -1,0 +1,45 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--
+    <PreferenceCategory android:title="Accelerometer shake">
+        <CheckBoxPreference
+            android:key="shake"
+            android:title="Enable shake"
+            android:summary="Go to next song when shaked."/>
+
+        <Preference
+            android:key="shake_force"
+            android:title="Shake force threshold"
+            android:summary="0"/>
+
+    </PreferenceCategory>
+-->
+    <PreferenceCategory android:title="About">
+
+        <Preference
+            android:title="Author"
+            android:summary="@string/settings_author"/>
+
+        <Preference
+            android:title="Version number"
+            android:summary="@string/settings_version_title"/>
+
+        <Preference
+            android:title="License"
+            android:summary="@string/settings_opensource"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Special thanks">
+
+        <Preference
+            android:title="Daniele De Santis &amp; WPZOOM"
+            android:summary="icons found on iconfinder.com">
+        </Preference>
+
+        <Preference
+            android:title="Sue Smith's"
+            android:summary="tutorials on creating a Music Player on Android">
+        </Preference>
+
+    </PreferenceCategory>
+
+</PreferenceScreen>
