@@ -3,12 +3,15 @@
 
     <item android:id="@+id/action_settings"
         android:title="@string/action_settings"
+        android:icon="@drawable/ic_menu_settings"
         android:orderInCategory="100" />
 
     <item android:id="@+id/action_rescan"
+        android:icon="@drawable/ic_menu_rescan"
         android:title="@string/action_rescan"/>
 
-        <item android:id="@+id/action_kill"
+    <item android:id="@+id/action_kill"
+        android:icon="@drawable/ic_menu_kill"
         android:title="Kill app"/>
 
 </menu>
