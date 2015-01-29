@@ -1,10 +1,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" tools:context=".main">
 
+    <!--
+    icon ic_menu_settings and ic_menu_kill
+    done by WPZOOM (Creative Commons (Attribution-Share Alike 3.0 Unported))
+    found on iconfinder.com. Color and dimension has been changed.
+    -->
     <item android:id="@+id/action_settings"
         android:title="@string/action_settings"
-        android:icon="@drawable/ic_menu_settings"
-        android:orderInCategory="100" />
+        android:icon="@drawable/ic_menu_settings" />
 
     <item android:id="@+id/action_rescan"
         android:icon="@drawable/ic_menu_rescan"

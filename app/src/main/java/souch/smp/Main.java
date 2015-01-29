@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -421,7 +422,7 @@ public class Main extends Activity {
 */
 
     private void restorePreferences() {
-        SharedPreferences settings = getSharedPreferences("Main", 0);
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
         noLock = settings.getBoolean("noLock", false);
         Log.d("MusicService", "restorePreferences noLock: " + noLock);
     }
@@ -429,7 +430,7 @@ public class Main extends Activity {
     private void savePreferences() {
         Log.d("MusicService", "savePreferences noLock: " + noLock);
 
-        SharedPreferences settings = getSharedPreferences("Main", 0);
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = settings.edit();
         editor.putBoolean("noLock", noLock);
         editor.commit();

@@ -71,7 +71,7 @@ public class MusicService extends Service implements
     private long lastUpdate;
     private boolean enableShake;
     private float shakeThreshold;
-    private final int MIN_SHAKE_PERIOD = 600;
+    private final int MIN_SHAKE_PERIOD = 1000;
 
 
     public void onCreate() {
@@ -321,7 +321,7 @@ public class MusicService extends Service implements
     }
 
     private void restorePreferences() {
-        SharedPreferences settings = getSharedPreferences("MusicService", 0);
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
         int savedSong = settings.getInt(currSongPref, 0);
         // the songs must have changed
         if (savedSong >= songs.size())
@@ -329,9 +329,9 @@ public class MusicService extends Service implements
         songPosn = savedSong;
         Log.d("MusicService", "restorePreferences load song: " + savedSong);
 
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-        enableShake = sp.getBoolean(PrefKeys.ENABLE_SHAKE, true);
-        shakeThreshold = Float.valueOf(sp.getString(PrefKeys.SHAKE_THRESHOLD, "30")) / 10.0f;
+
+        enableShake = settings.getBoolean(PrefKeys.ENABLE_SHAKE, true);
+        shakeThreshold = Float.valueOf(settings.getString(PrefKeys.SHAKE_THRESHOLD, "30")) / 10.0f;
         Log.d("MusicService", "restorePreferences enable shake: " + enableShake +
                 " threshold:" + shakeThreshold);
     }
@@ -339,7 +339,7 @@ public class MusicService extends Service implements
     private void savePreferences() {
         Log.d("MusicService", "savePreferences save song: " + songPosn);
 
-        SharedPreferences settings = getSharedPreferences("MusicService", 0);
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = settings.edit();
         editor.putInt(currSongPref, songPosn);
         editor.commit();
