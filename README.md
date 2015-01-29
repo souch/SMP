@@ -15,11 +15,11 @@ No eyes candy graphics nor advanced mega bass settings.
 - show current played song in list
 - bluetooth
 - On start go to last song played
-- seek bar
+- seek bar that show current song position
 - button that disable/enable lockscreen
+- Shake to go to next song when playing
 
 ### Help
-- press on back button shut everything
 - press on home button to shut the app and keep the music in background
 - press the button to the right of next to go to curr played song
 - close the padlock to disable lock screen (it prevents locking only when the app is on top).
@@ -37,7 +37,7 @@ No eyes candy graphics nor advanced mega bass settings.
 - guess "smart" track number (2 < 11, song file name vs id tag, ...)
 - select main music directory
 - quick jump with letter in the right (like in contact)
-- Shake to go to next song
+
 - zoom make letter (and button) bigger or smaller
 - speak the title ?
 - cursor for volume ? ( half/full?)

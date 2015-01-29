@@ -11,6 +11,9 @@
     <string name="settings_author">Souch (https://github.com/souch/SMP)</string>
     <string name="settings_opensource">GPLv3</string>
 
+    <string name="shake_threshold">SHAKE_THRESHOLD</string>
+    <string name="shake_enabled">SHAKE_ENABLED</string>
+
     <!--
     <string-array name="pref_sync_frequency_titles">
         <item>15 minutes</item>

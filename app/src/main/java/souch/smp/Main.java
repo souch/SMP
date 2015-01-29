@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -108,6 +107,8 @@ public class Main extends Activity {
             });
             serviceBound = true;
 
+            musicSrv.stopNotification();
+
             updatePlayButton();
             scrollToCurrSong(null);
         }
@@ -166,8 +167,8 @@ public class Main extends Activity {
         }, 10, updateInterval);
 
         if (serviceBound)
-            musicSrv.stopNotification();
-        // todo: if serviceBound = false -> stopNotification should be called from onServiceConnected?
+            musicSrv.stopNotification();  // if service not bound stopNotification is called onServiceConnected
+
     }
 
     /*
@@ -203,12 +204,19 @@ public class Main extends Activity {
         savePreferences();
 
         if (serviceBound) {
+            // stop the service if not playing music
+            if(!musicSrv.playingLaunched()) {
+                musicSrv.stopService(playIntent);
+                Toast.makeText(getApplicationContext(),
+                        getResources().getString(R.string.app_name) + "'s service destroyed.",
+                        Toast.LENGTH_SHORT).show();
+            }
             unbindService(musicConnection);
             serviceBound = false;
             musicSrv = null;
         }
-
     }
+
 
     final Runnable updateInfo = new Runnable() {
         public void run() {
@@ -222,7 +230,7 @@ public class Main extends Activity {
                 updatePlayButton();
             } else {
                 if (!musicSrv.playingStopped() && !touchSeekbar && musicSrv.getSeekFinished()) {
-                    Log.d("Main", "updateInfo setProgress" + Song.secondsToMinutes(musicSrv.getCurrentPosition()));
+                    Log.v("Main", "updateInfo setProgress" + Song.secondsToMinutes(musicSrv.getCurrentPosition()));
                     // getCurrentPosition {Idle, Initialized, Prepared, Started, Paused, Stopped, PlaybackCompleted}
                     seekbar.setProgress(musicSrv.getCurrentPosition());
                 }
@@ -298,15 +306,21 @@ public class Main extends Activity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        final int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            Intent intent = new Intent(this, Settings.class);
-            startActivity(intent);
-            return true;
-        }
-        if (id == R.id.action_rescan) {
-            rescan();
-            return true;
+        switch(item.getItemId()) {
+            case R.id.action_settings:
+                Intent intent = new Intent(this, Settings.class);
+                startActivity(intent);
+                return true;
+            case R.id.action_rescan:
+                rescan();
+                return true;
+            case R.id.action_kill:
+                Log.d("Main", "Exit app");
+                if(serviceBound && musicSrv.isPlaying())
+                    musicSrv.pause();
+                finishing = true;
+                finish();
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -392,23 +406,19 @@ public class Main extends Activity {
         return serviceBound && musicSrv.isInState(states);
     }
 
-
-    // exit "nicely"
+/*
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
+    public boolean onKeyLongPress(int keyCode, KeyEvent event) {
         switch (keyCode) {
             case KeyEvent.KEYCODE_BACK:
                 Log.d("Main", "Exit app");
                 finishing = true;
-                if(serviceBound) {
-                    musicSrv.stopService(playIntent);
-                }
                 finish();
                 return true;
         }
         return super.onKeyDown(keyCode, event);
     }
-
+*/
 
     private void restorePreferences() {
         SharedPreferences settings = getSharedPreferences("Main", 0);

@@ -3,6 +3,10 @@
     package="souch.smp" >
     <uses-sdk android:minSdkVersion="10"  android:targetSdkVersion="10" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <!-- useful at least from android 5.0, not useful for 2.3, 4.1, 4.3
+    todo: see if it can be adaptable for each android version
+    -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -26,6 +30,7 @@
         <activity
             android:name=".Settings"
             android:label="@string/settings_title"
+            android:theme="@style/PreferenceTheme"
             android:parentActivityName=".Main" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

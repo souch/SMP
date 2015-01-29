@@ -9,6 +9,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -16,6 +20,7 @@ import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.Toast;
@@ -29,7 +34,8 @@ import java.util.TimerTask;
 public class MusicService extends Service implements
         MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener,
         MediaPlayer.OnCompletionListener, MediaPlayer.OnSeekCompleteListener,
-        AudioManager.OnAudioFocusChangeListener {
+        AudioManager.OnAudioFocusChangeListener, SensorEventListener
+{
 
     // save/load song pos preference name
     final String currSongPref = "currSong";
@@ -45,6 +51,9 @@ public class MusicService extends Service implements
     // sthg happened and the Main do not know it : a song has finish to play, another app gain focus
     private boolean changed;
 
+    // a notification has been lauched
+    private boolean foreground;
+
     private final IBinder musicBind = new MusicBinder();
 
     private AudioManager audioManager;
@@ -56,6 +65,14 @@ public class MusicService extends Service implements
     private boolean seekFinished;
 
     private static final int NOTIFY_ID = 1;
+
+    private SensorManager sensorManager;
+    private Sensor accelerometer;
+    private long lastUpdate;
+    private boolean enableShake;
+    private float shakeThreshold;
+    private final int MIN_SHAKE_PERIOD = 600;
+
 
     public void onCreate() {
         Log.d("MusicService", "onCreate()");
@@ -79,15 +96,27 @@ public class MusicService extends Service implements
         });
 
         restorePreferences();
+
+        if(enableShake) {
+            startSensor();
+        }
     }
 
 
     public void initSongs() {
         ContentResolver musicResolver = getContentResolver();
         Uri musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-        Cursor musicCursor = musicResolver.query(musicUri, null, null, null, null);
+        Cursor musicCursor;
+        try {
+            musicCursor = musicResolver.query(musicUri, null, null, null, null);
+        } catch (Exception e) {
+            final String msg = "initSongs(): Unable to query musicResolver! No songs available.";
+            Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
+            Log.e("MusicService", msg);
+            return;
+        }
 
-        if(musicCursor!=null && musicCursor.moveToFirst()){
+        if(musicCursor != null && musicCursor.moveToFirst()){
             //get columns
             int titleColumn = musicCursor.getColumnIndex
                     (MediaStore.Audio.Media.TITLE);
@@ -229,6 +258,47 @@ public class MusicService extends Service implements
         Log.d("MusicService", "onSeekComplete setProgress" + Song.secondsToMinutes(getCurrentPosition()));
     }
 
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            getAccelerometer(event);
+        }
+    }
+
+    private void getAccelerometer(SensorEvent event) {
+        float[] values = event.values;
+        // Movement
+        float x = values[0];
+        float y = values[1];
+        float z = values[2];
+
+        float accelationSquareRoot = (x*x + y*y + z*z)
+                / (SensorManager.GRAVITY_EARTH * SensorManager.GRAVITY_EARTH);
+
+        if (accelationSquareRoot > shakeThreshold) {
+            final long actualTime = event.timestamp;
+            if (actualTime - lastUpdate < MIN_SHAKE_PERIOD) {
+                return;
+            }
+            lastUpdate = actualTime;
+
+            Log.d("MusicService", "Device was shuffed. Acceleration: " +
+                    String.format("%.1f", accelationSquareRoot) +
+                    " x: " + String.format("%.1f", x*x) +
+                    " y: " + String.format("%.1f", y*y) +
+                    " z: " + String.format("%.1f", z*z));
+
+            // goes to next song
+            if(playingLaunched()) {
+                playNext();
+                changed = true;
+            }
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {}
+
 
     public class MusicBinder extends Binder {
         MusicService getService() {
@@ -241,11 +311,13 @@ public class MusicService extends Service implements
         return musicBind;
     }
 
+
     @Override
     public void onDestroy() {
         Log.d("MusicService", "onDestroy");
         savePreferences();
         releaseAudio();
+        stopSensor();
     }
 
     private void restorePreferences() {
@@ -256,6 +328,12 @@ public class MusicService extends Service implements
             savedSong = 0;
         songPosn = savedSong;
         Log.d("MusicService", "restorePreferences load song: " + savedSong);
+
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        enableShake = sp.getBoolean(PrefKeys.ENABLE_SHAKE, true);
+        shakeThreshold = Float.valueOf(sp.getString(PrefKeys.SHAKE_THRESHOLD, "30")) / 10.0f;
+        Log.d("MusicService", "restorePreferences enable shake: " + enableShake +
+                " threshold:" + shakeThreshold);
     }
 
     private void savePreferences() {
@@ -305,6 +383,7 @@ public class MusicService extends Service implements
         state.setState(PlayerState.PlaybackCompleted);
         changed = true;
         playNext();
+
     }
 
     @Override
@@ -339,10 +418,13 @@ public class MusicService extends Service implements
                 " - " + playSong.getAlbum(), pendInt);
 
         startForeground(NOTIFY_ID, notification);
+        foreground = true;
     }
 
     public void stopNotification() {
-        stopForeground(true);
+        if(foreground)
+            stopForeground(true);
+        foreground = false;
     }
 
     public boolean isPlaying() {
@@ -407,6 +489,8 @@ public class MusicService extends Service implements
         songPosn++;
         if(songPosn >= songs.size())
             songPosn = 0;
+        if(foreground)
+            startNotification();
         playSong();
     }
 
@@ -436,5 +520,36 @@ public class MusicService extends Service implements
 
     public boolean playingPaused() {
         return state.compare(PlayerState.Paused);
+    }
+
+    public void setEnableShake(boolean shake) {
+        enableShake = shake;
+        if(enableShake)
+            startSensor();
+        else
+            stopSensor();
+    }
+
+    public void setShakeThreshold(float threshold) {
+        shakeThreshold = threshold;
+    }
+
+    // can be called twice
+    private void startSensor() {
+        if(sensorManager == null) {
+            sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+            accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+            sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+            lastUpdate = System.currentTimeMillis();
+        }
+    }
+
+    // can be called twice
+    private void stopSensor() {
+        if(sensorManager != null) {
+            sensorManager.unregisterListener(this);
+            sensorManager = null;
+            accelerometer = null;
+        }
     }
 }

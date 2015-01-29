@@ -8,4 +8,7 @@
     <item android:id="@+id/action_rescan"
         android:title="@string/action_rescan"/>
 
+        <item android:id="@+id/action_kill"
+        android:title="Kill app"/>
+
 </menu>

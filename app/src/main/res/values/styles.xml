@@ -27,8 +27,13 @@
         <item name="android:paddingRight">16dip</item>
     </style>
 
-    <style name="PreferenceTheme">
-        <item name="android:textColor">@color/apptheme_color</item>
+    <style name="PreferenceTheme" parent="">
+        <!--
+        do not work on 2.3, works on 4.1
+        todo: make it work everywhere
+        -->
+        <item name="android:textColorSecondary">@color/apptheme_color</item>
     </style>
+
 
 </resources>

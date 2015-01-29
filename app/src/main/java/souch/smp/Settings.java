@@ -1,42 +1,96 @@
 package souch.smp;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.preference.EditTextPreference;
 import android.preference.PreferenceActivity;
+import android.util.Log;
 
-public class Settings extends PreferenceActivity {
+public class Settings extends PreferenceActivity
+        implements SharedPreferences.OnSharedPreferenceChangeListener {
+    private MusicService musicSrv;
+    private Intent playIntent;
+    private boolean serviceBound = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
+        playIntent = new Intent(this, MusicService.class);
+        bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
 
+        // todo: dirty?
+        final String strThreshold = getPreferenceScreen().getSharedPreferences().getString(PrefKeys.SHAKE_THRESHOLD, "30");
+        EditTextPreference pref = (EditTextPreference) findPreference(PrefKeys.SHAKE_THRESHOLD);
+        pref.setSummary(strThreshold);
+        this.onContentChanged();
     }
 
-    private void getPreferences() {
-/*
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+    private ServiceConnection musicConnection = new ServiceConnection() {
 
-        ((TextView)findViewById(R.id.tvLogin)).setText("Nom d'utilisateur : " + preferences.getString("login", ""));
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            Log.d("Settings", "onServiceConnected");
+            MusicService.MusicBinder binder = (MusicService.MusicBinder) service;
+            musicSrv = binder.getService();
+            serviceBound = true;
+        }
 
-        ((TextView)findViewById(R.id.tvPassword)).setText("Mot de passe : " + preferences.getString("password", ""));
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            Log.d("Settings", "onServiceDisconnected");
+            serviceBound = false;
+        }
+    };
 
-        ((TextView)findViewById(R.id.tvRingtone)).setText("Sonnerie : " + preferences.getString("sonnerie", ""));
-
-        ((TextView)findViewById(R.id.tvVibrate)).setText("Vibreur : " + preferences.getBoolean("vibrate", false));
-*/
+    @Override
+    protected void onDestroy() {
+        unbindService(musicConnection);
+        serviceBound = false;
+        musicSrv = null;
+        super.onDestroy();
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-/*
-        if(requestCode == CODE_RETOUR) {
-            Toast.makeText(this, "Modifications terminées", Toast.LENGTH_SHORT).show();
-            getPreferences();
-        }
+    protected void onResume() {
+        super.onResume();
+        // Set up a listener whenever a key changes
+        getPreferenceScreen().getSharedPreferences()
+                .registerOnSharedPreferenceChangeListener(this);
+    }
 
-        super.onActivityResult(requestCode, resultCode, data);
-*/
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Unregister the listener whenever a key changes
+        getPreferenceScreen().getSharedPreferences()
+                .unregisterOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if(!serviceBound)
+            return;
+        Log.d("MusicService", "onSharedPreferenceChanged: " + key);
+
+        switch (key) {
+            case PrefKeys.ENABLE_SHAKE:
+                musicSrv.setEnableShake(sharedPreferences.getBoolean(PrefKeys.ENABLE_SHAKE, true));
+                break;
+            case PrefKeys.SHAKE_THRESHOLD:
+                final String strThreshold = sharedPreferences.getString(PrefKeys.SHAKE_THRESHOLD, "30");
+                musicSrv.setShakeThreshold(Float.valueOf(strThreshold) / 10.0f);
+
+                EditTextPreference pref = (EditTextPreference) findPreference(key);
+                pref.setSummary(strThreshold);
+                this.onContentChanged();
+
+                break;
+        }
     }
 }
