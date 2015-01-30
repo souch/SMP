@@ -40,7 +40,7 @@ public class Main extends Activity {
     private boolean finishing;
 
     private Timer timer;
-    private final long updateInterval = 1000;
+    private final long updateInterval = 500;
     private SeekBar seekbar;
     // tell whether the seekbar is currently touch by a user
     private boolean touchSeekbar;

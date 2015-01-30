@@ -67,8 +67,10 @@ public class MusicService extends Service implements
     private long lastUpdate;
     private boolean enableShake;
     private float shakeThreshold;
-    private final int MIN_SHAKE_PERIOD = 1000;
-
+    private final int MIN_SHAKE_PERIOD = 1000 * 1000 * 1000;
+    private double accelLast;
+    private double accelCurrent;
+    private double accel;
 
     public void onCreate() {
         Log.d("MusicService", "onCreate()");
@@ -261,6 +263,7 @@ public class MusicService extends Service implements
         }
     }
 
+
     private void getAccelerometer(SensorEvent event) {
         float[] values = event.values;
         // Movement
@@ -268,10 +271,13 @@ public class MusicService extends Service implements
         float y = values[1];
         float z = values[2];
 
-        float accelationSquareRoot = (x*x + y*y + z*z)
-                / (SensorManager.GRAVITY_EARTH * SensorManager.GRAVITY_EARTH);
+        // algo found here : http://stackoverflow.com/questions/2317428/android-i-want-to-shake-it
+        accelLast = accelCurrent;
+        accelCurrent = Math.sqrt((double) (x*x + y*y + z*z));
+        double delta = accelCurrent - accelLast;
+        accel = accel * 0.9f + delta; // perform low-cut filter
 
-        if (accelationSquareRoot > shakeThreshold) {
+        if (accel > shakeThreshold) {
             final long actualTime = event.timestamp;
             if (actualTime - lastUpdate < MIN_SHAKE_PERIOD) {
                 return;
@@ -279,7 +285,7 @@ public class MusicService extends Service implements
             lastUpdate = actualTime;
 
             Log.d("MusicService", "Device was shuffed. Acceleration: " +
-                    String.format("%.1f", accelationSquareRoot) +
+                    String.format("%.1f", accel) +
                     " x: " + String.format("%.1f", x*x) +
                     " y: " + String.format("%.1f", y*y) +
                     " z: " + String.format("%.1f", z*z));
@@ -326,8 +332,9 @@ public class MusicService extends Service implements
         Log.d("MusicService", "restorePreferences load song: " + savedSong);
 
 
-        enableShake = settings.getBoolean(PrefKeys.ENABLE_SHAKE, true);
-        shakeThreshold = Float.valueOf(settings.getString(PrefKeys.SHAKE_THRESHOLD, "30")) / 10.0f;
+        enableShake = settings.getBoolean(PrefKeys.ENABLE_SHAKE, false);
+        shakeThreshold = Float.valueOf(settings.getString(PrefKeys.SHAKE_THRESHOLD,
+                getString(R.string.settings_default_shake_threshold))) / 10.0f;
         Log.d("MusicService", "restorePreferences enable shake: " + enableShake +
                 " threshold:" + shakeThreshold);
     }
@@ -536,6 +543,9 @@ public class MusicService extends Service implements
     // can be called twice
     private void startSensor() {
         if(sensorManager == null) {
+            accelLast = SensorManager.GRAVITY_EARTH;
+            accel = 0.00f;
+            accelCurrent = SensorManager.GRAVITY_EARTH;
             sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
             accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
             sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);

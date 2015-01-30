@@ -5,17 +5,22 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.PreferenceActivity;
 import android.util.Log;
+import android.widget.Toast;
 
 public class Settings extends PreferenceActivity
         implements SharedPreferences.OnSharedPreferenceChangeListener {
     private MusicService musicSrv;
     private Intent playIntent;
     private boolean serviceBound = false;
+
+    // todo: improve preference default value
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,10 +29,20 @@ public class Settings extends PreferenceActivity
         playIntent = new Intent(this, MusicService.class);
         bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
 
-        // todo: dirty?
-        final String strThreshold = getPreferenceScreen().getSharedPreferences().getString(PrefKeys.SHAKE_THRESHOLD, "30");
-        EditTextPreference pref = (EditTextPreference) findPreference(PrefKeys.SHAKE_THRESHOLD);
-        pref.setSummary(strThreshold);
+        CheckBoxPreference prefEnableShake = (CheckBoxPreference) findPreference(PrefKeys.ENABLE_SHAKE);
+        EditTextPreference prefShakeThreshold = (EditTextPreference) findPreference(PrefKeys.SHAKE_THRESHOLD);
+        if(getPackageManager().hasSystemFeature(PackageManager.FEATURE_SENSOR_ACCELEROMETER)) {
+            SharedPreferences sp = getPreferenceScreen().getSharedPreferences();
+            prefShakeThreshold.setSummary(sp.getString(PrefKeys.SHAKE_THRESHOLD,
+                    getString(R.string.settings_default_shake_threshold)));
+        }
+        else {
+            prefEnableShake.setEnabled(false);
+            prefShakeThreshold.setEnabled(false);
+            Toast.makeText(getApplicationContext(),
+                    getResources().getString(R.string.settings_no_accelerometer),
+                    Toast.LENGTH_LONG).show();
+        }
         this.onContentChanged();
     }
 
@@ -80,10 +95,10 @@ public class Settings extends PreferenceActivity
 
         switch (key) {
             case PrefKeys.ENABLE_SHAKE:
-                musicSrv.setEnableShake(sharedPreferences.getBoolean(PrefKeys.ENABLE_SHAKE, true));
+                musicSrv.setEnableShake(sharedPreferences.getBoolean(PrefKeys.ENABLE_SHAKE, false));
                 break;
             case PrefKeys.SHAKE_THRESHOLD:
-                final String strThreshold = sharedPreferences.getString(PrefKeys.SHAKE_THRESHOLD, "30");
+                final String strThreshold = sharedPreferences.getString(PrefKeys.SHAKE_THRESHOLD, getString(R.string.settings_default_shake_threshold));
                 musicSrv.setShakeThreshold(Float.valueOf(strThreshold) / 10.0f);
 
                 EditTextPreference pref = (EditTextPreference) findPreference(key);

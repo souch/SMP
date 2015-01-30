@@ -8,7 +8,11 @@
 
     <string name="settings_title">Settings</string>
     <string name="settings_version_title">0.1</string>
-    <string name="settings_author">Mathieu Souchaud (https://github.com/souch/SMP)</string>
+    <string name="settings_author">Mathieu Souchaud</string>
+    <string name="settings_source">https://github.com/souch/SMP</string>
     <string name="settings_opensource">GPLv3</string>
+
+    <string name="settings_default_shake_threshold">50</string>
+    <string name="settings_no_accelerometer">Your device has no accelerometer. Shake functionality is disabled.</string>
 
 </resources>

@@ -5,7 +5,7 @@
         <CheckBoxPreference
             android:key="FOLLOW_SONG"
             android:title="Scroll to new song played"
-            android:summary="When start playing song scroll to it"
+            android:summary="When song start playing, scroll to it"
             android:defaultValue="true"
             />
 
@@ -23,9 +23,9 @@
         <EditTextPreference
             android:key="SHAKE_THRESHOLD"
             android:title="Shake force threshold"
-            android:summary="30"
+            android:summary="@string/settings_default_shake_threshold"
             android:numeric="integer"
-            android:defaultValue="30"/>
+            android:defaultValue="@string/settings_default_shake_threshold"/>
 
     </PreferenceCategory>
 
@@ -38,6 +38,10 @@
         <Preference
             android:title="Version number"
             android:summary="@string/settings_version_title"/>
+
+        <Preference
+            android:title="Sources"
+            android:summary="@string/settings_source"/>
 
         <Preference
             android:title="License"
