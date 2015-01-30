@@ -8,19 +8,7 @@
 
     <string name="settings_title">Settings</string>
     <string name="settings_version_title">0.1</string>
-    <string name="settings_author">Souch (https://github.com/souch/SMP)</string>
+    <string name="settings_author">Mathieu Souchaud (https://github.com/souch/SMP)</string>
     <string name="settings_opensource">GPLv3</string>
-
-    <string name="shake_threshold">SHAKE_THRESHOLD</string>
-    <string name="shake_enabled">SHAKE_ENABLED</string>
-
-    <!--
-    <string-array name="pref_sync_frequency_titles">
-        <item>15 minutes</item>
-        <item>30 minutes</item>
-        <item>1 hour</item>
-        <item>Never</item>
-    </string-array>
-    -->
 
 </resources>

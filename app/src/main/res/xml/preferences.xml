@@ -1,5 +1,16 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <PreferenceCategory android:title="Song view">
+
+        <CheckBoxPreference
+            android:key="FOLLOW_SONG"
+            android:title="Scroll to new song played"
+            android:summary="When start playing song scroll to it"
+            android:defaultValue="true"
+            />
+
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="Accelerometer shake">
         <CheckBoxPreference
             android:key="ENABLE_SHAKE"

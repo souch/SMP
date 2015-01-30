@@ -50,6 +50,9 @@ public class Main extends Activity {
     // true if the user want to disable lockscreen
     private boolean noLock;
 
+    // true if you want to keep the current song played visible
+    private boolean followSong;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,8 +77,7 @@ public class Main extends Activity {
         seekbar = (SeekBar) findViewById(R.id.seek_bar);
         seekbar.setOnSeekBarChangeListener(seekBarChangeListener);
 
-        restorePreferences();
-        applyLock();
+        followSong = false;
     }
 
 
@@ -111,7 +113,7 @@ public class Main extends Activity {
             musicSrv.stopNotification();
 
             updatePlayButton();
-            scrollToCurrSong(null);
+            scrollToCurrSong();
         }
 
         @Override
@@ -158,6 +160,9 @@ public class Main extends Activity {
         super.onStart();
         Log.d("Main", "onStart");
 
+        restorePreferences();
+        applyLock();
+
         timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
@@ -169,7 +174,6 @@ public class Main extends Activity {
 
         if (serviceBound)
             musicSrv.stopNotification();  // if service not bound stopNotification is called onServiceConnected
-
     }
 
     /*
@@ -192,6 +196,7 @@ public class Main extends Activity {
         super.onStop();
         Log.d("Main", "onStop");
         timer.cancel();
+        savePreferences();
 
         if (!finishing && serviceBound && musicSrv.playingLaunched())
             musicSrv.startNotification();
@@ -202,7 +207,6 @@ public class Main extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         Log.d("Main", "onDestroy");
-        savePreferences();
 
         if (serviceBound) {
             // stop the service if not playing music
@@ -229,6 +233,8 @@ public class Main extends Activity {
             if (musicSrv.getChanged()) {
                 Log.d("Main", "updateInfo");
                 updatePlayButton();
+                if(followSong)
+                    scrollToCurrSong();
             } else {
                 if (!musicSrv.playingStopped() && !touchSeekbar && musicSrv.getSeekFinished()) {
                     Log.v("Main", "updateInfo setProgress" + Song.secondsToMinutes(musicSrv.getCurrentPosition()));
@@ -356,6 +362,8 @@ public class Main extends Activity {
 
         musicSrv.playNext();
         updatePlayButton();
+        if(followSong)
+            scrollToCurrSong();
     }
 
     public void playPrev(View view){
@@ -364,19 +372,65 @@ public class Main extends Activity {
 
         musicSrv.playPrev();
         updatePlayButton();
+        if(followSong)
+            scrollToCurrSong();
     }
 
-    public void scrollToCurrSong(View view) {
-        if(!serviceBound)
+
+    public void gotoCurrSong(View view) {
+        scrollToCurrSong();
+    }
+
+    public void scrollToCurrSong() {
+        if(songs.size() == 0)
             return;
 
-        int gotoSong = musicSrv.getSong() - 3; // -3 to show a bit of songs before the cur song
-        if(gotoSong < 0)
-            gotoSong = 0;
+        final int firstVisible = songView.getFirstVisiblePosition();
+        final int lastVisible = songView.getLastVisiblePosition();
+        Log.v("Main", "scrollToCurrSong firstVisible:" + firstVisible + " lastVisible:" + lastVisible);
 
-        Log.d("Main", "scrollToCurrSong:" + gotoSong);
-        songView.setSelection(gotoSong);
-        //songView.smoothScrollToPosition(gotoSong);
+        final int smoothMaxOffset = 20; // deactivate smooth if too far
+        int showAround = 2; // to show a bit of songs before or after the cur song
+        /*
+        // for tiny screen that can show less than 5 songs
+        final int totalVisible = lastVisible - firstVisible;
+        showAround = showAround > totalVisible/2 ? totalVisible/2 : showAround;
+        showAround = showAround < 0 ? 0 : showAround;
+        Log.v("Main", "scrollToCurrSong showAround:" + showAround);
+        */
+
+        int gotoSong = musicSrv.getSong();
+
+        // how far from top or bottom border the song is
+        int offset = 0;
+        if(gotoSong > lastVisible)
+            offset = gotoSong - lastVisible;
+        if(gotoSong < firstVisible)
+            offset = firstVisible - gotoSong;
+
+        if(offset > smoothMaxOffset) {
+            gotoSong -= showAround;
+            if(gotoSong < 0)
+                gotoSong = 0;
+            // setSelection set position at top of the screen
+            songView.setSelection(gotoSong);
+        }
+        else {
+            if(gotoSong + showAround >= lastVisible) {
+                gotoSong += showAround;
+                if(gotoSong >= songs.size())
+                    gotoSong = songs.size() - 1;
+            }
+            else {
+                gotoSong -= showAround;
+                if(gotoSong < 0)
+                    gotoSong = 0;
+            }
+            // smoothScrollToPosition only make the position visible
+            songView.smoothScrollToPosition(gotoSong);
+        }
+
+        Log.d("Main", "scrollToCurrSong position:" + gotoSong);
     }
 
     public void lockUnlock(View view) {
@@ -423,8 +477,10 @@ public class Main extends Activity {
 
     private void restorePreferences() {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-        noLock = settings.getBoolean("noLock", false);
-        Log.d("MusicService", "restorePreferences noLock: " + noLock);
+        noLock = settings.getBoolean(PrefKeys.NO_LOCK, false);
+        followSong = settings.getBoolean(PrefKeys.FOLLOW_SONG, true);
+
+        Log.d("MusicService", "restorePreferences noLock: " + noLock + " follow: " + followSong);
     }
 
     private void savePreferences() {
@@ -432,7 +488,7 @@ public class Main extends Activity {
 
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = settings.edit();
-        editor.putBoolean("noLock", noLock);
+        editor.putBoolean(PrefKeys.NO_LOCK, noLock);
         editor.commit();
     }
 }

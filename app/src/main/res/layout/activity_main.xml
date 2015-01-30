@@ -110,7 +110,7 @@
         android:layout_height="wrap_content"
         android:src="@drawable/action_goto_play"
         style="@style/BottomButton"
-        android:onClick="scrollToCurrSong"
+        android:onClick="gotoCurrSong"
         android:layout_alignParentBottom="true"
         android:layout_toRightOf="@+id/next_button"
         android:id="@+id/goto_button" />

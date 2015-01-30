@@ -36,10 +36,6 @@ public class MusicService extends Service implements
         MediaPlayer.OnCompletionListener, MediaPlayer.OnSeekCompleteListener,
         AudioManager.OnAudioFocusChangeListener, SensorEventListener
 {
-
-    // save/load song pos preference name
-    final String currSongPref = "currSong";
-
     //media player
     private MediaPlayer player;
     //song list
@@ -322,7 +318,7 @@ public class MusicService extends Service implements
 
     private void restorePreferences() {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-        int savedSong = settings.getInt(currSongPref, 0);
+        int savedSong = settings.getInt(PrefKeys.CURR_SONG, 0);
         // the songs must have changed
         if (savedSong >= songs.size())
             savedSong = 0;
@@ -341,7 +337,7 @@ public class MusicService extends Service implements
 
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = settings.edit();
-        editor.putInt(currSongPref, songPosn);
+        editor.putInt(PrefKeys.CURR_SONG, songPosn);
         editor.commit();
     }
 
@@ -356,6 +352,9 @@ public class MusicService extends Service implements
     }
 
     public void playSong() {
+        if(songs.size() == 0)
+            return;
+
         getPlayer().reset();
         state.setState(PlayerState.Idle);
 

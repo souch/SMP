@@ -89,7 +89,6 @@ public class Settings extends PreferenceActivity
                 EditTextPreference pref = (EditTextPreference) findPreference(key);
                 pref.setSummary(strThreshold);
                 this.onContentChanged();
-
                 break;
         }
     }

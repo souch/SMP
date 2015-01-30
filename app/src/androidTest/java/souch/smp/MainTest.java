@@ -1,10 +1,8 @@
 package souch.smp;
 
-import android.media.MediaPlayer;
 import android.os.SystemClock;
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -115,6 +113,22 @@ public class MainTest extends ActivityInstrumentationTestCase2<Main> {
         prevPosSong = linePos;
     }
 
+    /*
+    public void test3NoSongs() throws Exception {
+        changeNbSong(0);
+
+        clickOnButton(R.id.play_button);
+
+        clickOnButton(R.id.next_button);
+
+        clickOnButton(R.id.goto_button);
+
+        clickOnButton(R.id.prev_button);
+
+        clickOnButton(R.id.goto_button);
+    }
+    */
+
     // todo: see if the listview update curr pause when musicservice goes to next song automatically.
 
     // todo: seekbar tests
@@ -168,6 +182,13 @@ public class MainTest extends ActivityInstrumentationTestCase2<Main> {
             songList.remove(songList.size() - 1);
         }
         field.set(main, songList);
+
+        /*
+        field = main.getClass().getDeclaredField("songAdt");
+        field.setAccessible(true);
+        SongAdapter songAdt = (SongAdapter) field.get(main);
+        songAdt.notifyDataSetChanged();
+        */
     }
 
     // check that the curr icon is well set
