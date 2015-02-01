@@ -12,20 +12,20 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 public class SongAdapter extends BaseAdapter {
-    private ArrayList<Song> songs;
+    private ArrayList<SongItem> songItems;
     private LayoutInflater songInf;
     private Main main;
 
 
-    public SongAdapter(Context c, ArrayList<Song> theSongs, Main mn){
-        songs = theSongs;
+    public SongAdapter(Context c, ArrayList<SongItem> items, Main mn){
+        songItems = items;
         songInf = LayoutInflater.from(c);
         main = mn;
     }
 
     @Override
     public int getCount() {
-        return songs.size();
+        return songItems.size();
     }
 
     @Override
@@ -42,35 +42,42 @@ public class SongAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        //map to song layout
-        RelativeLayout itemView = (RelativeLayout) songInf.inflate(R.layout.song, parent, false);
-        //get title and artist views
-        TextView songView = (TextView) itemView.findViewById(R.id.song_title);
-        TextView artistView = (TextView) itemView.findViewById(R.id.song_artist);
-        TextView durationView = (TextView) itemView.findViewById(R.id.song_duration);
-        ImageView currPlay = (ImageView) itemView.findViewById(R.id.curr_play);
-        //get song using position
-        Song currSong = songs.get(position);
-        //get title and artist strings
-        songView.setText(currSong.getTitle());
-        artistView.setText(currSong.getArtist() + " - " + currSong.getAlbum());
-        durationView.setText(currSong.secondsToMinutes(currSong.getDuration()));
+        SongItem currItem = songItems.get(position);
 
-        int currIcon = R.drawable.ic_transparent;
-        if(position == main.getSong()) {
-            if(main.isInState(PlayerState.Paused))
-                currIcon = R.drawable.ic_curr_pause;
-            else
-                currIcon = R.drawable.ic_curr_play;
+        // map to song layout
+        RelativeLayout itemView = (RelativeLayout) songInf.inflate(R.layout.song, parent, false);
+
+        if(currItem.getClass() == Song.class) {
+            Song song = (Song) currItem;
+            TextView title = (TextView) itemView.findViewById(R.id.song_title);
+            title.setText(song.getTitle());
+
+            TextView duration = (TextView) itemView.findViewById(R.id.song_duration);
+            duration.setText(Song.secondsToMinutes(song.getDuration()));
+
+            ImageView currPlay = (ImageView) itemView.findViewById(R.id.curr_play);
+            int currIcon = android.R.color.transparent;
+            if (currItem == main.getSongItem()) {
+                if (main.isInState(PlayerState.Paused))
+                    currIcon = R.drawable.ic_curr_pause;
+                else
+                    currIcon = R.drawable.ic_curr_play;
+            }
+            currPlay.setImageResource(currIcon);
+            // useful only for the tests
+            currPlay.setTag(currIcon);
         }
-        currPlay.setImageResource(currIcon);
-        // useful only for the tests
-        currPlay.setTag(currIcon);
+        else {
+            SongGroup group = (SongGroup) currItem;
+            group.setText((TextView) itemView.findViewById(R.id.song_title));
+
+            TextView duration = (TextView) itemView.findViewById(R.id.song_duration);
+            duration.setText("");
+        }
 
         //set position as tag (not useful for now)
         //itemView.setTag(position);
         return itemView;
     }
-
 
 }

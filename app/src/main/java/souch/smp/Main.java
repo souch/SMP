@@ -28,7 +28,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class Main extends Activity {
-    private ArrayList<Song> songs;
+    private ArrayList<SongItem> songItems;
     private ListView songView;
     private SongAdapter songAdt;
     ImageButton playButton;
@@ -92,8 +92,8 @@ public class Main extends Activity {
             // get service
             musicSrv = binder.getService();
 
-            songs = musicSrv.getSongs();
-            songAdt = new SongAdapter(Main.this, songs, Main.this);
+            songItems = musicSrv.getSongItems();
+            songAdt = new SongAdapter(Main.this, songItems, Main.this);
             songView.setAdapter(songAdt);
             songView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
@@ -103,7 +103,9 @@ public class Main extends Activity {
                         return;
                     //Toast.makeText(getApplicationContext(),
                     //        "Click ListItem Number " + position + " id: " + id, Toast.LENGTH_LONG).show();
-                    musicSrv.setSong(position);
+                    while(songItems.get(position).getClass() != Song.class)
+                        position++;
+                    musicSrv.setSongPos(position);
                     musicSrv.playSong();
                     updatePlayButton();
                 }
@@ -259,14 +261,17 @@ public class Main extends Activity {
                 playButton.setTag(R.drawable.ic_action_play);
             }
 
-            Song currSong = songs.get(musicSrv.getSong());
-            duration.setText(Song.secondsToMinutes(currSong.getDuration()));
-            duration.setVisibility(TextView.VISIBLE);
-            seekbar.setMax(currSong.getDuration());
-            if (!touchSeekbar && musicSrv.getSeekFinished())
-                seekbar.setProgress(musicSrv.getCurrentPosition());
-            seekbar.setVisibility(TextView.VISIBLE);
-            currDuration.setText(Song.secondsToMinutes(musicSrv.getCurrentPosition()));
+            SongItem songItem = songItems.get(musicSrv.getSongPos());
+            if(songItem.getClass() == Song.class) {
+                Song song = (Song) songItem;
+                duration.setText(Song.secondsToMinutes(song.getDuration()));
+                duration.setVisibility(TextView.VISIBLE);
+                seekbar.setMax(song.getDuration());
+                if (!touchSeekbar && musicSrv.getSeekFinished())
+                    seekbar.setProgress(musicSrv.getCurrentPosition());
+                seekbar.setVisibility(TextView.VISIBLE);
+                currDuration.setText(Song.secondsToMinutes(musicSrv.getCurrentPosition()));
+            }
         }
 
         songAdt.notifyDataSetChanged();
@@ -382,24 +387,24 @@ public class Main extends Activity {
     }
 
     public void scrollToCurrSong() {
-        if(songs.size() == 0)
+        if(songItems.size() == 0)
             return;
 
         final int firstVisible = songView.getFirstVisiblePosition();
         final int lastVisible = songView.getLastVisiblePosition();
         Log.v("Main", "scrollToCurrSong firstVisible:" + firstVisible + " lastVisible:" + lastVisible);
 
-        final int smoothMaxOffset = 20; // deactivate smooth if too far
-        int showAround = 2; // to show a bit of songs before or after the cur song
+        final int smoothMaxOffset = 40; // deactivate smooth if too far
+        int showAround = 2; // to show a bit of songItems before or after the cur song
         /*
-        // for tiny screen that can show less than 5 songs
+        // for tiny screen that can show less than 5 songItems
         final int totalVisible = lastVisible - firstVisible;
         showAround = showAround > totalVisible/2 ? totalVisible/2 : showAround;
         showAround = showAround < 0 ? 0 : showAround;
         Log.v("Main", "scrollToCurrSong showAround:" + showAround);
         */
 
-        int gotoSong = musicSrv.getSong();
+        int gotoSong = musicSrv.getSongPos();
 
         // how far from top or bottom border the song is
         int offset = 0;
@@ -418,8 +423,8 @@ public class Main extends Activity {
         else {
             if(gotoSong + showAround >= lastVisible) {
                 gotoSong += showAround;
-                if(gotoSong >= songs.size())
-                    gotoSong = songs.size() - 1;
+                if(gotoSong >= songItems.size())
+                    gotoSong = songItems.size() - 1;
             }
             else {
                 gotoSong -= showAround;
@@ -450,11 +455,11 @@ public class Main extends Activity {
         }
     }
 
-    public int getSong() {
+    public SongItem getSongItem() {
         if(serviceBound)
-            return musicSrv.getSong();
+            return songItems.get(musicSrv.getSongPos());
         else
-            return -1;
+            return null;
     }
 
     public boolean isInState(int states) {

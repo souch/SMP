@@ -26,8 +26,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -36,18 +34,16 @@ public class MusicService extends Service implements
         MediaPlayer.OnCompletionListener, MediaPlayer.OnSeekCompleteListener,
         AudioManager.OnAudioFocusChangeListener, SensorEventListener
 {
-    //media player
     private MediaPlayer player;
-    //song list
-    private ArrayList<Song> songs;
-    //current position
-    private int songPosn;
+    private ArrayList<SongItem> songItems;
+    // current position in songItems
+    private int songPos;
     // need for focus
     private boolean wasPlaying;
-    // sthg happened and the Main do not know it : a song has finish to play, another app gain focus
+    // sthg happened and the Main do not know it: a song has finish to play, another app gain focus
     private boolean changed;
 
-    // a notification has been lauched
+    // a notification has been launched
     private boolean foreground;
 
     private final IBinder musicBind = new MusicBinder();
@@ -85,13 +81,8 @@ public class MusicService extends Service implements
         player = null;
         audioManager = null;
 
-        songs = new ArrayList<Song>();
+        songItems = new ArrayList<SongItem>();
         initSongs();
-        Collections.sort(songs, new Comparator<Song>() {
-            public int compare(Song a, Song b) {
-                return a.getArtist().compareTo(b.getArtist());
-            }
-        });
 
         restorePreferences();
 
@@ -102,42 +93,101 @@ public class MusicService extends Service implements
 
 
     public void initSongs() {
+        long startTime = System.currentTimeMillis();
         ContentResolver musicResolver = getContentResolver();
         Uri musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         Cursor musicCursor;
+        String sortOrder;
+        sortOrder = MediaStore.Audio.Media.ARTIST +
+                ", " + MediaStore.Audio.Media.ALBUM +
+                ", " + MediaStore.Audio.Media.TRACK +
+                ", " + MediaStore.Audio.Media.TITLE;
+
         try {
-            musicCursor = musicResolver.query(musicUri, null, null, null, null);
+            musicCursor = musicResolver.query(musicUri, null, null, null, sortOrder);
         } catch (Exception e) {
-            final String msg = "initSongs(): Unable to query musicResolver! No songs available.";
+            final String msg = "No songItems found!";
             Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
             Log.e("MusicService", msg);
             return;
         }
 
         if(musicCursor != null && musicCursor.moveToFirst()){
-            //get columns
-            int titleColumn = musicCursor.getColumnIndex
-                    (MediaStore.Audio.Media.TITLE);
-            int idColumn = musicCursor.getColumnIndex
-                    (MediaStore.Audio.Media._ID);
-            int artistColumn = musicCursor.getColumnIndex
-                    (MediaStore.Audio.Media.ARTIST);
-            int albumColumn = musicCursor.getColumnIndex
-                    (MediaStore.Audio.Media.ALBUM);
-            int durationColumn = musicCursor.getColumnIndex
-                    (MediaStore.Audio.Media.DURATION);
-            //add songs to list
+            int titleCol    = musicCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
+            int idCol       = musicCursor.getColumnIndex(MediaStore.Audio.Media._ID);
+            int artistCol   = musicCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
+            int albumCol    = musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM);
+            int durationCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
+            int pathCol     = musicCursor.getColumnIndex(MediaStore.MediaColumns.DATA);
+            int trackCol    = musicCursor.getColumnIndex(MediaStore.Audio.Media.TRACK);
+
+            SongGroup prevArtistGroup = null;
+            SongGroup prevAlbumGroup = null;
+            int lastSongPos = -1;
             do {
-                long thisId = musicCursor.getLong(idColumn);
-                String thisTitle = musicCursor.getString(titleColumn);
-                String thisArtist = musicCursor.getString(artistColumn);
-                String thisAlbum = musicCursor.getString(albumColumn);
-                int thisDuration = musicCursor.getInt(durationColumn);
-                songs.add(new Song(thisId, thisTitle, thisArtist, thisAlbum, thisDuration / 1000));
+                long id = musicCursor.getLong(idCol);
+                String title = musicCursor.getString(titleCol);
+                String artist = musicCursor.getString(artistCol);
+                String album = musicCursor.getString(albumCol);
+                int duration = musicCursor.getInt(durationCol);
+                int track = musicCursor.getInt(trackCol);
+                String path = musicCursor.getString(pathCol);
+
+                if(prevArtistGroup == null || artist.compareTo(prevArtistGroup.getName()) != 0) {
+                    SongGroupArtist artistGroup = new SongGroupArtist(artist, 0);
+                    songItems.add(artistGroup);
+                    if(prevArtistGroup != null)
+                        prevArtistGroup.setEndPos(lastSongPos);
+                    prevArtistGroup = artistGroup;
+                }
+
+                if(prevAlbumGroup == null || album.compareTo(prevAlbumGroup.getName()) != 0) {
+                    SongGroupAlbum albumGroup = new SongGroupAlbum(album, 3);
+                    songItems.add(albumGroup);
+                    if(prevAlbumGroup != null)
+                        prevAlbumGroup.setEndPos(lastSongPos);
+                    prevAlbumGroup = albumGroup;
+                }
+
+                Song song = new Song(id, title, artist, album, duration / 1000, track, path, 6);
+                lastSongPos = songItems.size();
+                songItems.add(song);
             }
             while (musicCursor.moveToNext());
         }
+
+        Log.d("MusicService", "songItems initialized in " + (System.currentTimeMillis() - startTime) + "ms");
     }
+
+    /*
+    private void sortTracksOfAlbums() {
+        int prevAlbumIdx = 0;
+        String prevAlbum = "";
+        int curAlbumIdx;
+        for(curAlbumIdx = 0; curAlbumIdx < songItems.size(); curAlbumIdx++) {
+            Song song = songItems.get(curAlbumIdx);
+            String curAlbum = song.getAlbum();
+            if(curAlbum.compareTo(prevAlbum) != 0) {
+                // this album has more that one song: sort them by track
+                if(curAlbumIdx - prevAlbumIdx > 1) {
+                    Collections.sort(songItems.subList(prevAlbumIdx, curAlbumIdx), new Comparator<Song>() {
+                        public int compare(Song a, Song b) {
+                            int trackDiff = a.getTrack() - b.getTrack();
+                            if(trackDiff != 0)
+                                return trackDiff;
+                            else
+                                // the track number are missing, compare by title
+                                return a.getTitle().compareTo(b.getTitle());
+                        }
+                    });
+                }
+
+                prevAlbumIdx = curAlbumIdx;
+                prevAlbum = curAlbum;
+            }
+        }
+    }
+*/
 
     // create AudioManager and MediaPlayer at the last moment
     // this func assure they are initialized
@@ -325,10 +375,10 @@ public class MusicService extends Service implements
     private void restorePreferences() {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
         int savedSong = settings.getInt(PrefKeys.CURR_SONG, 0);
-        // the songs must have changed
-        if (savedSong >= songs.size())
+        // the songItems must have changed
+        if (savedSong >= songItems.size())
             savedSong = 0;
-        songPosn = savedSong;
+        songPos = savedSong;
         Log.d("MusicService", "restorePreferences load song: " + savedSong);
 
 
@@ -340,33 +390,45 @@ public class MusicService extends Service implements
     }
 
     private void savePreferences() {
-        Log.d("MusicService", "savePreferences save song: " + songPosn);
+        Log.d("MusicService", "savePreferences save song: " + songPos);
 
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = settings.edit();
-        editor.putInt(PrefKeys.CURR_SONG, songPosn);
+        editor.putInt(PrefKeys.CURR_SONG, songPos);
         editor.commit();
     }
 
-    public void setSong(int songIndex){
-        songPosn = songIndex;
+    public void setSongPos(int songIndex){
+        songPos = songIndex;
     }
-    public int getSong() {
-        return songPosn;
+
+    public int getSongPos() {
+        return songPos;
     }
-    public ArrayList<Song> getSongs() {
-        return songs;
+
+    public ArrayList<SongItem> getSongItems() {
+        return songItems;
     }
 
     public void playSong() {
-        if(songs.size() == 0)
+        if(songItems.size() == 0)
             return;
+
+        SongItem songItem = songItems.get(songPos);
+        Song song;
+        if(songItem.getClass() == Song.class) {
+            song = (Song) songItem;
+        }
+        else {
+            Log.w("MusicService", "playSong try to start playing with a wrong SongItem!");
+            return;
+        }
 
         getPlayer().reset();
         state.setState(PlayerState.Idle);
 
         // get id
-        long currSong = songs.get(songPosn).getID();
+        long currSong = song.getID();
         // set uri
         Uri trackUri = ContentUris.withAppendedId(
                 android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, currSong);
@@ -410,21 +472,27 @@ public class MusicService extends Service implements
     }
 
     public void startNotification() {
-        Intent notificationIntent = new Intent(this, Main.class);
-        notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendInt = PendingIntent.getActivity(this, 0,
-                notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        SongItem songItem = songItems.get(songPos);
+        if(songItem.getClass() == Song.class) {
+            Song song = (Song) songItem;
+            Intent notificationIntent = new Intent(this, Main.class);
+            notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            PendingIntent pendInt = PendingIntent.getActivity(this, 0,
+                    notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        Song playSong = songs.get(songPosn);
-        Notification notification = new Notification(R.drawable.ic_launcher,
-                playSong.getTitle(),
-                System.currentTimeMillis());
-        notification.setLatestEventInfo(this, "SicMu playing", playSong.getTitle() +
-                " - " + playSong.getArtist() +
-                " - " + playSong.getAlbum(), pendInt);
+            Notification notification = new Notification(R.drawable.ic_launcher,
+                    song.getTitle(),
+                    System.currentTimeMillis());
+            notification.setLatestEventInfo(this, "SicMu playing", song.getTitle() +
+                    " - " + song.getArtist() +
+                    " - " + song.getAlbum(), pendInt);
 
-        startForeground(NOTIFY_ID, notification);
-        foreground = true;
+            startForeground(NOTIFY_ID, notification);
+            foreground = true;
+        }
+        else {
+            Log.w("MusicService", "startNotification try to start a notification with a wrong SongItem!");
+        }
     }
 
     public void stopNotification() {
@@ -485,16 +553,27 @@ public class MusicService extends Service implements
     }
 
     public void playPrev(){
-        songPosn--;
-        if(songPosn < 0)
-            songPosn = songs.size() - 1;
+        songPos--;
+        if(songPos < 0)
+            songPos = songItems.size() - 1;
+
+        while(songItems.get(songPos).getClass() != Song.class) {
+            songPos--;
+            if(songPos < 0)
+                songPos = songItems.size() - 1;
+        }
+
         playSong();
     }
 
     public void playNext(){
-        songPosn++;
-        if(songPosn >= songs.size())
-            songPosn = 0;
+        songPos++;
+        if(songPos >= songItems.size())
+            songPos = 0;
+
+        while(songItems.get(songPos).getClass() != Song.class)
+            songPos++;
+
         if(foreground)
             startNotification();
         playSong();
