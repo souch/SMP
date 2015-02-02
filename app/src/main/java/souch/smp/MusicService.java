@@ -97,14 +97,23 @@ public class MusicService extends Service implements
         ContentResolver musicResolver = getContentResolver();
         Uri musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         Cursor musicCursor;
-        String sortOrder;
-        sortOrder = MediaStore.Audio.Media.ARTIST +
+        String[] projection = new String[] {
+            MediaStore.Audio.Media.TITLE,
+            MediaStore.Audio.Media._ID,
+            MediaStore.Audio.Media.ARTIST,
+            MediaStore.Audio.Media.ALBUM,
+            MediaStore.Audio.Media.DURATION,
+            MediaStore.MediaColumns.DATA,
+            MediaStore.Audio.Media.TRACK
+        };
+        String where = MediaStore.Audio.Media.IS_MUSIC + "=1";
+        String sortOrder = MediaStore.Audio.Media.ARTIST +
                 ", " + MediaStore.Audio.Media.ALBUM +
                 ", " + MediaStore.Audio.Media.TRACK +
                 ", " + MediaStore.Audio.Media.TITLE;
 
         try {
-            musicCursor = musicResolver.query(musicUri, null, null, null, sortOrder);
+            musicCursor = musicResolver.query(musicUri, projection, where, null, sortOrder);
         } catch (Exception e) {
             final String msg = "No songItems found!";
             Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
@@ -484,8 +493,7 @@ public class MusicService extends Service implements
                     song.getTitle(),
                     System.currentTimeMillis());
             notification.setLatestEventInfo(this, "SicMu playing", song.getTitle() +
-                    " - " + song.getArtist() +
-                    " - " + song.getAlbum(), pendInt);
+                    " - " + song.getArtist(), pendInt);
 
             startForeground(NOTIFY_ID, notification);
             foreground = true;
