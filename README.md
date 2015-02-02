@@ -1,6 +1,6 @@
 ## SicMu Player for Android
 
-Present song in list by grouping folders or genre or/and artists and albums.
+Present song in list by grouping folders, genre or/and artists and albums.
 
 Gui aims to be easy to use while driving.
 
@@ -8,21 +8,25 @@ Works on old slow small devices (from Android froyo 2.2)
 
 No eyes candy graphics nor advanced mega bass settings.
 
+![Artist list](screen_artist.png)&nbsp;
+![Settings](screen_settings.png)
+
+
 ### Detailed features
 - play mp3, ogg, flac, midi, wav, mp4, 3gp... see Android MediaPlayer Supported Media Formats (depends on android version).
-- sorted by artist
-- notification when playing
+- bluetooth support
+- sorted by artists, albums and track number
 - show current played song in list
-- bluetooth
-- On start go to last song played
-- seek bar that show current song position
-- button that disable/enable lockscreen
-- Shake to go to next song when playing
+- notification when playing
+- seek bar
+- shake go to next song
+- disable/enable lockscreen
+
 
 ### Help
-- press on home button to shut the app and keep the music in background
-- press the button to the right of next to go to curr played song
-- close the padlock to disable lock screen (it prevents locking only when the app is on top).
+- press on home button or back button to shut the song list and keep the music playing in background
+- press the button to the right of next to scroll the list to current played song
+- open the padlock button to disable lock screen (it prevents locking only when the app is on top).
 
 ### Todo (perhaps :-)
 - fast on big music list
@@ -37,7 +41,6 @@ No eyes candy graphics nor advanced mega bass settings.
 - guess "smart" track number (2 < 11, song file name vs id tag, ...)
 - select main music directory
 - quick jump with letter in the right (like in contact)
-
 - zoom make letter (and button) bigger or smaller
 - speak the title ?
 - cursor for volume ? ( half/full?)
@@ -45,6 +48,7 @@ No eyes candy graphics nor advanced mega bass settings.
 - mp3 tag editor ?
 - help + infobulle ?
 - playlist?
+- small vibration on action?
 
 ### Credits
 

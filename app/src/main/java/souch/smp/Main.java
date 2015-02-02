@@ -215,7 +215,7 @@ public class Main extends Activity {
             if(!musicSrv.playingLaunched()) {
                 musicSrv.stopService(playIntent);
                 Toast.makeText(getApplicationContext(),
-                        getResources().getString(R.string.app_name) + "'s service destroyed.",
+                        getResources().getString(R.string.app_name) + " destroyed.",
                         Toast.LENGTH_SHORT).show();
             }
             unbindService(musicConnection);
