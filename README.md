@@ -1,12 +1,10 @@
 ## SicMu Player for Android
 
-Present song in list by grouping folders, genre or/and artists and albums.
+Every songs of the phone are put in a unique big song list, grouping them by folders, genres, artists and albums.
 
-Gui aims to be easy to use while driving.
+Works on old slow small devices (from Android froyo 2.2).
 
-Works on old slow small devices (from Android froyo 2.2)
-
-No eyes candy graphics nor advanced mega bass settings.
+No eye candy graphics.
 
 ![Artist list](screen_artist.png)&nbsp;
 ![Settings](screen_settings.png)
@@ -19,8 +17,9 @@ No eyes candy graphics nor advanced mega bass settings.
 - show current played song in list
 - notification when playing
 - seek bar
-- shake go to next song
+- shake the phone to go to next song
 - disable/enable lockscreen
+- on app startup, scroll to last song played
 
 
 ### Help
