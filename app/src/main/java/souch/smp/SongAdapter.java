@@ -1,6 +1,7 @@
 package souch.smp;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,22 +41,35 @@ public class SongAdapter extends BaseAdapter {
         return 0;
     }
 
+    static class ViewHolder {
+        public TextView text;
+        public TextView duration;
+        public ImageView image;
+    }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        View itemView = convertView;
+        // reuse views
+        if (itemView == null) {
+            // map to song layout
+            itemView = songInf.inflate(R.layout.song, parent, false);
+            // configure view holder
+            ViewHolder viewHolder = new ViewHolder();
+            viewHolder.text = (TextView) itemView.findViewById(R.id.song_title);
+            viewHolder.image = (ImageView) itemView.findViewById(R.id.curr_play);
+            viewHolder.duration = (TextView) itemView.findViewById(R.id.song_duration);
+            itemView.setTag(viewHolder);
+        }
+
+        ViewHolder holder = (ViewHolder) itemView.getTag();
+
         SongItem currItem = songItems.get(position);
-
-        // map to song layout
-        RelativeLayout itemView = (RelativeLayout) songInf.inflate(R.layout.song, parent, false);
-
         if(currItem.getClass() == Song.class) {
             Song song = (Song) currItem;
-            TextView title = (TextView) itemView.findViewById(R.id.song_title);
-            title.setText(song.getTitle());
+            song.setText(holder.text);
+            holder.duration.setText(Song.secondsToMinutes(song.getDuration()));
 
-            TextView duration = (TextView) itemView.findViewById(R.id.song_duration);
-            duration.setText(Song.secondsToMinutes(song.getDuration()));
-
-            ImageView currPlay = (ImageView) itemView.findViewById(R.id.curr_play);
             int currIcon = android.R.color.transparent;
             if (currItem == main.getSongItem()) {
                 if (main.isInState(PlayerState.Paused))
@@ -63,20 +77,17 @@ public class SongAdapter extends BaseAdapter {
                 else
                     currIcon = R.drawable.ic_curr_play;
             }
-            currPlay.setImageResource(currIcon);
+            holder.image.setImageResource(currIcon);
             // useful only for the tests
-            currPlay.setTag(currIcon);
+            holder.image.setTag(currIcon);
         }
         else {
             SongGroup group = (SongGroup) currItem;
-            group.setText((TextView) itemView.findViewById(R.id.song_title));
-
-            TextView duration = (TextView) itemView.findViewById(R.id.song_duration);
-            duration.setText("");
+            group.setText(holder.text);
+            holder.duration.setText("");
+            holder.image.setImageResource(android.R.color.transparent);
         }
 
-        //set position as tag (not useful for now)
-        //itemView.setTag(position);
         return itemView;
     }
 

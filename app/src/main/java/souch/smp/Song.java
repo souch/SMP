@@ -1,5 +1,8 @@
 package souch.smp;
 
+import android.graphics.Typeface;
+import android.widget.TextView;
+
 public class Song extends SongItem {
     private long id;
     private String title;
@@ -21,13 +24,17 @@ public class Song extends SongItem {
     }
 
     public long getID(){return id;}
-    public String getTitle(){return getStrPadding() + title;}
+    public String getTitle(){return title;}
     public String getArtist(){return artist;}
     public String getAlbum(){return album;}
     public int getDuration(){return duration;}
     public int getTrack(){return track;}
     public String getPath(){return path;}
 
+    public void setText(TextView text) {
+        text.setText(getStrPadding() + title);
+        text.setTypeface(null, Typeface.NORMAL);
+    }
 
     public String toString() {
         return "ID: " + id + " artist: " + artist + " album: " + album + " title: " + title + " " +
