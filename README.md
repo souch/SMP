@@ -1,6 +1,7 @@
 ## SicMu Player for Android
 
-Every songs of the phone are put in a unique big song list, grouping them by folders, genres, artists and albums.
+Every songs of the phone are put in a unique big song list,  
+grouping them by folders, genres, artists and albums.
 
 Works on old slow small devices (from Android froyo 2.2).
 
@@ -28,15 +29,10 @@ No eye candy graphics.
 - open the padlock button to disable lock screen (it prevents locking only when the app is on top).
 
 ### Todo (perhaps :-)
-- fast on big music list
-- the folder hierarchy is shown
 - the groups can be fold/unfold
-- stacked filter
-  folder
-  album
-  artist
-  song title
-  track number (id tag or name)
+- group by folder
+- group by genre
+- fast on big music list
 - guess "smart" track number (2 < 11, song file name vs id tag, ...)
 - select main music directory
 - quick jump with letter in the right (like in contact)
@@ -54,6 +50,7 @@ No eye candy graphics.
 Lot's of time saved thanks to Sue Smith's [tutorials on creating a Music Player on Android](http://code.tutsplus.com/tutorials/create-a-music-player-on-android-project-setup--mobile-22764).
 
 Use some icons done by Daniele De Santis (Creative Commons Attribution 3.0 Unported), found on iconfinder.com.
+
 Seekbar style created by Jérôme Van Der Linden (Creative Commons Attribution 3.0 Unported), found on http://android-holo-colors.com.
 
 ### Developer
