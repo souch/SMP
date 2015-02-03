@@ -1,13 +1,15 @@
 package souch.smp;
 
+import android.widget.TextView;
+
 public class SongItem {
     protected int padding;
 
-    public String getStrPadding() {
-        return new String(new char[padding]).replace('\0', ' ');
-    }
-
     public SongItem(int pad) {
         padding = pad;
+    }
+
+    public void setText(TextView text) {
+        text.setPadding(padding * 10, 0, 0, 0);
     }
 }

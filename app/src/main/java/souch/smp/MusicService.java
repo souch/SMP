@@ -151,14 +151,14 @@ public class MusicService extends Service implements
                 }
 
                 if(prevAlbumGroup == null || album.compareTo(prevAlbumGroup.getName()) != 0) {
-                    SongGroupAlbum albumGroup = new SongGroupAlbum(album, 3);
+                    SongGroupAlbum albumGroup = new SongGroupAlbum(album, 1);
                     songItems.add(albumGroup);
                     if(prevAlbumGroup != null)
                         prevAlbumGroup.setEndPos(lastSongPos);
                     prevAlbumGroup = albumGroup;
                 }
 
-                Song song = new Song(id, title, artist, album, duration / 1000, track, path, 6);
+                Song song = new Song(id, title, artist, album, duration / 1000, track, path, 2);
                 lastSongPos = songItems.size();
                 songItems.add(song);
             }

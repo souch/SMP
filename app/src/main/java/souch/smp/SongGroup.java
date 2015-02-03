@@ -17,6 +17,7 @@ public class SongGroup extends SongItem {
     public String getName() { return name; }
 
     public void setText(TextView text) {
-        text.setText(getStrPadding() + name);
+        super.setText(text);
+        text.setText(name);
     }
 }

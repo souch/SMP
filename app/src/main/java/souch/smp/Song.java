@@ -12,7 +12,8 @@ public class Song extends SongItem {
     private int track;
     private String path;
 
-    public Song(long songID, String songTitle, String songArtist, String songAlbum, int dur, int songTrack, String songPath, int padding) {
+    public Song(long songID, String songTitle, String songArtist, String songAlbum,
+                int dur, int songTrack, String songPath, int padding) {
         super(padding);
         id = songID;
         title = songTitle;
@@ -32,7 +33,8 @@ public class Song extends SongItem {
     public String getPath(){return path;}
 
     public void setText(TextView text) {
-        text.setText(getStrPadding() + title);
+        super.setText(text);
+        text.setText(title);
         text.setTypeface(null, Typeface.NORMAL);
     }
 

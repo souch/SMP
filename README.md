@@ -44,6 +44,8 @@ No eye candy graphics.
 - help + infobulle ?
 - playlist?
 - small vibration on action?
+- shuffle
+- long press on back button kill the app
 
 ### Credits
 
