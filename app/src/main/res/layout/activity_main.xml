@@ -69,67 +69,72 @@
         android:scrollbars="vertical"
         android:scrollbarThumbVertical="@drawable/fastscroll_thumb_holo"
         android:layout_below="@+id/action_bar"
-        android:layout_above="@+id/play_button" />
+        android:layout_above="@+id/action_button" />
 
-    <!--
-    icon ic_action_prev, ic_action_play, ic_action_pause, ic_action_next
-    done by Daniele De Santis (Creative Commons (Attribution 3.0 Unported)),
-    found on iconfinder.com. Color and dimension has been changed.
-    -->
-    <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/action_play"
-        style="@style/BottomButton"
-        android:onClick="playOrPause"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:id="@+id/play_button" />
 
-    <ImageButton
-        android:layout_width="wrap_content"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:src="@drawable/action_prev"
-        style="@style/BottomButton"
-        android:onClick="playPrev"
-        android:layout_toRightOf="@+id/play_button"
         android:layout_alignParentBottom="true"
-        android:id="@+id/prev_button" />
+        android:id="@+id/action_button">
 
-    <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/action_next"
-        style="@style/BottomButton"
-        android:onClick="playNext"
-        android:layout_alignParentBottom="true"
-        android:layout_toRightOf="@+id/prev_button"
-        android:id="@+id/next_button" />
+        <!--
+        icon ic_action_prev, ic_action_play, ic_action_pause, ic_action_next
+        done by Daniele De Santis (Creative Commons (Attribution 3.0 Unported)),
+        found on iconfinder.com. Color and dimension has been changed.
+        -->
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/action_play"
+            style="@style/BottomButton"
+            android:onClick="playOrPause"
+            android:id="@+id/play_button"
+            android:layout_weight="1" />
 
-    <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/action_goto_play"
-        style="@style/BottomButton"
-        android:onClick="gotoCurrSong"
-        android:layout_alignParentBottom="true"
-        android:layout_toRightOf="@+id/next_button"
-        android:id="@+id/goto_button" />
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/action_prev"
+            style="@style/BottomButton"
+            android:onClick="playPrev"
+            android:id="@+id/prev_button"
+            android:layout_weight="1" />
 
-    <!--
-    icon ic_action_locked and ic_action_unlocked
-    done by WPZOOM (Creative Commons (Attribution-Share Alike 3.0 Unported))
-    found on iconfinder.com. Color and dimension has been changed.
-    -->
-    <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_action_locked"
-        style="@style/BottomButton"
-        android:onClick="lockUnlock"
-        android:layout_alignParentBottom="true"
-        android:layout_toRightOf="@+id/goto_button"
-        android:id="@+id/lock_button" />
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/action_next"
+            style="@style/BottomButton"
+            android:onClick="playNext"
+            android:id="@+id/next_button"
+            android:layout_weight="1" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/action_goto_play"
+            style="@style/BottomButton"
+            android:onClick="gotoCurrSong"
+            android:id="@+id/goto_button"
+            android:layout_weight="1" />
+
+        <!--
+        icon ic_action_locked and ic_action_unlocked
+        done by WPZOOM (Creative Commons (Attribution-Share Alike 3.0 Unported))
+        found on iconfinder.com. Color and dimension has been changed.
+        -->
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_action_locked"
+            style="@style/BottomButton"
+            android:onClick="lockUnlock"
+            android:id="@+id/lock_button"
+            android:layout_weight="1" />
+
+    </LinearLayout>
 
 </RelativeLayout>
 
