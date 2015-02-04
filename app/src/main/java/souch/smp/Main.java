@@ -462,8 +462,8 @@ public class Main extends Activity {
             return null;
     }
 
-    public boolean isInState(int states) {
-        return serviceBound && musicSrv.isInState(states);
+    public MusicService getMusicSrv() {
+        return musicSrv;
     }
 
 /*

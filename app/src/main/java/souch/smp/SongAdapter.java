@@ -72,10 +72,10 @@ public class SongAdapter extends BaseAdapter {
 
             int currIcon = android.R.color.transparent;
             if (currItem == main.getSongItem()) {
-                if (main.isInState(PlayerState.Paused))
-                    currIcon = R.drawable.ic_curr_pause;
-                else
+                if (main.getMusicSrv().playingLaunched())
                     currIcon = R.drawable.ic_curr_play;
+                else
+                    currIcon = R.drawable.ic_curr_pause;
             }
             holder.image.setImageResource(currIcon);
             // useful only for the tests
