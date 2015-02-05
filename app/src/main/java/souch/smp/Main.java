@@ -309,9 +309,25 @@ public class Main extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
 
-        //Intent intent = new Intent(this, Settings.class);
-        //startActivity(intent);
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if(musicSrv != null) {
+            MenuItem itemArtist = menu.findItem(R.id.action_sort_artist);
+            MenuItem itemFolder = menu.findItem(R.id.action_sort_folder);
+            switch(musicSrv.getFilter()) {
+                case ARTIST:
+                    itemArtist.setIcon(R.drawable.ic_menu_artist_checked);
+                    itemFolder.setIcon(R.drawable.ic_menu_folder);
+                    break;
+                case FOLDER:
+                    itemArtist.setIcon(R.drawable.ic_menu_artist);
+                    itemFolder.setIcon(R.drawable.ic_menu_folder_checked);
+                    break;
+            }
+        }
 
         return true;
     }
@@ -332,6 +348,22 @@ public class Main extends Activity {
                     musicSrv.pause();
                 finishing = true;
                 finish();
+                return true;
+            case R.id.action_sort_artist:
+                if(musicSrv != null && musicSrv.getFilter() != Filter.ARTIST) {
+                    item.setIcon(R.drawable.ic_menu_artist_checked);
+                    Toast.makeText(getApplicationContext(), item.getTitle(), Toast.LENGTH_LONG).show();
+                    musicSrv.setFilter(Filter.ARTIST);
+                    scrollToCurrSong();
+                }
+                return true;
+            case R.id.action_sort_folder:
+                if(musicSrv != null && musicSrv.getFilter() != Filter.FOLDER) {
+                    item.setIcon(R.drawable.ic_menu_folder_checked);
+                    Toast.makeText(getApplicationContext(), item.getTitle(), Toast.LENGTH_LONG).show();
+                    musicSrv.setFilter(Filter.FOLDER);
+                    scrollToCurrSong();
+                }
                 return true;
         }
 
@@ -482,8 +514,8 @@ public class Main extends Activity {
 
     private void restorePreferences() {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-        noLock = settings.getBoolean(PrefKeys.NO_LOCK, false);
-        followSong = settings.getBoolean(PrefKeys.FOLLOW_SONG, true);
+        noLock = settings.getBoolean(PrefKeys.NO_LOCK.name(), false);
+        followSong = settings.getBoolean(PrefKeys.FOLLOW_SONG.name(), true);
 
         Log.d("MusicService", "restorePreferences noLock: " + noLock + " follow: " + followSong);
     }
@@ -493,7 +525,7 @@ public class Main extends Activity {
 
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = settings.edit();
-        editor.putBoolean(PrefKeys.NO_LOCK, noLock);
+        editor.putBoolean(PrefKeys.NO_LOCK.name(), noLock);
         editor.commit();
     }
 }

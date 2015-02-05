@@ -29,11 +29,11 @@ public class Settings extends PreferenceActivity
         playIntent = new Intent(this, MusicService.class);
         bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
 
-        CheckBoxPreference prefEnableShake = (CheckBoxPreference) findPreference(PrefKeys.ENABLE_SHAKE);
-        EditTextPreference prefShakeThreshold = (EditTextPreference) findPreference(PrefKeys.SHAKE_THRESHOLD);
+        CheckBoxPreference prefEnableShake = (CheckBoxPreference) findPreference(PrefKeys.ENABLE_SHAKE.name());
+        EditTextPreference prefShakeThreshold = (EditTextPreference) findPreference(PrefKeys.SHAKE_THRESHOLD.name());
         if(getPackageManager().hasSystemFeature(PackageManager.FEATURE_SENSOR_ACCELEROMETER)) {
             SharedPreferences sp = getPreferenceScreen().getSharedPreferences();
-            prefShakeThreshold.setSummary(sp.getString(PrefKeys.SHAKE_THRESHOLD,
+            prefShakeThreshold.setSummary(sp.getString(PrefKeys.SHAKE_THRESHOLD.name(),
                     getString(R.string.settings_default_shake_threshold)));
         }
         else {
@@ -93,18 +93,16 @@ public class Settings extends PreferenceActivity
             return;
         Log.d("MusicService", "onSharedPreferenceChanged: " + key);
 
-        switch (key) {
-            case PrefKeys.ENABLE_SHAKE:
-                musicSrv.setEnableShake(sharedPreferences.getBoolean(PrefKeys.ENABLE_SHAKE, false));
-                break;
-            case PrefKeys.SHAKE_THRESHOLD:
-                final String strThreshold = sharedPreferences.getString(PrefKeys.SHAKE_THRESHOLD, getString(R.string.settings_default_shake_threshold));
+        if(key.equals(PrefKeys.ENABLE_SHAKE.name())) {
+            musicSrv.setEnableShake(sharedPreferences.getBoolean(PrefKeys.ENABLE_SHAKE.name(), false));
+        }
+        else if(key.equals(PrefKeys.SHAKE_THRESHOLD.name())) {
+                final String strThreshold = sharedPreferences.getString(PrefKeys.SHAKE_THRESHOLD.name(), getString(R.string.settings_default_shake_threshold));
                 musicSrv.setShakeThreshold(Float.valueOf(strThreshold) / 10.0f);
 
                 EditTextPreference pref = (EditTextPreference) findPreference(key);
                 pref.setSummary(strThreshold);
                 this.onContentChanged();
-                break;
         }
     }
 }

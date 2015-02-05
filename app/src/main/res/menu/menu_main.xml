@@ -6,10 +6,6 @@
     done by WPZOOM (Creative Commons (Attribution-Share Alike 3.0 Unported))
     found on iconfinder.com. Color and dimension has been changed.
     -->
-    <item android:id="@+id/action_settings"
-        android:title="@string/action_settings"
-        android:icon="@drawable/ic_menu_settings" />
-
     <item android:id="@+id/action_rescan"
         android:icon="@drawable/ic_menu_rescan"
         android:title="@string/action_rescan"/>
@@ -17,5 +13,22 @@
     <item android:id="@+id/action_kill"
         android:icon="@drawable/ic_menu_kill"
         android:title="Kill app"/>
+
+    <item android:id="@+id/action_settings"
+        android:title="@string/action_settings"
+        android:icon="@drawable/ic_menu_settings" />
+
+    <item android:id="@+id/action_sort_artist"
+        android:title="Sort by artist"
+        android:icon="@drawable/ic_menu_artist"
+        android:checkable="true"
+        />
+
+    <!-- ionicons (MIT license) -->
+    <item android:id="@+id/action_sort_folder"
+        android:title="Sort by folder"
+        android:icon="@drawable/ic_menu_folder"
+        android:checkable="true"
+        />
 
 </menu>

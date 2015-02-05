@@ -25,9 +25,13 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.Toast;
 
+
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Timer;
 import java.util.TimerTask;
+
 
 public class MusicService extends Service implements
         MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener,
@@ -38,13 +42,18 @@ public class MusicService extends Service implements
     private ArrayList<SongItem> songItems;
     // current position in songItems
     private int songPos;
+    // id of the song at last exiting
+    private long savedID;
     // need for focus
     private boolean wasPlaying;
     // sthg happened and the Main do not know it: a song has finish to play, another app gain focus
     private boolean changed;
 
+    private Filter filter;
+
     // a notification has been launched
     private boolean foreground;
+    private static final int NOTIFY_ID = 1;
 
     private final IBinder musicBind = new MusicBinder();
 
@@ -55,8 +64,6 @@ public class MusicService extends Service implements
 
     // set to false if seekTo() has been called but the seek is still not done
     private boolean seekFinished;
-
-    private static final int NOTIFY_ID = 1;
 
     private SensorManager sensorManager;
     private Sensor accelerometer;
@@ -78,13 +85,17 @@ public class MusicService extends Service implements
         seekFinished = true;
         wasPlaying = false;
 
+        filter = Filter.FOLDER;
+
         player = null;
         audioManager = null;
+
+        songPos = -1;
+        restorePreferences();
 
         songItems = new ArrayList<SongItem>();
         initSongs();
 
-        restorePreferences();
 
         if(enableShake) {
             startSensor();
@@ -92,6 +103,7 @@ public class MusicService extends Service implements
     }
 
 
+    // preference must have already been restored
     public void initSongs() {
         long startTime = System.currentTimeMillis();
         ContentResolver musicResolver = getContentResolver();
@@ -107,11 +119,19 @@ public class MusicService extends Service implements
             MediaStore.Audio.Media.TRACK
         };
         String where = MediaStore.Audio.Media.IS_MUSIC + "=1";
-        String sortOrder = MediaStore.Audio.Media.ARTIST +
-                ", " + MediaStore.Audio.Media.ALBUM +
-                ", " + MediaStore.Audio.Media.TRACK +
-                ", " + MediaStore.Audio.Media.TITLE;
 
+        String sortOrder = null;
+        switch(filter) {
+            case ARTIST:
+                sortOrder = MediaStore.Audio.Media.ARTIST +
+                        ", " + MediaStore.Audio.Media.ALBUM +
+                        ", " + MediaStore.Audio.Media.TRACK +
+                        ", " + MediaStore.Audio.Media.TITLE;
+                break;
+            case FOLDER:
+                // did not find a way to sort by folder through query
+                break;
+        }
         try {
             musicCursor = musicResolver.query(musicUri, projection, where, null, sortOrder);
         } catch (Exception e) {
@@ -121,14 +141,42 @@ public class MusicService extends Service implements
             return;
         }
 
-        if(musicCursor != null && musicCursor.moveToFirst()){
-            int titleCol    = musicCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
-            int idCol       = musicCursor.getColumnIndex(MediaStore.Audio.Media._ID);
-            int artistCol   = musicCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
-            int albumCol    = musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM);
+        switch(filter) {
+            case ARTIST:
+                initSongsByArtist(musicCursor);
+                break;
+            case FOLDER:
+                initSongsByPath(musicCursor);
+                break;
+        }
+
+        if(musicCursor != null)
+            musicCursor.close();
+
+
+        if(songPos == -1) {
+            // no songPos saved : search the first song
+            int idx;
+            for(idx = 0; idx < songItems.size(); idx++) {
+                if (songItems.get(idx).getClass() == Song.class) {
+                    songPos = idx;
+                    break;
+                }
+            }
+        }
+
+        Log.d("MusicService", "songItems initialized in " + (System.currentTimeMillis() - startTime) + "ms");
+        Log.d("MusicService", "songPos: " + songPos);
+    }
+
+    public void initSongsByArtist(Cursor musicCursor) {
+        if (musicCursor != null && musicCursor.moveToFirst()) {
+            int titleCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
+            int idCol = musicCursor.getColumnIndex(MediaStore.Audio.Media._ID);
+            int artistCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
+            int albumCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM);
             int durationCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
-            int pathCol     = musicCursor.getColumnIndex(MediaStore.MediaColumns.DATA);
-            int trackCol    = musicCursor.getColumnIndex(MediaStore.Audio.Media.TRACK);
+            int trackCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.TRACK);
 
             SongGroup prevArtistGroup = null;
             SongGroup prevAlbumGroup = null;
@@ -140,63 +188,106 @@ public class MusicService extends Service implements
                 String album = musicCursor.getString(albumCol);
                 int duration = musicCursor.getInt(durationCol);
                 int track = musicCursor.getInt(trackCol);
-                String path = musicCursor.getString(pathCol);
 
-                if(prevArtistGroup == null || artist.compareTo(prevArtistGroup.getName()) != 0) {
+                if (prevArtistGroup == null || artist.compareTo(prevArtistGroup.getName()) != 0) {
                     SongGroupArtist artistGroup = new SongGroupArtist(artist, 0);
                     songItems.add(artistGroup);
-                    if(prevArtistGroup != null)
+                    if (prevArtistGroup != null)
                         prevArtistGroup.setEndPos(lastSongPos);
                     prevArtistGroup = artistGroup;
                 }
 
-                if(prevAlbumGroup == null || album.compareTo(prevAlbumGroup.getName()) != 0) {
+                if (prevAlbumGroup == null || album.compareTo(prevAlbumGroup.getName()) != 0) {
                     SongGroupAlbum albumGroup = new SongGroupAlbum(album, 1);
                     songItems.add(albumGroup);
-                    if(prevAlbumGroup != null)
+                    if (prevAlbumGroup != null)
                         prevAlbumGroup.setEndPos(lastSongPos);
                     prevAlbumGroup = albumGroup;
                 }
 
-                Song song = new Song(id, title, artist, album, duration / 1000, track, path, 2);
+                Song song = new Song(id, title, artist, album, duration / 1000, track, null, 2);
+
                 lastSongPos = songItems.size();
+                if(id == savedID)
+                    songPos = lastSongPos;
                 songItems.add(song);
+                Log.d("MusicService", "song added: " + song.toString());
+            }
+            while (musicCursor.moveToNext());
+        }
+    }
+
+
+    public void initSongsByPath(Cursor musicCursor) {
+        if (musicCursor != null && musicCursor.moveToFirst()) {
+            int titleCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
+            int idCol = musicCursor.getColumnIndex(MediaStore.Audio.Media._ID);
+            int artistCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
+            int albumCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM);
+            int durationCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
+            int pathCol = musicCursor.getColumnIndex(MediaStore.MediaColumns.DATA);
+            int trackCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.TRACK);
+
+            do {
+                long id = musicCursor.getLong(idCol);
+                String title = musicCursor.getString(titleCol);
+                String artist = musicCursor.getString(artistCol);
+                String album = musicCursor.getString(albumCol);
+                int duration = musicCursor.getInt(durationCol);
+                int track = musicCursor.getInt(trackCol);
+                String path = musicCursor.getString(pathCol);
+
+                Song song = new Song(id, title, artist, album, duration / 1000, track, path, 1);
+                songItems.add(song);
+                Log.d("MusicService", "song added: " + song.toString());
             }
             while (musicCursor.moveToNext());
         }
 
-        Log.d("MusicService", "songItems initialized in " + (System.currentTimeMillis() - startTime) + "ms");
-    }
+        // sort by folder
+        Collections.sort(songItems, new Comparator<SongItem>() {
+            public int compare(SongItem a, SongItem b) {
+                // only Song has been added so far
+                return ((Song) a).getFolder().compareTo(((Song) b).getFolder());
+            }
+        });
 
-    /*
-    private void sortTracksOfAlbums() {
-        int prevAlbumIdx = 0;
-        String prevAlbum = "";
-        int curAlbumIdx;
-        for(curAlbumIdx = 0; curAlbumIdx < songItems.size(); curAlbumIdx++) {
-            Song song = songItems.get(curAlbumIdx);
-            String curAlbum = song.getAlbum();
-            if(curAlbum.compareTo(prevAlbum) != 0) {
-                // this album has more that one song: sort them by track
-                if(curAlbumIdx - prevAlbumIdx > 1) {
-                    Collections.sort(songItems.subList(prevAlbumIdx, curAlbumIdx), new Comparator<Song>() {
-                        public int compare(Song a, Song b) {
-                            int trackDiff = a.getTrack() - b.getTrack();
-                            if(trackDiff != 0)
-                                return trackDiff;
-                            else
-                                // the track number are missing, compare by title
-                                return a.getTitle().compareTo(b.getTitle());
+        // sort by filename
+        int prevFolderIdx = 0;
+        int curFolderPadding = 0;
+        String prevFolder = "";
+        int idx;
+        for(idx = 0; idx < songItems.size(); idx++) {
+            Song song = (Song) songItems.get(idx);
+            String curFolder = song.getFolder();
+            if(curFolder.compareTo(prevFolder) != 0) {
+                // the last folder has more that one song: sort it by path
+                if(idx - prevFolderIdx > 1) {
+                    Collections.sort(songItems.subList(prevFolderIdx, idx), new Comparator<SongItem>() {
+                        public int compare(SongItem a, SongItem b) {
+                            return ((Song) a).getPath().compareTo(((Song) b).getPath());
                         }
                     });
                 }
 
-                prevAlbumIdx = curAlbumIdx;
-                prevAlbum = curAlbum;
+                SongGroupFolder folderGroup = new SongGroupFolder(curFolder, 0);
+                songItems.add(idx, folderGroup);
+                prevFolderIdx = ++idx;
+                prevFolder = curFolder;
+            }
+            song.setPadding(2);
+        }
+
+        // todo: put this in the previous loop to improve perf
+        for(idx = 0; idx < songItems.size(); idx++) {
+            SongItem item = songItems.get(idx);
+            if (item.getClass() == Song.class && ((Song) item).getID() == savedID) {
+                songPos = idx;
+                break;
             }
         }
     }
-*/
+
 
     // create AudioManager and MediaPlayer at the last moment
     // this func assure they are initialized
@@ -383,19 +474,16 @@ public class MusicService extends Service implements
 
     private void restorePreferences() {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-        int savedSong = settings.getInt(PrefKeys.CURR_SONG, 0);
-        // the songItems must have changed
-        if (savedSong >= songItems.size())
-            savedSong = 0;
-        songPos = savedSong;
-        Log.d("MusicService", "restorePreferences load song: " + savedSong);
+        savedID = settings.getLong(PrefKeys.CURR_SONG.name(), -1);
+        Log.d("MusicService", "restorePreferences savedId: " + savedID);
 
-
-        enableShake = settings.getBoolean(PrefKeys.ENABLE_SHAKE, false);
-        shakeThreshold = Float.valueOf(settings.getString(PrefKeys.SHAKE_THRESHOLD,
+        enableShake = settings.getBoolean(PrefKeys.ENABLE_SHAKE.name(), false);
+        shakeThreshold = Float.valueOf(settings.getString(PrefKeys.SHAKE_THRESHOLD.name(),
                 getString(R.string.settings_default_shake_threshold))) / 10.0f;
         Log.d("MusicService", "restorePreferences enable shake: " + enableShake +
                 " threshold:" + shakeThreshold);
+
+        filter = Filter.valueOf(settings.getString(PrefKeys.FILTER.name(), Filter.FOLDER.name()));
     }
 
     private void savePreferences() {
@@ -403,7 +491,10 @@ public class MusicService extends Service implements
 
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = settings.edit();
-        editor.putInt(PrefKeys.CURR_SONG, songPos);
+
+        updateSavedId();
+        editor.putLong(PrefKeys.CURR_SONG.name(), savedID);
+        editor.putString(PrefKeys.FILTER.name(), filter.name());
         editor.commit();
     }
 
@@ -647,5 +738,24 @@ public class MusicService extends Service implements
             sensorManager = null;
             accelerometer = null;
         }
+    }
+
+    public Filter getFilter() {return filter;}
+    public void setFilter(Filter theFilter) {
+        if(filter != theFilter) {
+            filter = theFilter;
+            // todo: handle the current playing song finish during initSongs()...
+            updateSavedId();
+            songItems.clear();
+            initSongs();
+
+            changed = true;
+        }
+    }
+
+    private void updateSavedId() {
+        SongItem item = songItems.get(songPos);
+        if(item.getClass() == Song.class)
+            savedID = ((Song) item).getID();
     }
 }

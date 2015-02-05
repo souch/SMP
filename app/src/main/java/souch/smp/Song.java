@@ -3,6 +3,8 @@ package souch.smp;
 import android.graphics.Typeface;
 import android.widget.TextView;
 
+import java.io.File;
+
 public class Song extends SongItem {
     private long id;
     private String title;
@@ -10,7 +12,10 @@ public class Song extends SongItem {
     private String album;
     private int duration;
     private int track;
+    // full filename
     private String path;
+    // folder of the path
+    private String folder;
 
     public Song(long songID, String songTitle, String songArtist, String songAlbum,
                 int dur, int songTrack, String songPath, int padding) {
@@ -22,6 +27,8 @@ public class Song extends SongItem {
         duration = dur;
         track = songTrack;
         path = songPath;
+        if(path != null)
+            folder = (new File(path.replaceFirst("/mnt/sdcard/music/", ""))).getParent();
     }
 
     public long getID(){return id;}
@@ -31,6 +38,7 @@ public class Song extends SongItem {
     public int getDuration(){return duration;}
     public int getTrack(){return track;}
     public String getPath(){return path;}
+    public String getFolder(){return folder;}
 
     public void setText(TextView text) {
         super.setText(text);

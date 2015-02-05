@@ -1,7 +1,8 @@
 ## SicMu Player for Android
 
-Every songs of the phone are put in a unique big song list,  
-grouping them by folders, genres, artists and albums.
+Every songs of the phone are put in a unique big song list.
+
+Songs are sorted and grouped by folders, genres, artists, albums and album's track.
 
 Works on old slow small devices (from Android froyo 2.2).
 
@@ -15,6 +16,7 @@ No eye candy graphics.
 - play mp3, ogg, flac, midi, wav, mp4, 3gp... see Android MediaPlayer Supported Media Formats (depends on android version).
 - bluetooth support
 - sorted by artists, albums and track number
+- or sorted by folders
 - show current played song in list
 - notification when playing
 - seek bar
@@ -30,7 +32,7 @@ No eye candy graphics.
 
 ### Todo (perhaps :-)
 - the groups can be fold/unfold
-- group by folder
+- sort folders by artist
 - group by genre
 - fast on big music list
 - guess "smart" track number (2 < 11, song file name vs id tag, ...)
@@ -46,6 +48,8 @@ No eye candy graphics.
 - small vibration on action?
 - shuffle
 - long press on back button kill the app
+- go to the last position after automatic scrolling
+
 
 ### Credits
 

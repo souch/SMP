@@ -3,8 +3,8 @@ package souch.smp;
 import android.graphics.Typeface;
 import android.widget.TextView;
 
-public class SongGroupArtist extends SongGroup {
-    public SongGroupArtist(String name, int padding) {
+public class SongGroupFolder extends SongGroup {
+    public SongGroupFolder(String name, int padding) {
         super(name, padding);
     }
 
