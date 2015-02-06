@@ -191,7 +191,7 @@ public class MusicService extends Service implements
                 int duration = musicCursor.getInt(durationCol);
                 int track = musicCursor.getInt(trackCol);
 
-                if (prevArtistGroup == null || artist.compareTo(prevArtistGroup.getName()) != 0) {
+                if (prevArtistGroup == null || artist.compareToIgnoreCase(prevArtistGroup.getName()) != 0) {
                     SongGroupArtist artistGroup = new SongGroupArtist(artist, getSongPadding(0));
                     songItems.add(artistGroup);
                     if (prevArtistGroup != null)
@@ -199,7 +199,7 @@ public class MusicService extends Service implements
                     prevArtistGroup = artistGroup;
                 }
 
-                if (prevAlbumGroup == null || album.compareTo(prevAlbumGroup.getName()) != 0) {
+                if (prevAlbumGroup == null || album.compareToIgnoreCase(prevAlbumGroup.getName()) != 0) {
                     SongGroupAlbum albumGroup = new SongGroupAlbum(album, getSongPadding(1));
                     songItems.add(albumGroup);
                     if (prevAlbumGroup != null)
@@ -251,7 +251,7 @@ public class MusicService extends Service implements
         Collections.sort(songItems, new Comparator<SongItem>() {
             public int compare(SongItem a, SongItem b) {
                 // only Song has been added so far
-                return ((Song) a).getFolder().compareTo(((Song) b).getFolder());
+                return ((Song) a).getFolder().compareToIgnoreCase(((Song) b).getFolder());
             }
         });
 
@@ -262,12 +262,12 @@ public class MusicService extends Service implements
         for(idx = 0; idx < songItems.size(); idx++) {
             Song song = (Song) songItems.get(idx);
             String curFolder = song.getFolder();
-            if(curFolder.compareTo(prevFolder) != 0) {
+            if(curFolder.compareToIgnoreCase(prevFolder) != 0) {
                 // the last folder has more that one song: sort it by path
                 if(idx - prevFolderIdx > 1) {
                     Collections.sort(songItems.subList(prevFolderIdx, idx), new Comparator<SongItem>() {
                         public int compare(SongItem a, SongItem b) {
-                            return ((Song) a).getPath().compareTo(((Song) b).getPath());
+                            return ((Song) a).getPath().compareToIgnoreCase(((Song) b).getPath());
                         }
                     });
                 }
