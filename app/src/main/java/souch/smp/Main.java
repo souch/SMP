@@ -6,9 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.net.Uri;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -291,20 +290,6 @@ public class Main extends Activity {
         openOptionsMenu();
     }
 
-    public void rescan() {
-        //Broadcast the Media Scanner Intent to trigger it
-        sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri
-                .parse("file://" + Environment.getExternalStorageDirectory())));
-
-        //Just a message
-        Toast toast = Toast.makeText(getApplicationContext(),
-                "Media Scanner Triggered...", Toast.LENGTH_SHORT);
-        toast.show();
-
-        // todo: should be improved with this
-        // http://stackoverflow.com/questions/13270789/how-to-run-media-scanner-in-android
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -327,6 +312,16 @@ public class Main extends Activity {
                     itemFolder.setIcon(R.drawable.ic_menu_folder_checked);
                     break;
             }
+
+            MenuItem ic_menu_shake = menu.findItem(R.id.action_shake);
+            if(musicSrv.getEnableShake()) {
+                ic_menu_shake.setIcon(R.drawable.ic_menu_shake_checked);
+                ic_menu_shake.setTitle(R.string.action_shake_enabled);
+            }
+            else {
+                ic_menu_shake.setIcon(R.drawable.ic_menu_shake);
+                ic_menu_shake.setTitle(R.string.action_shake_disabled);
+            }
         }
 
         return true;
@@ -339,15 +334,25 @@ public class Main extends Activity {
                 Intent intent = new Intent(this, Settings.class);
                 startActivity(intent);
                 return true;
-            case R.id.action_rescan:
-                rescan();
-                return true;
-            case R.id.action_kill:
-                Log.d("Main", "Exit app");
-                if(serviceBound && musicSrv.isPlaying())
-                    musicSrv.pause();
-                finishing = true;
-                finish();
+            case R.id.action_shake:
+                if(musicSrv != null) {
+                    if(getPackageManager().hasSystemFeature(PackageManager.FEATURE_SENSOR_ACCELEROMETER)) {
+                        musicSrv.setEnableShake(!musicSrv.getEnableShake());
+                        int msgId;
+                        if(musicSrv.getEnableShake())
+                            msgId = R.string.action_shake_enabled;
+                        else
+                            msgId = R.string.action_shake_disabled;
+                        Toast.makeText(getApplicationContext(),
+                                getResources().getString(msgId),
+                                Toast.LENGTH_LONG).show();
+                    }
+                    else {
+                        Toast.makeText(getApplicationContext(),
+                                getResources().getString(R.string.settings_no_accelerometer),
+                                Toast.LENGTH_LONG).show();
+                    }
+                }
                 return true;
             case R.id.action_sort_artist:
                 if(musicSrv != null && musicSrv.getFilter() != Filter.ARTIST) {

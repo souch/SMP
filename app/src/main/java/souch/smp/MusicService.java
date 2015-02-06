@@ -8,6 +8,7 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -23,6 +24,7 @@ import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.util.TypedValue;
 import android.widget.Toast;
 
 
@@ -190,7 +192,7 @@ public class MusicService extends Service implements
                 int track = musicCursor.getInt(trackCol);
 
                 if (prevArtistGroup == null || artist.compareTo(prevArtistGroup.getName()) != 0) {
-                    SongGroupArtist artistGroup = new SongGroupArtist(artist, 0);
+                    SongGroupArtist artistGroup = new SongGroupArtist(artist, getSongPadding(0));
                     songItems.add(artistGroup);
                     if (prevArtistGroup != null)
                         prevArtistGroup.setEndPos(lastSongPos);
@@ -198,14 +200,14 @@ public class MusicService extends Service implements
                 }
 
                 if (prevAlbumGroup == null || album.compareTo(prevAlbumGroup.getName()) != 0) {
-                    SongGroupAlbum albumGroup = new SongGroupAlbum(album, 1);
+                    SongGroupAlbum albumGroup = new SongGroupAlbum(album, getSongPadding(1));
                     songItems.add(albumGroup);
                     if (prevAlbumGroup != null)
                         prevAlbumGroup.setEndPos(lastSongPos);
                     prevAlbumGroup = albumGroup;
                 }
 
-                Song song = new Song(id, title, artist, album, duration / 1000, track, null, 2);
+                Song song = new Song(id, title, artist, album, duration / 1000, track, null, getSongPadding(2));
 
                 lastSongPos = songItems.size();
                 if(id == savedID)
@@ -237,7 +239,8 @@ public class MusicService extends Service implements
                 int track = musicCursor.getInt(trackCol);
                 String path = musicCursor.getString(pathCol);
 
-                Song song = new Song(id, title, artist, album, duration / 1000, track, path, 1);
+                Song song = new Song(id, title, artist, album, duration / 1000, track, path,
+                        getSongPadding(2));
                 songItems.add(song);
                 Log.d("MusicService", "song added: " + song.toString());
             }
@@ -254,7 +257,6 @@ public class MusicService extends Service implements
 
         // sort by filename
         int prevFolderIdx = 0;
-        int curFolderPadding = 0;
         String prevFolder = "";
         int idx;
         for(idx = 0; idx < songItems.size(); idx++) {
@@ -270,12 +272,12 @@ public class MusicService extends Service implements
                     });
                 }
 
-                SongGroupFolder folderGroup = new SongGroupFolder(curFolder, 0);
+                SongGroupFolder folderGroup = new SongGroupFolder(curFolder, getSongPadding(0));
                 songItems.add(idx, folderGroup);
                 prevFolderIdx = ++idx;
                 prevFolder = curFolder;
             }
-            song.setPadding(2);
+            //song.setPadding(convertDpToPixels(8 * 2));
         }
 
         // todo: put this in the previous loop to improve perf
@@ -495,6 +497,7 @@ public class MusicService extends Service implements
         updateSavedId();
         editor.putLong(PrefKeys.CURR_SONG.name(), savedID);
         editor.putString(PrefKeys.FILTER.name(), filter.name());
+        editor.putBoolean(PrefKeys.ENABLE_SHAKE.name(), enableShake);
         editor.commit();
     }
 
@@ -714,6 +717,8 @@ public class MusicService extends Service implements
             stopSensor();
     }
 
+    public boolean getEnableShake() { return enableShake; }
+
     public void setShakeThreshold(float threshold) {
         shakeThreshold = threshold;
     }
@@ -751,6 +756,33 @@ public class MusicService extends Service implements
 
             changed = true;
         }
+    }
+
+    // cache result
+    private static int lastPx1 = -1;
+    private static int lastPx2 = -1;
+    private int getSongPadding(int shift) {
+        int px;
+        switch(shift) {
+            case 1:
+                if(lastPx1 < 0)
+                    lastPx1 = convertDpToPixels(10);
+                px = lastPx1;
+                break;
+            case 2:
+                if(lastPx2 < 0)
+                    lastPx2 = convertDpToPixels(20);
+                px = lastPx2;
+                break;
+            default:
+                px = 0;
+        }
+        return px;
+    }
+
+    private int convertDpToPixels(int dp) {
+        Resources r = getResources();
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics());
     }
 
     private void updateSavedId() {

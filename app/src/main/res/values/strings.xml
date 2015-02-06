@@ -3,16 +3,22 @@
 
     <string name="app_name">SicMu Player</string>
 
-    <string name="action_rescan">Rescan media</string>
     <string name="action_settings">Settings</string>
+    <string name="action_shake_disabled">Shake disabled</string>
+    <string name="action_shake_enabled">Shake enabled</string>
 
     <string name="settings_title">Settings</string>
+
+    <string name="settings_rescan_title">Rescan</string>
+    <string name="settings_rescan">Rescan media files</string>
+    <string name="settings_rescan_key">RESCAN</string>
+
     <string name="settings_version_title">0.1</string>
     <string name="settings_author">Mathieu Souchaud</string>
     <string name="settings_source">https://github.com/souch/SMP</string>
     <string name="settings_opensource">GPLv3</string>
 
-    <string name="settings_default_shake_threshold">60</string>
+    <string name="settings_default_shake_threshold">100</string>
     <string name="settings_no_accelerometer">Your device has no accelerometer. Shake functionality is disabled.</string>
 
 </resources>

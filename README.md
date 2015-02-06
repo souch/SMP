@@ -48,7 +48,8 @@ No eye candy graphics.
 - small vibration on action?
 - shuffle
 - long press on back button kill the app
-- go to the last position after automatic scrolling
+- button to go to the last position after automatic scrolling
+- option: relock on pause even if unlocked
 
 
 ### Credits

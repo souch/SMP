@@ -14,6 +14,6 @@ public class SongItem {
     }
 
     public void setText(TextView text) {
-        text.setPadding(padding * 10, 0, 0, 0);
+        text.setPadding(padding, 0, 0, 0);
     }
 }
