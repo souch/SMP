@@ -6,5 +6,6 @@ public enum PrefKeys {
     FOLLOW_SONG,
     ENABLE_SHAKE,
     SHAKE_THRESHOLD,
-    FILTER
+    FILTER,
+    ROOT_FOLDER
 }

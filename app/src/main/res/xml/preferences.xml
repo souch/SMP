@@ -8,14 +8,13 @@
             android:summary="When song start playing, scroll to it"
             android:defaultValue="true"
             />
-<!--
+
         <EditTextPreference
             android:key="ROOT_FOLDER"
             android:title="Root folder"
             android:summary="@string/settings_root_folder"
-            android:defaultValue="@string/settings_default_root_folder"
             />
--->
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="Accelerometer shake">

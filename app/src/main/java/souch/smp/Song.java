@@ -18,7 +18,7 @@ public class Song extends SongItem {
     private String folder;
 
     public Song(long songID, String songTitle, String songArtist, String songAlbum,
-                int dur, int songTrack, String songPath, int padding) {
+                int dur, int songTrack, String songPath, int padding, String rootFolder) {
         super(padding);
         id = songID;
         title = songTitle;
@@ -28,7 +28,7 @@ public class Song extends SongItem {
         track = songTrack;
         path = songPath;
         if(path != null)
-            folder = (new File(path.replaceFirst("/mnt/sdcard/music/", ""))).getParent();
+            folder = (new File(path.replaceFirst(rootFolder, ""))).getParent();
     }
 
     public long getID(){return id;}

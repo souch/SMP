@@ -67,6 +67,8 @@ public class MusicService extends Service implements
     // set to false if seekTo() has been called but the seek is still not done
     private boolean seekFinished;
 
+    private String rootFolder;
+
     private SensorManager sensorManager;
     private Sensor accelerometer;
     private long lastUpdate;
@@ -207,7 +209,8 @@ public class MusicService extends Service implements
                     prevAlbumGroup = albumGroup;
                 }
 
-                Song song = new Song(id, title, artist, album, duration / 1000, track, null, getSongPadding(2));
+                Song song = new Song(id, title, artist, album, duration / 1000, track, null,
+                        getSongPadding(2), rootFolder);
 
                 lastSongPos = songItems.size();
                 if(id == savedID)
@@ -240,7 +243,7 @@ public class MusicService extends Service implements
                 String path = musicCursor.getString(pathCol);
 
                 Song song = new Song(id, title, artist, album, duration / 1000, track, path,
-                        getSongPadding(2));
+                        getSongPadding(2), rootFolder);
                 songItems.add(song);
                 Log.d("MusicService", "song added: " + song.toString());
             }
@@ -277,7 +280,6 @@ public class MusicService extends Service implements
                 prevFolderIdx = ++idx;
                 prevFolder = curFolder;
             }
-            //song.setPadding(convertDpToPixels(8 * 2));
         }
 
         // todo: put this in the previous loop to improve perf
@@ -484,6 +486,8 @@ public class MusicService extends Service implements
                 getString(R.string.settings_default_shake_threshold))) / 10.0f;
         Log.d("MusicService", "restorePreferences enable shake: " + enableShake +
                 " threshold:" + shakeThreshold);
+
+        rootFolder = settings.getString(PrefKeys.ROOT_FOLDER.name(), Settings.getDefaultMusicDir());
 
         filter = Filter.valueOf(settings.getString(PrefKeys.FILTER.name(), Filter.FOLDER.name()));
     }
@@ -749,13 +753,21 @@ public class MusicService extends Service implements
     public void setFilter(Filter theFilter) {
         if(filter != theFilter) {
             filter = theFilter;
-            // todo: handle the current playing song finish during initSongs()...
-            updateSavedId();
-            songItems.clear();
-            initSongs();
-
-            changed = true;
+            reinitSongs();
         }
+    }
+
+    public void reinitSongs() {
+        // todo: handle the current playing song finish during reinitSongs()...
+        updateSavedId();
+
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+        rootFolder = settings.getString(PrefKeys.ROOT_FOLDER.name(), Settings.getDefaultMusicDir());
+
+        songItems.clear();
+        initSongs();
+
+        changed = true;
     }
 
     // cache result
@@ -790,4 +802,6 @@ public class MusicService extends Service implements
         if(item.getClass() == Song.class)
             savedID = ((Song) item).getID();
     }
+
+    public void setRootFolder(String root) { rootFolder = root; }
 }

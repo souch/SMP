@@ -13,6 +13,7 @@ No eye candy graphics.
 
 
 ### Detailed features
+
 - play mp3, ogg, flac, midi, wav, mp4, 3gp... see Android MediaPlayer Supported Media Formats (depends on android version).
 - bluetooth support
 - sorted by artists, albums and track number
@@ -26,11 +27,15 @@ No eye candy graphics.
 
 
 ### Help
+
 - press on home button or back button to shut the song list and keep the music playing in background
 - press the button to the right of next to scroll the list to current played song
-- open the padlock button to disable lock screen (it prevents locking only when the app is on top).
+- open the padlock button to disable lock screen (it prevents locking only when the app is on top)
+- root folder can be customized : useful only to hide the first portion of the folders path when songs are sorted by folder
+
 
 ### Todo (perhaps :-)
+
 - the groups can be fold/unfold
 - sort folders by artist
 - group by genre
@@ -46,6 +51,7 @@ No eye candy graphics.
 - help + infobulle ?
 - playlist?
 - small vibration on action?
+- pinned section (upper group level stay at top until another one appears)?
 - shuffle
 - long press on back button kill the app
 - button to go to the last position after automatic scrolling
@@ -60,11 +66,13 @@ Use some icons done by Daniele De Santis (Creative Commons Attribution 3.0 Unpor
 
 Seekbar style created by Jérôme Van Der Linden (Creative Commons Attribution 3.0 Unported), found on http://android-holo-colors.com.
 
+
 ### Developer
 
 Compiled with Android Studio.
 Robotium non regression tests are available in the androidTest folder.
 Tested on Gingerbread (2.3.6), Nexus 4 JellyBean (4.1.2), Samsung S3 (4.3).
+
 
 ### License
 

@@ -16,6 +16,8 @@ import android.preference.PreferenceActivity;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.io.File;
+
 public class Settings extends PreferenceActivity
         implements SharedPreferences.OnSharedPreferenceChangeListener,
         Preference.OnPreferenceClickListener
@@ -33,24 +35,23 @@ public class Settings extends PreferenceActivity
         playIntent = new Intent(this, MusicService.class);
         bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
 
-        EditTextPreference prefShakeThreshold = (EditTextPreference) findPreference(PrefKeys.SHAKE_THRESHOLD.name());
-        if(getPackageManager().hasSystemFeature(PackageManager.FEATURE_SENSOR_ACCELEROMETER)) {
-            SharedPreferences sp = getPreferenceScreen().getSharedPreferences();
-            prefShakeThreshold.setSummary(sp.getString(PrefKeys.SHAKE_THRESHOLD.name(),
-                    getString(R.string.settings_default_shake_threshold)));
-        }
-        else {
-            prefShakeThreshold.setEnabled(false);
-        }
+        SharedPreferences sharedPreferences = getPreferenceScreen().getSharedPreferences();
 
-        // todo: root_folder ..
-        /*Environment.getExternalStorageDirectory().getPath()
-        <string name="settings_root_folder">Root folder of folder filter</string>
-        <string name="settings_default_root_folder">/mnt/sdcard/music</string>
-        */
+        String thresholdKeys = PrefKeys.SHAKE_THRESHOLD.name();
+        EditTextPreference prefShakeThreshold = (EditTextPreference) findPreference(thresholdKeys);
+        if(getPackageManager().hasSystemFeature(PackageManager.FEATURE_SENSOR_ACCELEROMETER))
+            prefShakeThreshold.setSummary(sharedPreferences.getString(thresholdKeys, getString(R.string.settings_default_shake_threshold)));
+        else
+            prefShakeThreshold.setEnabled(false);
 
         Preference rescan = findPreference(getResources().getString(R.string.settings_rescan_key));
         rescan.setOnPreferenceClickListener(this);
+
+        String rootFolderKey = PrefKeys.ROOT_FOLDER.name();
+        EditTextPreference prefRootFolder = (EditTextPreference) findPreference(rootFolderKey);
+        prefRootFolder.setSummary(sharedPreferences.getString(rootFolderKey, getDefaultMusicDir()));
+        if(!sharedPreferences.contains(rootFolderKey))
+            prefRootFolder.setText(getDefaultMusicDir());
 
         this.onContentChanged();
     }
@@ -103,15 +104,30 @@ public class Settings extends PreferenceActivity
         Log.d("MusicService", "onSharedPreferenceChanged: " + key);
 
         if(key.equals(PrefKeys.SHAKE_THRESHOLD.name())) {
-                final String strThreshold = sharedPreferences.getString(PrefKeys.SHAKE_THRESHOLD.name(), getString(R.string.settings_default_shake_threshold));
-                float threshold = Float.valueOf(strThreshold) / 10.0f;
-                musicSrv.setShakeThreshold(threshold);
-                Log.d("MusicService", "Set shake threshold to: " + threshold);
+            String strThreshold = sharedPreferences.getString(PrefKeys.SHAKE_THRESHOLD.name(), getString(R.string.settings_default_shake_threshold));
+            float threshold = Float.valueOf(strThreshold) / 10.0f;
+            musicSrv.setShakeThreshold(threshold);
+            Log.d("MusicService", "Set shake threshold to: " + threshold);
 
-                EditTextPreference pref = (EditTextPreference) findPreference(key);
-                pref.setSummary(strThreshold);
-                this.onContentChanged();
+            EditTextPreference pref = (EditTextPreference) findPreference(key);
+            pref.setSummary(strThreshold);
+            this.onContentChanged();
         }
+        else if(key.equals(PrefKeys.ROOT_FOLDER.name())) {
+            EditTextPreference prefRootFolder = (EditTextPreference) findPreference(key);
+            String rootFolder = sharedPreferences.getString(key, getDefaultMusicDir());
+            prefRootFolder.setSummary(rootFolder);
+            if(!(new File(rootFolder)).exists())
+                Toast.makeText(getApplicationContext(),
+                        "! The path '" + rootFolder + "' does not exists on the phone !",
+                        Toast.LENGTH_LONG).show();
+            if(musicSrv.getFilter() == Filter.FOLDER)
+                musicSrv.reinitSongs(); // a bit heavy: anyway rootFolder will not be changed often
+        }
+    }
+
+    static public String getDefaultMusicDir() {
+        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getPath();
     }
 
     @Override
