@@ -21,6 +21,7 @@ import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -48,8 +49,11 @@ public class MusicService extends Service implements
     private long savedID;
     // need for focus
     private boolean wasPlaying;
-    // sthg happened and the Main do not know it: a song has finish to play, another app gain focus
+    // sthg happened and the Main do not know it: a song has finish to play, another app gain focus, ...
     private boolean changed;
+
+    // useful only for buggy android seek
+    private int seekPosBug;
 
     private Filter filter;
 
@@ -87,6 +91,7 @@ public class MusicService extends Service implements
 
         changed = false;
         seekFinished = true;
+        seekPosBug = -1;
         wasPlaying = false;
 
         filter = Filter.FOLDER;
@@ -296,6 +301,8 @@ public class MusicService extends Service implements
     // create AudioManager and MediaPlayer at the last moment
     // this func assure they are initialized
     private MediaPlayer getPlayer() {
+        seekPosBug = -1;
+
         if (audioManager == null) {
             audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
             int result = audioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC,
@@ -392,21 +399,18 @@ public class MusicService extends Service implements
 
     @Override
     public void onSeekComplete(MediaPlayer mp) {
-        // on My 2.3.6 phone, the phone seems bugged : calling now getCurrentPosition gives
-        // last position. 1 second after it is ok, so wait a bit.
-        if(Build.VERSION.SDK_INT <= 10) {
-            Timer delaySeekCompleted = new Timer();
-            delaySeekCompleted.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    seekFinished = true;
-                }
-            }, 1000);
-        }
         // on a 4.1 phone no bug : calling getCurrentPosition now gives the new seeked position
-        else {
-            seekFinished = true;
+        // on My 2.3.6 phone, the phone seems bugged : calling now getCurrentPosition gives
+        // last position. So wait the seekpos goes after the asked seekpos.
+        if(seekPosBug != -1) {
+            int i = 15;
+            while(i-- > 0 && getCurrentPosition() < seekPosBug) {
+                SystemClock.sleep(300);
+            }
+            seekPosBug = -1;
         }
+
+        seekFinished = true;
         Log.d("MusicService", "onSeekComplete setProgress" + Song.secondsToMinutes(getCurrentPosition()));
     }
 
@@ -637,7 +641,12 @@ public class MusicService extends Service implements
             return;
 
         seekFinished = false;
-        player.seekTo(posn * 1000);
+        int gotoPos = posn * 1000;
+
+        if(Build.VERSION.SDK_INT <= 10)
+            seekPosBug = gotoPos;
+
+        player.seekTo(gotoPos);
     }
 
     public boolean getSeekFinished() {
@@ -802,6 +811,4 @@ public class MusicService extends Service implements
         if(item.getClass() == Song.class)
             savedID = ((Song) item).getID();
     }
-
-    public void setRootFolder(String root) { rootFolder = root; }
 }
