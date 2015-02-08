@@ -226,18 +226,20 @@ public class Main extends Activity {
 
     final Runnable updateInfo = new Runnable() {
         public void run() {
-            if (!serviceBound || musicSrv.playingStopped()) {
-                stopPlayButton();
+            if (!serviceBound)
                 return;
-            }
 
+            //Log.d("Main", "updateInfo");
             if (musicSrv.getChanged()) {
-                Log.d("Main", "updateInfo");
+                Log.d("Main", "updateInfo changed");
                 updatePlayButton();
                 if(followSong)
                     scrollToCurrSong();
             } else {
-                if (!musicSrv.playingStopped() && !touchSeekbar && musicSrv.getSeekFinished()) {
+                if(musicSrv.playingStopped()) {
+                    stopPlayButton();
+                }
+                else if(!touchSeekbar && musicSrv.getSeekFinished()) {
                     Log.v("Main", "updateInfo setProgress" + Song.secondsToMinutes(musicSrv.getCurrentPosition()));
                     // getCurrentPosition {Idle, Initialized, Prepared, Started, Paused, Stopped, PlaybackCompleted}
                     seekbar.setProgress(musicSrv.getCurrentPosition());
