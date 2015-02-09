@@ -17,7 +17,7 @@ No eye candy graphics.
 - play mp3, ogg, flac, midi, wav, mp4, 3gp... see Android MediaPlayer Supported Media Formats (depends on android version).
 - bluetooth support
 - sorted by artists, albums and track number
-- or sorted by folders
+- or sorted by folders, artists, albums and track number
 - show current played song in list
 - notification when playing
 - seek bar
@@ -37,11 +37,9 @@ No eye candy graphics.
 ### Todo (perhaps :-)
 
 - the groups can be fold/unfold
-- sort folders by artist
 - group by genre
-- fast on big music list
+- fast on big music list (> 5Go)
 - guess "smart" track number (2 < 11, song file name vs id tag, ...)
-- select main music directory
 - quick jump with letter in the right (like in contact)
 - zoom make letter (and button) bigger or smaller
 - speak the title ?
@@ -56,6 +54,7 @@ No eye candy graphics.
 - long press on back button kill the app
 - button to go to the last position after automatic scrolling
 - option: relock on pause even if unlocked
+- search?
 
 
 ### Credits

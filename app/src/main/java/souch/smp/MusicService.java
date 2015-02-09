@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -32,8 +33,6 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Timer;
-import java.util.TimerTask;
 
 
 public class MusicService extends Service implements
@@ -111,6 +110,8 @@ public class MusicService extends Service implements
         }
     }
 
+
+    // todo: put all the init songs in a different class?
 
     // preference must have already been restored
     public void initSongs() {
@@ -199,7 +200,7 @@ public class MusicService extends Service implements
                 int track = musicCursor.getInt(trackCol);
 
                 if (prevArtistGroup == null || artist.compareToIgnoreCase(prevArtistGroup.getName()) != 0) {
-                    SongGroupArtist artistGroup = new SongGroupArtist(artist, getSongPadding(0));
+                    SongGroup artistGroup = new SongGroup(artist, Typeface.BOLD, getSongPadding(0));
                     songItems.add(artistGroup);
                     if (prevArtistGroup != null)
                         prevArtistGroup.setEndPos(lastSongPos);
@@ -207,7 +208,7 @@ public class MusicService extends Service implements
                 }
 
                 if (prevAlbumGroup == null || album.compareToIgnoreCase(prevAlbumGroup.getName()) != 0) {
-                    SongGroupAlbum albumGroup = new SongGroupAlbum(album, getSongPadding(1));
+                    SongGroup albumGroup = new SongGroup(album, Typeface.ITALIC, getSongPadding(1));
                     songItems.add(albumGroup);
                     if (prevAlbumGroup != null)
                         prevAlbumGroup.setEndPos(lastSongPos);
@@ -255,45 +256,48 @@ public class MusicService extends Service implements
             while (musicCursor.moveToNext());
         }
 
-        // sort by folder
+        // sort
         Collections.sort(songItems, new Comparator<SongItem>() {
-            public int compare(SongItem a, SongItem b) {
+            public int compare(SongItem first, SongItem second) {
                 // only Song has been added so far
-                return ((Song) a).getFolder().compareToIgnoreCase(((Song) b).getFolder());
+                Song a = (Song) first;
+                Song b = (Song) second;
+                int cmp = a.getFolder().compareToIgnoreCase(b.getFolder());
+                if(cmp == 0) {
+                    cmp = a.getArtist().compareToIgnoreCase(b.getArtist());
+                    if(cmp == 0) {
+                        cmp = a.getAlbum().compareToIgnoreCase(b.getAlbum());
+                        if(cmp == 0) {
+                            cmp = a.getTrack() - b.getTrack();
+                        }
+                    }
+                }
+                return cmp;
             }
         });
 
-        // sort by filename
-        int prevFolderIdx = 0;
-        String prevFolder = "";
+        // add group
+        String prevInit = "!=_"; // Hope Nothing has this name
+        String prevFolder = prevInit;
+        String prevArtist = prevInit;
         int idx;
         for(idx = 0; idx < songItems.size(); idx++) {
             Song song = (Song) songItems.get(idx);
             String curFolder = song.getFolder();
             if(curFolder.compareToIgnoreCase(prevFolder) != 0) {
-                // the last folder has more that one song: sort it by path
-                if(idx - prevFolderIdx > 1) {
-                    Collections.sort(songItems.subList(prevFolderIdx, idx), new Comparator<SongItem>() {
-                        public int compare(SongItem a, SongItem b) {
-                            return ((Song) a).getPath().compareToIgnoreCase(((Song) b).getPath());
-                        }
-                    });
-                }
-
-                SongGroupFolder folderGroup = new SongGroupFolder(curFolder, getSongPadding(0));
-                songItems.add(idx, folderGroup);
-                prevFolderIdx = ++idx;
+                songItems.add(idx, new SongGroup(curFolder, Typeface.BOLD_ITALIC, getSongPadding(0)));
+                idx++;
                 prevFolder = curFolder;
+                prevArtist = prevInit;
             }
-        }
-
-        // todo: put this in the previous loop to improve perf
-        for(idx = 0; idx < songItems.size(); idx++) {
-            SongItem item = songItems.get(idx);
-            if (item.getClass() == Song.class && ((Song) item).getID() == savedID) {
-                songPos = idx;
-                break;
+            String curArtist = song.getArtist();
+            if(curArtist.compareToIgnoreCase(prevArtist) != 0) {
+                songItems.add(idx, new SongGroup(curArtist, Typeface.BOLD, getSongPadding(1)));
+                idx++;
+                prevArtist = curArtist;
             }
+            if(song.getID() == savedID)
+                 songPos = idx;
         }
     }
 
