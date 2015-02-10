@@ -8,13 +8,14 @@ Works on old slow small devices (from Android froyo 2.2).
 
 No eye candy graphics.
 
-![Artist list](screen_artist.png)&nbsp;
-![Settings](screen_settings.png)
+![Folder list](screen4.7_folder.png)&nbsp;
+![Artist list](screen3.5_artist.png)&nbsp;
+![Options menu](screen3.5_menu.png)
 
 
-### Detailed features
+### detailed features
 
-- play mp3, ogg, flac, midi, wav, mp4, 3gp... see Android MediaPlayer Supported Media Formats (depends on android version).
+- play mp3, ogg, flac, midi, wav, mp4, 3gp... see android mediaplayer supported media formats (depends on android version).
 - bluetooth support
 - sorted by artists, albums and track number
 - or sorted by folders, artists, albums and track number
