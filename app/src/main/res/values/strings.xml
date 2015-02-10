@@ -15,7 +15,7 @@
 
     <string name="settings_root_folder">Root folder of folder filter</string>
 
-    <string name="settings_version_title">0.1</string>
+    <string name="settings_version_title">0.2</string>
     <string name="settings_author">Mathieu Souchaud</string>
     <string name="settings_source">https://github.com/souch/SMP</string>
     <string name="settings_opensource">GPLv3</string>
