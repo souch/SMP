@@ -9,8 +9,7 @@ Works on old slow small devices (from Android froyo 2.2).
 No eye candy graphics.
 
 ![Folder list](screen4.7_folder.png)&nbsp;
-![Artist list](screen3.5_artist.png)&nbsp;
-![Options menu](screen3.5_menu.png)
+![Artist list](screen3.5_artist.png)
 
 
 ### detailed features
