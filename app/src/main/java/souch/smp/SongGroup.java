@@ -12,6 +12,7 @@ public class SongGroup extends SongItem {
         super(padding);
         name = theName;
         typeface = theTypeface;
+        endPos = -1;
     }
 
     public void setEndPos(int end) { endPos = end; }
@@ -23,5 +24,9 @@ public class SongGroup extends SongItem {
         text.setText(name);
         text.setTypeface(null, typeface);
         //text.setPaintFlags(text.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+    }
+
+    public String toString() {
+        return "name: " + name + " endPos: " + endPos;
     }
 }

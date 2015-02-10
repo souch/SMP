@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-
 public class MusicService extends Service implements
         MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener,
         MediaPlayer.OnCompletionListener, MediaPlayer.OnSeekCompleteListener,
@@ -81,6 +80,7 @@ public class MusicService extends Service implements
     private double accelLast;
     private double accelCurrent;
     private double accel;
+
 
     public void onCreate() {
         Log.d("MusicService", "onCreate()");
@@ -175,6 +175,10 @@ public class MusicService extends Service implements
             }
         }
 
+        // to comment in release mode:
+        int idx;
+        for(idx = 0; idx < songItems.size(); idx++)
+            Log.d("MusicService", "songItem " + idx + " added: " + songItems.get(idx).toString());
         Log.d("MusicService", "songItems initialized in " + (System.currentTimeMillis() - startTime) + "ms");
         Log.d("MusicService", "songPos: " + songPos);
     }
@@ -205,6 +209,7 @@ public class MusicService extends Service implements
                     if (prevArtistGroup != null)
                         prevArtistGroup.setEndPos(lastSongPos);
                     prevArtistGroup = artistGroup;
+                    prevAlbumGroup = null;
                 }
 
                 if (prevAlbumGroup == null || album.compareToIgnoreCase(prevAlbumGroup.getName()) != 0) {
@@ -221,10 +226,14 @@ public class MusicService extends Service implements
                 lastSongPos = songItems.size();
                 if(id == savedID)
                     songPos = lastSongPos;
+
                 songItems.add(song);
-                Log.d("MusicService", "song added: " + song.toString());
             }
             while (musicCursor.moveToNext());
+
+            // there is at least one song
+            prevArtistGroup.setEndPos(lastSongPos);
+            prevAlbumGroup.setEndPos(lastSongPos);
         }
     }
 
@@ -263,11 +272,11 @@ public class MusicService extends Service implements
                 Song a = (Song) first;
                 Song b = (Song) second;
                 int cmp = a.getFolder().compareToIgnoreCase(b.getFolder());
-                if(cmp == 0) {
+                if (cmp == 0) {
                     cmp = a.getArtist().compareToIgnoreCase(b.getArtist());
-                    if(cmp == 0) {
+                    if (cmp == 0) {
                         cmp = a.getAlbum().compareToIgnoreCase(b.getAlbum());
-                        if(cmp == 0) {
+                        if (cmp == 0) {
                             cmp = a.getTrack() - b.getTrack();
                         }
                     }
@@ -277,28 +286,42 @@ public class MusicService extends Service implements
         });
 
         // add group
-        String prevInit = "!=_"; // Hope Nothing has this name
-        String prevFolder = prevInit;
-        String prevArtist = prevInit;
+        int lastSongPos = -1;
+        SongGroup prevFolderGroup = null;
+        SongGroup prevArtistGroup = null;
+
         int idx;
-        for(idx = 0; idx < songItems.size(); idx++) {
+        for (idx = 0; idx < songItems.size(); idx++) {
             Song song = (Song) songItems.get(idx);
             String curFolder = song.getFolder();
-            if(curFolder.compareToIgnoreCase(prevFolder) != 0) {
-                songItems.add(idx, new SongGroup(curFolder, Typeface.BOLD_ITALIC, getSongPadding(0)));
+            boolean newFolderGroup = false;
+            if (prevFolderGroup == null || curFolder.compareToIgnoreCase(prevFolderGroup.getName()) != 0) {
+                SongGroup folderGroup = new SongGroup(curFolder, Typeface.BOLD_ITALIC, getSongPadding(0));
+                songItems.add(idx, folderGroup);
+                if (prevFolderGroup != null)
+                    prevFolderGroup.setEndPos(lastSongPos);
                 idx++;
-                prevFolder = curFolder;
-                prevArtist = prevInit;
+                prevFolderGroup = folderGroup;
+                newFolderGroup = true;
             }
             String curArtist = song.getArtist();
-            if(curArtist.compareToIgnoreCase(prevArtist) != 0) {
-                songItems.add(idx, new SongGroup(curArtist, Typeface.BOLD, getSongPadding(1)));
+            if (newFolderGroup || curArtist.compareToIgnoreCase(prevArtistGroup.getName()) != 0) {
+                SongGroup artistGroup = new SongGroup(curArtist, Typeface.BOLD, getSongPadding(1));
+                songItems.add(idx, artistGroup);
+                if (prevArtistGroup != null)
+                    prevArtistGroup.setEndPos(lastSongPos);
                 idx++;
-                prevArtist = curArtist;
+                prevArtistGroup = artistGroup;
             }
-            if(song.getID() == savedID)
-                 songPos = idx;
+            lastSongPos = idx;
+            if (song.getID() == savedID)
+                songPos = idx;
         }
+
+        if (prevFolderGroup != null)
+            prevFolderGroup.setEndPos(lastSongPos);
+        if (prevArtistGroup != null)
+            prevArtistGroup.setEndPos(lastSongPos);
     }
 
 
