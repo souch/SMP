@@ -5,7 +5,7 @@ import android.widget.TextView;
 
 import java.io.File;
 
-public class Song extends SongItem {
+public class RowSong extends Row {
     private long id;
     private String title;
     private String artist;
@@ -17,9 +17,9 @@ public class Song extends SongItem {
     // folder of the path
     private String folder;
 
-    public Song(long songID, String songTitle, String songArtist, String songAlbum,
-                int dur, int songTrack, String songPath, int padding, String rootFolder) {
-        super(padding);
+    public RowSong(int pos, int offset, long songID, String songTitle, String songArtist, String songAlbum,
+                   int dur, int songTrack, String songPath, String rootFolder) {
+        super(pos, offset, Typeface.NORMAL);
         id = songID;
         title = songTitle;
         artist = songArtist;
@@ -43,11 +43,11 @@ public class Song extends SongItem {
     public void setText(TextView text) {
         super.setText(text);
         text.setText(title);
-        text.setTypeface(null, Typeface.NORMAL);
     }
 
     public String toString() {
-        return "ID: " + id + " artist: " + artist + " album: " + album + " title: " + title + " " +
+        return "Song pos: " + genuinePos + " level: " + level + " ID: " + id + " artist: " + artist +
+                " album: " + album + " title: " + title + " " +
                 secondsToMinutes(duration) + " track:" + track + " path: " + path;
     }
 

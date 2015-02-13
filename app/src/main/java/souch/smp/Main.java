@@ -22,14 +22,13 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class Main extends Activity {
-    private ArrayList<SongItem> songItems;
+    private Rows rows;
     private ListView songView;
-    private SongAdapter songAdt;
+    private RowsAdapter songAdt;
     ImageButton playButton;
 
     private MusicService musicSrv;
@@ -91,8 +90,8 @@ public class Main extends Activity {
             // get service
             musicSrv = binder.getService();
 
-            songItems = musicSrv.getSongItems();
-            songAdt = new SongAdapter(Main.this, songItems, Main.this);
+            rows = musicSrv.getRows();
+            songAdt = new RowsAdapter(Main.this, rows, Main.this);
             songView.setAdapter(songAdt);
             songView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
@@ -102,10 +101,9 @@ public class Main extends Activity {
                         return;
                     //Toast.makeText(getApplicationContext(),
                     //        "Click ListItem Number " + position + " id: " + id, Toast.LENGTH_LONG).show();
-                    while(songItems.get(position).getClass() != Song.class)
-                        position++;
-                    musicSrv.setSongPos(position);
-                    musicSrv.playSong();
+                    rows.select(position);
+                    if(rows.get(position).getClass() == RowSong.class)
+                        musicSrv.playSong();
                     updatePlayButton();
                 }
             });
@@ -130,7 +128,7 @@ public class Main extends Activity {
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
             if (seekbar.getVisibility() == TextView.VISIBLE) {
-                currDuration.setText(Song.secondsToMinutes(seekBar.getProgress()));
+                currDuration.setText(RowSong.secondsToMinutes(seekBar.getProgress()));
             }
         }
 
@@ -146,7 +144,7 @@ public class Main extends Activity {
                     PlayerState.Paused |
                     PlayerState.PlaybackCompleted;
             if (serviceBound && musicSrv.isInState(states)) {
-                Log.d("Main", "onStopTrackingTouch setProgress" + Song.secondsToMinutes(seekBar.getProgress()));
+                Log.d("Main", "onStopTrackingTouch setProgress" + RowSong.secondsToMinutes(seekBar.getProgress()));
                 seekBar.setProgress(seekBar.getProgress());
                 // valid state : {Prepared, Started, Paused, PlaybackCompleted}
                 musicSrv.seekTo(seekBar.getProgress());
@@ -161,7 +159,7 @@ public class Main extends Activity {
         super.onStart();
         Log.d("Main", "onStart");
 
-        restorePreferences();
+        restore();
         applyLock();
 
         timer = new Timer();
@@ -177,7 +175,7 @@ public class Main extends Activity {
             musicSrv.stopNotification();  // if service not bound stopNotification is called onServiceConnected
     }
 
-    /*
+/*
     @Override
     protected void onResume(){
         super.onResume();
@@ -197,7 +195,7 @@ public class Main extends Activity {
         super.onStop();
         Log.d("Main", "onStop");
         timer.cancel();
-        savePreferences();
+        save();
 
         if (!finishing && serviceBound && musicSrv.playingLaunched())
             musicSrv.startNotification();
@@ -240,7 +238,7 @@ public class Main extends Activity {
                     stopPlayButton();
                 }
                 else if(!touchSeekbar && musicSrv.getSeekFinished()) {
-                    Log.v("Main", "updateInfo setProgress" + Song.secondsToMinutes(musicSrv.getCurrentPosition()));
+                    Log.v("Main", "updateInfo setProgress" + RowSong.secondsToMinutes(musicSrv.getCurrentPosition()));
                     // getCurrentPosition {Idle, Initialized, Prepared, Started, Paused, Stopped, PlaybackCompleted}
                     seekbar.setProgress(musicSrv.getCurrentPosition());
                 }
@@ -262,16 +260,15 @@ public class Main extends Activity {
                 playButton.setTag(R.drawable.ic_action_play);
             }
 
-            SongItem songItem = songItems.get(musicSrv.getSongPos());
-            if(songItem.getClass() == Song.class) {
-                Song song = (Song) songItem;
-                duration.setText(Song.secondsToMinutes(song.getDuration()));
+            RowSong rowSong = rows.getCurrSong();
+            if(rowSong != null) {
+                duration.setText(RowSong.secondsToMinutes(rowSong.getDuration()));
                 duration.setVisibility(TextView.VISIBLE);
-                seekbar.setMax(song.getDuration());
+                seekbar.setMax(rowSong.getDuration());
                 if (!touchSeekbar && musicSrv.getSeekFinished())
                     seekbar.setProgress(musicSrv.getCurrentPosition());
                 seekbar.setVisibility(TextView.VISIBLE);
-                currDuration.setText(Song.secondsToMinutes(musicSrv.getCurrentPosition()));
+                currDuration.setText(RowSong.secondsToMinutes(musicSrv.getCurrentPosition()));
             }
         }
 
@@ -304,7 +301,7 @@ public class Main extends Activity {
         if(musicSrv != null) {
             MenuItem itemArtist = menu.findItem(R.id.action_sort_artist);
             MenuItem itemFolder = menu.findItem(R.id.action_sort_folder);
-            switch(musicSrv.getFilter()) {
+            switch(rows.getFilter()) {
                 case ARTIST:
                     itemArtist.setIcon(R.drawable.ic_menu_artist_checked);
                     itemFolder.setIcon(R.drawable.ic_menu_folder);
@@ -357,18 +354,20 @@ public class Main extends Activity {
                 }
                 return true;
             case R.id.action_sort_artist:
-                if(musicSrv != null && musicSrv.getFilter() != Filter.ARTIST) {
+                if(musicSrv != null && rows.getFilter() != Filter.ARTIST) {
                     item.setIcon(R.drawable.ic_menu_artist_checked);
                     Toast.makeText(getApplicationContext(), item.getTitle(), Toast.LENGTH_LONG).show();
-                    musicSrv.setFilter(Filter.ARTIST);
+                    rows.setFilter(Filter.ARTIST);
+                    songAdt.notifyDataSetChanged();
                     scrollToCurrSong();
                 }
                 return true;
             case R.id.action_sort_folder:
-                if(musicSrv != null && musicSrv.getFilter() != Filter.FOLDER) {
+                if(musicSrv != null && rows.getFilter() != Filter.FOLDER) {
                     item.setIcon(R.drawable.ic_menu_folder_checked);
                     Toast.makeText(getApplicationContext(), item.getTitle(), Toast.LENGTH_LONG).show();
-                    musicSrv.setFilter(Filter.FOLDER);
+                    rows.setFilter(Filter.FOLDER);
+                    songAdt.notifyDataSetChanged();
                     scrollToCurrSong();
                 }
                 return true;
@@ -426,7 +425,7 @@ public class Main extends Activity {
     }
 
     public void scrollToCurrSong() {
-        if(songItems.size() == 0)
+        if(rows.size() == 0)
             return;
 
         final int firstVisible = songView.getFirstVisiblePosition();
@@ -443,7 +442,7 @@ public class Main extends Activity {
         Log.v("Main", "scrollToCurrSong showAround:" + showAround);
         */
 
-        int gotoSong = musicSrv.getSongPos();
+        int gotoSong = rows.getCurrSongPos();
 
         // how far from top or bottom border the song is
         int offset = 0;
@@ -462,8 +461,8 @@ public class Main extends Activity {
         else {
             if(gotoSong + showAround >= lastVisible) {
                 gotoSong += showAround;
-                if(gotoSong >= songItems.size())
-                    gotoSong = songItems.size() - 1;
+                if(gotoSong >= rows.size())
+                    gotoSong = rows.size() - 1;
             }
             else {
                 gotoSong -= showAround;
@@ -494,12 +493,6 @@ public class Main extends Activity {
         }
     }
 
-    public SongItem getSongItem() {
-        if(serviceBound)
-            return songItems.get(musicSrv.getSongPos());
-        else
-            return null;
-    }
 
     public MusicService getMusicSrv() {
         return musicSrv;
@@ -519,7 +512,7 @@ public class Main extends Activity {
     }
 */
 
-    private void restorePreferences() {
+    private void restore() {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
         noLock = settings.getBoolean(PrefKeys.NO_LOCK.name(), false);
         followSong = settings.getBoolean(PrefKeys.FOLLOW_SONG.name(), true);
@@ -527,8 +520,8 @@ public class Main extends Activity {
         Log.d("MusicService", "restorePreferences noLock: " + noLock + " follow: " + followSong);
     }
 
-    private void savePreferences() {
-        Log.d("MusicService", "savePreferences noLock: " + noLock);
+    private void save() {
+        Log.d("MusicService", "save noLock: " + noLock);
 
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = settings.edit();

@@ -121,8 +121,9 @@ public class Settings extends PreferenceActivity
                 Toast.makeText(getApplicationContext(),
                         "! The path '" + rootFolder + "' does not exists on the phone !",
                         Toast.LENGTH_LONG).show();
-            if(musicSrv.getFilter() == Filter.FOLDER)
-                musicSrv.reinitSongs(); // a bit heavy: anyway rootFolder will not be changed often
+            boolean reinited = musicSrv.getRows().setRootFolder(rootFolder);
+            if(reinited)
+                musicSrv.setChanged();
         }
     }
 

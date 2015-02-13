@@ -3,14 +3,10 @@ package souch.smp;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
-import android.database.Cursor;
-import android.graphics.Typeface;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -24,15 +20,8 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
-import android.provider.MediaStore;
 import android.util.Log;
-import android.util.TypedValue;
 import android.widget.Toast;
-
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 
 public class MusicService extends Service implements
         MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener,
@@ -40,11 +29,8 @@ public class MusicService extends Service implements
         AudioManager.OnAudioFocusChangeListener, SensorEventListener
 {
     private MediaPlayer player;
-    private ArrayList<SongItem> songItems;
-    // current position in songItems
-    private int songPos;
-    // id of the song at last exiting
-    private long savedID;
+    private Rows rows;
+
     // need for focus
     private boolean wasPlaying;
     // sthg happened and the Main do not know it: a song has finish to play, another app gain focus, ...
@@ -52,8 +38,6 @@ public class MusicService extends Service implements
 
     // useful only for buggy android seek
     private int seekPosBug;
-
-    private Filter filter;
 
     // a notification has been launched
     private boolean foreground;
@@ -69,8 +53,6 @@ public class MusicService extends Service implements
     // set to false if seekTo() has been called but the seek is still not done
     private boolean seekFinished;
 
-    private String rootFolder;
-
     private SensorManager sensorManager;
     private Sensor accelerometer;
     private long lastUpdate;
@@ -81,6 +63,20 @@ public class MusicService extends Service implements
     private double accelCurrent;
     private double accel;
 
+    public Rows getRows() { return rows; }
+
+    public boolean getChanged() {
+        boolean hasChanged = changed;
+        changed = false;
+        return hasChanged;
+    }
+
+    public void setChanged() {
+        changed = true;
+    }
+
+
+    /*** SERVICE ***/
 
     public void onCreate() {
         Log.d("MusicService", "onCreate()");
@@ -93,237 +89,43 @@ public class MusicService extends Service implements
         seekPosBug = -1;
         wasPlaying = false;
 
-        filter = Filter.FOLDER;
-
         player = null;
         audioManager = null;
 
-        songPos = -1;
-        restorePreferences();
+        restore();
 
-        songItems = new ArrayList<SongItem>();
-        initSongs();
-
+        rows = new Rows(getContentResolver(), this.getApplicationContext());
+        rows.init();
 
         if(enableShake) {
             startSensor();
         }
     }
 
-
-    // todo: put all the init songs in a different class?
-
-    // preference must have already been restored
-    public void initSongs() {
-        long startTime = System.currentTimeMillis();
-        ContentResolver musicResolver = getContentResolver();
-        Uri musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-        Cursor musicCursor;
-        String[] projection = new String[] {
-            MediaStore.Audio.Media.TITLE,
-            MediaStore.Audio.Media._ID,
-            MediaStore.Audio.Media.ARTIST,
-            MediaStore.Audio.Media.ALBUM,
-            MediaStore.Audio.Media.DURATION,
-            MediaStore.MediaColumns.DATA,
-            MediaStore.Audio.Media.TRACK
-        };
-        String where = MediaStore.Audio.Media.IS_MUSIC + "=1";
-
-        String sortOrder = null;
-        switch(filter) {
-            case ARTIST:
-                sortOrder = MediaStore.Audio.Media.ARTIST +
-                        ", " + MediaStore.Audio.Media.ALBUM +
-                        ", " + MediaStore.Audio.Media.TRACK +
-                        ", " + MediaStore.Audio.Media.TITLE;
-                break;
-            case FOLDER:
-                // did not find a way to sort by folder through query
-                break;
-        }
-        try {
-            musicCursor = musicResolver.query(musicUri, projection, where, null, sortOrder);
-        } catch (Exception e) {
-            final String msg = "No songItems found!";
-            Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
-            Log.e("MusicService", msg);
-            return;
-        }
-
-        switch(filter) {
-            case ARTIST:
-                initSongsByArtist(musicCursor);
-                break;
-            case FOLDER:
-                initSongsByPath(musicCursor);
-                break;
-        }
-
-        if(musicCursor != null)
-            musicCursor.close();
-
-
-        if(songPos == -1) {
-            // no songPos saved : search the first song
-            int idx;
-            for(idx = 0; idx < songItems.size(); idx++) {
-                if (songItems.get(idx).getClass() == Song.class) {
-                    songPos = idx;
-                    break;
-                }
-            }
-        }
-
-        // to comment in release mode:
-        int idx;
-        for(idx = 0; idx < songItems.size(); idx++)
-            Log.d("MusicService", "songItem " + idx + " added: " + songItems.get(idx).toString());
-        Log.d("MusicService", "songItems initialized in " + (System.currentTimeMillis() - startTime) + "ms");
-        Log.d("MusicService", "songPos: " + songPos);
-    }
-
-    public void initSongsByArtist(Cursor musicCursor) {
-        if (musicCursor != null && musicCursor.moveToFirst()) {
-            int titleCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
-            int idCol = musicCursor.getColumnIndex(MediaStore.Audio.Media._ID);
-            int artistCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
-            int albumCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM);
-            int durationCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
-            int trackCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.TRACK);
-
-            SongGroup prevArtistGroup = null;
-            SongGroup prevAlbumGroup = null;
-            int lastSongPos = -1;
-            do {
-                long id = musicCursor.getLong(idCol);
-                String title = musicCursor.getString(titleCol);
-                String artist = musicCursor.getString(artistCol);
-                String album = musicCursor.getString(albumCol);
-                int duration = musicCursor.getInt(durationCol);
-                int track = musicCursor.getInt(trackCol);
-
-                if (prevArtistGroup == null || artist.compareToIgnoreCase(prevArtistGroup.getName()) != 0) {
-                    SongGroup artistGroup = new SongGroup(artist, Typeface.BOLD, getSongPadding(0));
-                    songItems.add(artistGroup);
-                    if (prevArtistGroup != null)
-                        prevArtistGroup.setEndPos(lastSongPos);
-                    prevArtistGroup = artistGroup;
-                    prevAlbumGroup = null;
-                }
-
-                if (prevAlbumGroup == null || album.compareToIgnoreCase(prevAlbumGroup.getName()) != 0) {
-                    SongGroup albumGroup = new SongGroup(album, Typeface.ITALIC, getSongPadding(1));
-                    songItems.add(albumGroup);
-                    if (prevAlbumGroup != null)
-                        prevAlbumGroup.setEndPos(lastSongPos);
-                    prevAlbumGroup = albumGroup;
-                }
-
-                Song song = new Song(id, title, artist, album, duration / 1000, track, null,
-                        getSongPadding(2), rootFolder);
-
-                lastSongPos = songItems.size();
-                if(id == savedID)
-                    songPos = lastSongPos;
-
-                songItems.add(song);
-            }
-            while (musicCursor.moveToNext());
-
-            // there is at least one song
-            prevArtistGroup.setEndPos(lastSongPos);
-            prevAlbumGroup.setEndPos(lastSongPos);
+    public class MusicBinder extends Binder {
+        MusicService getService() {
+            return MusicService.this;
         }
     }
 
-
-    public void initSongsByPath(Cursor musicCursor) {
-        if (musicCursor != null && musicCursor.moveToFirst()) {
-            int titleCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
-            int idCol = musicCursor.getColumnIndex(MediaStore.Audio.Media._ID);
-            int artistCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
-            int albumCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM);
-            int durationCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
-            int pathCol = musicCursor.getColumnIndex(MediaStore.MediaColumns.DATA);
-            int trackCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.TRACK);
-
-            do {
-                long id = musicCursor.getLong(idCol);
-                String title = musicCursor.getString(titleCol);
-                String artist = musicCursor.getString(artistCol);
-                String album = musicCursor.getString(albumCol);
-                int duration = musicCursor.getInt(durationCol);
-                int track = musicCursor.getInt(trackCol);
-                String path = musicCursor.getString(pathCol);
-
-                Song song = new Song(id, title, artist, album, duration / 1000, track, path,
-                        getSongPadding(2), rootFolder);
-                songItems.add(song);
-                Log.d("MusicService", "song added: " + song.toString());
-            }
-            while (musicCursor.moveToNext());
-        }
-
-        // sort
-        Collections.sort(songItems, new Comparator<SongItem>() {
-            public int compare(SongItem first, SongItem second) {
-                // only Song has been added so far
-                Song a = (Song) first;
-                Song b = (Song) second;
-                int cmp = a.getFolder().compareToIgnoreCase(b.getFolder());
-                if (cmp == 0) {
-                    cmp = a.getArtist().compareToIgnoreCase(b.getArtist());
-                    if (cmp == 0) {
-                        cmp = a.getAlbum().compareToIgnoreCase(b.getAlbum());
-                        if (cmp == 0) {
-                            cmp = a.getTrack() - b.getTrack();
-                        }
-                    }
-                }
-                return cmp;
-            }
-        });
-
-        // add group
-        int lastSongPos = -1;
-        SongGroup prevFolderGroup = null;
-        SongGroup prevArtistGroup = null;
-
-        int idx;
-        for (idx = 0; idx < songItems.size(); idx++) {
-            Song song = (Song) songItems.get(idx);
-            String curFolder = song.getFolder();
-            boolean newFolderGroup = false;
-            if (prevFolderGroup == null || curFolder.compareToIgnoreCase(prevFolderGroup.getName()) != 0) {
-                SongGroup folderGroup = new SongGroup(curFolder, Typeface.BOLD_ITALIC, getSongPadding(0));
-                songItems.add(idx, folderGroup);
-                if (prevFolderGroup != null)
-                    prevFolderGroup.setEndPos(lastSongPos);
-                idx++;
-                prevFolderGroup = folderGroup;
-                newFolderGroup = true;
-            }
-            String curArtist = song.getArtist();
-            if (newFolderGroup || curArtist.compareToIgnoreCase(prevArtistGroup.getName()) != 0) {
-                SongGroup artistGroup = new SongGroup(curArtist, Typeface.BOLD, getSongPadding(1));
-                songItems.add(idx, artistGroup);
-                if (prevArtistGroup != null)
-                    prevArtistGroup.setEndPos(lastSongPos);
-                idx++;
-                prevArtistGroup = artistGroup;
-            }
-            lastSongPos = idx;
-            if (song.getID() == savedID)
-                songPos = idx;
-        }
-
-        if (prevFolderGroup != null)
-            prevFolderGroup.setEndPos(lastSongPos);
-        if (prevArtistGroup != null)
-            prevArtistGroup.setEndPos(lastSongPos);
+    @Override
+    public IBinder onBind(Intent arg0) {
+        return musicBind;
     }
 
+
+    @Override
+    public void onDestroy() {
+        Log.d("MusicService", "onDestroy");
+        save();
+        rows.save();
+        releaseAudio();
+        stopSensor();
+    }
+
+
+
+    /*** PLAYER ***/
 
     // create AudioManager and MediaPlayer at the last moment
     // this func assure they are initialized
@@ -375,7 +177,6 @@ public class MusicService extends Service implements
 
         stopNotification();
     }
-
 
     @Override
     public void onAudioFocusChange(int focusChange) {
@@ -438,135 +239,19 @@ public class MusicService extends Service implements
         }
 
         seekFinished = true;
-        Log.d("MusicService", "onSeekComplete setProgress" + Song.secondsToMinutes(getCurrentPosition()));
-    }
-
-    @Override
-    public void onSensorChanged(SensorEvent event) {
-        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            getAccelerometer(event);
-        }
-    }
-
-
-    private void getAccelerometer(SensorEvent event) {
-        float[] values = event.values;
-        // Movement
-        float x = values[0];
-        float y = values[1];
-        float z = values[2];
-
-        // algo found here : http://stackoverflow.com/questions/2317428/android-i-want-to-shake-it
-        accelLast = accelCurrent;
-        accelCurrent = Math.sqrt((double) (x*x + y*y + z*z));
-        double delta = accelCurrent - accelLast;
-        accel = accel * 0.9f + delta; // perform low-cut filter
-
-        if (accel > shakeThreshold) {
-            final long actualTime = event.timestamp;
-            if (actualTime - lastUpdate < MIN_SHAKE_PERIOD) {
-                return;
-            }
-            lastUpdate = actualTime;
-
-            Log.d("MusicService", "Device was shuffed. Acceleration: " +
-                    String.format("%.1f", accel) +
-                    " x: " + String.format("%.1f", x*x) +
-                    " y: " + String.format("%.1f", y*y) +
-                    " z: " + String.format("%.1f", z*z));
-
-            // goes to next song
-            if(playingLaunched()) {
-                playNext();
-                changed = true;
-            }
-        }
-    }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {}
-
-
-    public class MusicBinder extends Binder {
-        MusicService getService() {
-            return MusicService.this;
-        }
-    }
-
-    @Override
-    public IBinder onBind(Intent arg0) {
-        return musicBind;
-    }
-
-
-    @Override
-    public void onDestroy() {
-        Log.d("MusicService", "onDestroy");
-        savePreferences();
-        releaseAudio();
-        stopSensor();
-    }
-
-    private void restorePreferences() {
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-        savedID = settings.getLong(PrefKeys.CURR_SONG.name(), -1);
-        Log.d("MusicService", "restorePreferences savedId: " + savedID);
-
-        enableShake = settings.getBoolean(PrefKeys.ENABLE_SHAKE.name(), false);
-        shakeThreshold = Float.valueOf(settings.getString(PrefKeys.SHAKE_THRESHOLD.name(),
-                getString(R.string.settings_default_shake_threshold))) / 10.0f;
-        Log.d("MusicService", "restorePreferences enable shake: " + enableShake +
-                " threshold:" + shakeThreshold);
-
-        rootFolder = settings.getString(PrefKeys.ROOT_FOLDER.name(), Settings.getDefaultMusicDir());
-
-        filter = Filter.valueOf(settings.getString(PrefKeys.FILTER.name(), Filter.FOLDER.name()));
-    }
-
-    private void savePreferences() {
-        Log.d("MusicService", "savePreferences save song: " + songPos);
-
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor = settings.edit();
-
-        updateSavedId();
-        editor.putLong(PrefKeys.CURR_SONG.name(), savedID);
-        editor.putString(PrefKeys.FILTER.name(), filter.name());
-        editor.putBoolean(PrefKeys.ENABLE_SHAKE.name(), enableShake);
-        editor.commit();
-    }
-
-    public void setSongPos(int songIndex){
-        songPos = songIndex;
-    }
-
-    public int getSongPos() {
-        return songPos;
-    }
-
-    public ArrayList<SongItem> getSongItems() {
-        return songItems;
+        Log.d("MusicService", "onSeekComplete setProgress" + RowSong.secondsToMinutes(getCurrentPosition()));
     }
 
     public void playSong() {
-        if(songItems.size() == 0)
+        RowSong rowSong = rows.getCurrSong();
+        if (rowSong == null)
             return;
-
-        SongItem songItem = songItems.get(songPos);
-        Song song;
-        if(songItem.getClass() == Song.class) {
-            song = (Song) songItem;
-        }
-        else {
-            Log.w("MusicService", "playSong try to start playing with a wrong SongItem!");
-            return;
-        }
 
         getPlayer().reset();
         state.setState(PlayerState.Idle);
 
         // get id
-        long currSong = song.getID();
+        long currSong = rowSong.getID();
         // set uri
         Uri trackUri = ContentUris.withAppendedId(
                 android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, currSong);
@@ -609,44 +294,9 @@ public class MusicService extends Service implements
         state.setState(PlayerState.Started);
     }
 
-    public void startNotification() {
-        SongItem songItem = songItems.get(songPos);
-        if(songItem.getClass() == Song.class) {
-            Song song = (Song) songItem;
-            Intent notificationIntent = new Intent(this, Main.class);
-            notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            PendingIntent pendInt = PendingIntent.getActivity(this, 0,
-                    notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-            Notification notification = new Notification(R.drawable.ic_launcher,
-                    song.getTitle(),
-                    System.currentTimeMillis());
-            notification.setLatestEventInfo(this, "SicMu playing", song.getTitle() +
-                    " - " + song.getArtist(), pendInt);
 
-            startForeground(NOTIFY_ID, notification);
-            foreground = true;
-        }
-        else {
-            Log.w("MusicService", "startNotification try to start a notification with a wrong SongItem!");
-        }
-    }
-
-    public void stopNotification() {
-        if(foreground)
-            stopForeground(true);
-        foreground = false;
-    }
-
-    public boolean isPlaying() {
-        return player != null && player.isPlaying();
-    }
-
-    public boolean getChanged() {
-        boolean hasChanged = changed;
-        changed = false;
-        return hasChanged;
-    }
+    /*** PLAY ACTION ***/
 
     // get curr position in second
     public int getCurrentPosition(){
@@ -662,7 +312,7 @@ public class MusicService extends Service implements
         return player.getDuration() / 1000;
     }
 
-    // move to this song pos in second
+    // move to this song genuinePos in second
     public void seekTo(int posn){
         if(player == null)
             return;
@@ -681,12 +331,12 @@ public class MusicService extends Service implements
     }
 
     // unpause
-    public void start(){
+    public void start() {
         getPlayer().start();
         state.setState(PlayerState.Started);
     }
 
-    public void pause(){
+    public void pause() {
         if(player == null)
             return;
 
@@ -694,33 +344,27 @@ public class MusicService extends Service implements
         state.setState(PlayerState.Paused);
     }
 
-    public void playPrev(){
-        songPos--;
-        if(songPos < 0)
-            songPos = songItems.size() - 1;
-
-        while(songItems.get(songPos).getClass() != Song.class) {
-            songPos--;
-            if(songPos < 0)
-                songPos = songItems.size() - 1;
-        }
-
-        playSong();
-    }
-
-    public void playNext(){
-        songPos++;
-        if(songPos >= songItems.size())
-            songPos = 0;
-
-        while(songItems.get(songPos).getClass() != Song.class)
-            songPos++;
+    public void playPrev() {
+        rows.moveToPrevSong();
 
         if(foreground)
             startNotification();
+
         playSong();
     }
 
+    public void playNext() {
+        rows.moveToNextSong();
+
+        if(foreground)
+            startNotification();
+
+        playSong();
+    }
+
+
+
+    /*** STATE ***/
 
     public boolean isInState(int states) {
         return state.compare(states);
@@ -748,6 +392,110 @@ public class MusicService extends Service implements
     public boolean playingPaused() {
         return state.compare(PlayerState.Paused);
     }
+
+    public boolean isPlaying() {
+        return player != null && player.isPlaying();
+    }
+
+
+
+    /*** NOTIFICATION ***/
+
+    public void startNotification() {
+        RowSong rowSong = rows.getCurrSong();
+        if(rowSong == null)
+            return;
+
+        Intent notificationIntent = new Intent(this, Main.class);
+        notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendInt = PendingIntent.getActivity(this, 0,
+                notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Notification notification = new Notification(R.drawable.ic_launcher,
+                rowSong.getTitle(),
+                System.currentTimeMillis());
+        notification.setLatestEventInfo(this, "SicMu playing", rowSong.getTitle() +
+                " - " + rowSong.getArtist(), pendInt);
+
+        startForeground(NOTIFY_ID, notification);
+        foreground = true;
+    }
+
+    public void stopNotification() {
+        if(foreground)
+            stopForeground(true);
+        foreground = false;
+    }
+
+
+
+    /*** PREFERENCES ***/
+
+    private void restore() {
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+        enableShake = settings.getBoolean(PrefKeys.ENABLE_SHAKE.name(), false);
+        shakeThreshold = Float.valueOf(settings.getString(PrefKeys.SHAKE_THRESHOLD.name(),
+                getString(R.string.settings_default_shake_threshold))) / 10.0f;
+        Log.d("MusicService", "restore enable shake: " + enableShake +
+                " threshold:" + shakeThreshold);
+    }
+
+    private void save() {
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = settings.edit();
+
+        Log.d("MusicService", "save enableShake: " + enableShake);
+        editor.putBoolean(PrefKeys.ENABLE_SHAKE.name(), enableShake);
+        editor.commit();
+    }
+
+
+
+    /*** SENSORS ***/
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            getAccelerometer(event);
+        }
+    }
+
+    private void getAccelerometer(SensorEvent event) {
+        float[] values = event.values;
+        // Movement
+        float x = values[0];
+        float y = values[1];
+        float z = values[2];
+
+        // algo found here : http://stackoverflow.com/questions/2317428/android-i-want-to-shake-it
+        accelLast = accelCurrent;
+        accelCurrent = Math.sqrt((double) (x*x + y*y + z*z));
+        double delta = accelCurrent - accelLast;
+        accel = accel * 0.9f + delta; // perform low-cut filter
+
+        if (accel > shakeThreshold) {
+            final long actualTime = event.timestamp;
+            if (actualTime - lastUpdate < MIN_SHAKE_PERIOD) {
+                return;
+            }
+            lastUpdate = actualTime;
+
+            Log.d("MusicService", "Device was shuffed. Acceleration: " +
+                    String.format("%.1f", accel) +
+                    " x: " + String.format("%.1f", x*x) +
+                    " y: " + String.format("%.1f", y*y) +
+                    " z: " + String.format("%.1f", z*z));
+
+            // goes to next song
+            if(playingLaunched()) {
+                playNext();
+                changed = true;
+            }
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {}
 
     public void setEnableShake(boolean shake) {
         enableShake = shake;
@@ -785,57 +533,4 @@ public class MusicService extends Service implements
         }
     }
 
-    public Filter getFilter() {return filter;}
-    public void setFilter(Filter theFilter) {
-        if(filter != theFilter) {
-            filter = theFilter;
-            reinitSongs();
-        }
-    }
-
-    public void reinitSongs() {
-        // todo: handle the current playing song finish during reinitSongs()...
-        updateSavedId();
-
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-        rootFolder = settings.getString(PrefKeys.ROOT_FOLDER.name(), Settings.getDefaultMusicDir());
-
-        songItems.clear();
-        initSongs();
-
-        changed = true;
-    }
-
-    // cache result
-    private static int lastPx1 = -1;
-    private static int lastPx2 = -1;
-    private int getSongPadding(int shift) {
-        int px;
-        switch(shift) {
-            case 1:
-                if(lastPx1 < 0)
-                    lastPx1 = convertDpToPixels(10);
-                px = lastPx1;
-                break;
-            case 2:
-                if(lastPx2 < 0)
-                    lastPx2 = convertDpToPixels(20);
-                px = lastPx2;
-                break;
-            default:
-                px = 0;
-        }
-        return px;
-    }
-
-    private int convertDpToPixels(int dp) {
-        Resources r = getResources();
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics());
-    }
-
-    private void updateSavedId() {
-        SongItem item = songItems.get(songPos);
-        if(item.getClass() == Song.class)
-            savedID = ((Song) item).getID();
-    }
 }

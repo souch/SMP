@@ -1,7 +1,7 @@
 package souch.smp;
 
 public enum PrefKeys {
-    CURR_SONG,
+    SONG_ID,
     NO_LOCK,
     FOLLOW_SONG,
     ENABLE_SHAKE,
