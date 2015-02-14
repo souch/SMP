@@ -158,8 +158,6 @@ public class Rows {
         else {
             fold(group, pos);
         }
-        // update state
-        group.setFolded(!group.isFolded());
     }
 
     private void fold(RowGroup group, int pos) {
@@ -169,6 +167,7 @@ public class Rows {
             //Log.d("Rows", "Item removed pos: " + pos + " row: " + songItems.get(pos));
             rows.remove(pos);
         }
+        group.setFolded(true);
     }
 
     private void unfold(RowGroup group, int pos) {
@@ -178,9 +177,15 @@ public class Rows {
              group.getGenuinePos() + i < rowsUnfolded.size() &&
                      (row = rowsUnfolded.get(group.getGenuinePos() + i)).getLevel() > group.getLevel() ;
              i++) {
+            // todo: keeps the sub group folded?
+            // unfold if previously folded
+            if(row.getClass() == RowGroup.class)
+                ((RowGroup) row).setFolded(false);
+
             rows.add(pos + i, row);
             //Log.d("Rows", "Item added pos: " + pos + i + " row: " + songItem);
         }
+        group.setFolded(false);
     }
 
 
