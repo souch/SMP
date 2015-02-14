@@ -105,6 +105,7 @@ public class Main extends Activity {
                     if(rows.get(position).getClass() == RowSong.class)
                         musicSrv.playSong();
                     updatePlayButton();
+                    scrollToCurrSong();
                 }
             });
             serviceBound = true;
@@ -337,6 +338,14 @@ public class Main extends Activity {
                 if(musicSrv != null) {
                     rows.fold();
                     songAdt.notifyDataSetChanged();
+                    scrollToCurrSong();
+                }
+                return true;
+            case R.id.action_unfold:
+                if(musicSrv != null) {
+                    rows.unfold();
+                    songAdt.notifyDataSetChanged();
+                    scrollToCurrSong();
                 }
                 return true;
             case R.id.action_shake:

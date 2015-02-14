@@ -11,7 +11,12 @@
         android:title="@string/action_shake_disabled"/>
 
     <item android:id="@+id/action_fold"
-        android:title="@string/action_fold" />
+        android:title="@string/action_fold"
+        android:icon="@drawable/ic_menu_folded" />
+
+    <item android:id="@+id/action_unfold"
+        android:title="@string/action_unfold"
+        android:icon="@drawable/ic_menu_unfolded" />
 
     <item android:id="@+id/action_settings"
         android:title="@string/action_settings"

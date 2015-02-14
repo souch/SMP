@@ -156,7 +156,10 @@ public class Rows {
 
     // unfold everything
     public void unfold() {
-
+        rows = (ArrayList<Row>) rowsUnfolded.clone();
+        for(Row row : rows)
+            if (row.getClass() == RowGroup.class)
+                ((RowGroup) row).setFolded(false);
     }
 
     public void invertFold(int pos) {
