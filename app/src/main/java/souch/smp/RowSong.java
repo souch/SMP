@@ -50,6 +50,7 @@ public class RowSong extends Row {
     public void setDurationText(TextView text) {
         text.setText(secondsToMinutes(getDuration()));
         text.setTextColor(Color.WHITE);
+        text.setTypeface(null, typeface);
     }
 
     public String toString() {

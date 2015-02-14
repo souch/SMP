@@ -18,6 +18,7 @@ No eye candy graphics.
 - bluetooth support
 - sorted by artists, albums and track number
 - or sorted by folders, artists, albums and track number
+- groups can be fold/unfold
 - show current played song in list
 - notification when playing
 - seek bar
@@ -36,7 +37,6 @@ No eye candy graphics.
 
 ### Todo (perhaps :-)
 
-- the groups can be fold/unfold
 - group by genre
 - fast on big music list (> 5Go)
 - guess "smart" track number (2 < 11, song file name vs id tag, ...)

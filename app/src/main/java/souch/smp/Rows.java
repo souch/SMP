@@ -251,9 +251,11 @@ public class Rows {
         rows = (ArrayList<Row>) rowsUnfolded.clone();
 
         // to comment in release mode:
+        /*
         int idx;
         for(idx = 0; idx < rowsUnfolded.size(); idx++)
             Log.d("Rows", "songItem " + idx + " added: " + rowsUnfolded.get(idx).toString());
+        */
         Log.d("Rows", "songItems initialized in " + (System.currentTimeMillis() - startTime) + "ms");
         Log.d("Rows", "songPos: " + currPos);
     }
@@ -299,6 +301,8 @@ public class Rows {
                     currPos = rowsUnfolded.size();
 
                 rowsUnfolded.add(rowSong);
+                prevArtistGroup.incNbRowSong();
+                prevAlbumGroup.incNbRowSong();
             }
             while (musicCursor.moveToNext());
             setGroupSelectedState(currPos, true);
@@ -328,7 +332,7 @@ public class Rows {
                 RowSong rowSong = new RowSong(-1, 2, id, title, artist, album, duration / 1000, track, path,
                         rootFolder);
                 rowsUnfolded.add(rowSong);
-                Log.d("Rows", "song added: " + rowSong.toString());
+                //Log.d("Rows", "song added: " + rowSong.toString());
             }
             while (musicCursor.moveToNext());
         }
@@ -383,6 +387,9 @@ public class Rows {
 
             rowSong.setGenuinePos(idx);
             rowSong.setParent(prevArtistGroup);
+
+            prevFolderGroup.incNbRowSong();
+            prevArtistGroup.incNbRowSong();
         }
         setGroupSelectedState(currPos, true);
     }

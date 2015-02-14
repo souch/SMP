@@ -15,6 +15,7 @@ shuffle in sort/shuffle all/no shuffle
 stop at the end of first stack / go to the next stack (go to beginning if at the end)
 help separated from settings
 adjust brightness when on no lock
+show cur song played in total when group folded : i.e. 5/13  (the group has 13 songs and the fifth is selected)
 
 
 
