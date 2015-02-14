@@ -105,7 +105,6 @@ public class Main extends Activity {
                     if(rows.get(position).getClass() == RowSong.class)
                         musicSrv.playSong();
                     updatePlayButton();
-                    scrollToCurrSong();
                 }
             });
             serviceBound = true;
