@@ -333,6 +333,12 @@ public class Main extends Activity {
                 Intent intent = new Intent(this, Settings.class);
                 startActivity(intent);
                 return true;
+            case R.id.action_fold:
+                if(musicSrv != null) {
+                    rows.fold();
+                    songAdt.notifyDataSetChanged();
+                }
+                return true;
             case R.id.action_shake:
                 if(musicSrv != null) {
                     if(getPackageManager().hasSystemFeature(PackageManager.FEATURE_SENSOR_ACCELEROMETER)) {

@@ -9,6 +9,8 @@
 
     <string name="settings_title">Settings</string>
 
+    <string name="action_fold">Fold all</string>
+
     <string name="settings_rescan_title">Rescan</string>
     <string name="settings_rescan">Rescan media files</string>
     <string name="settings_rescan_key">RESCAN</string>

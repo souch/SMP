@@ -142,6 +142,20 @@ public class Rows {
         setGroupSelectedState(currPos, true);
     }
 
+    // fold everything
+    public void fold() {
+        for (int i = 0; i < rows.size(); i++) {
+            Row row = rows.get(i);
+            if (row.getClass() == RowGroup.class)
+                fold((RowGroup) rows.get(i), i);
+        }
+    }
+
+    // unfold everything
+    public void unfold() {
+
+    }
+
     public void invertFold(int pos) {
         if(rows.get(pos).getClass() != RowGroup.class) {
             Log.w("Rows", "invertFold called on class that is not SongGroup!");
@@ -160,6 +174,7 @@ public class Rows {
         }
     }
 
+    // group and pos must correspond in the foldable rows
     private void fold(RowGroup group, int pos) {
         pos++;
         // remove every following rows that has a higher level
@@ -170,6 +185,7 @@ public class Rows {
         group.setFolded(true);
     }
 
+     // group and pos must correspond in the foldable rows
     private void unfold(RowGroup group, int pos) {
         // add every missing rows
         Row row;

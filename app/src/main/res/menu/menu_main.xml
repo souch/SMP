@@ -10,6 +10,9 @@
         android:icon="@drawable/ic_menu_shake"
         android:title="@string/action_shake_disabled"/>
 
+    <item android:id="@+id/action_fold"
+        android:title="@string/action_fold" />
+
     <item android:id="@+id/action_settings"
         android:title="@string/action_settings"
         android:icon="@drawable/ic_menu_settings" />
