@@ -449,6 +449,7 @@ public class Main extends Activity {
         */
 
         int gotoSong = rows.getCurrPos();
+        Log.d("Main", "scrollToCurrSong getCurrPos:" + gotoSong);
 
         // how far from top or bottom border the song is
         int offset = 0;

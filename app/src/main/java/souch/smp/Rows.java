@@ -85,7 +85,10 @@ public class Rows {
         int i;
         for (i = 0; i < rows.size(); i++) {
             Row row = rows.get(i);
-            if (row == song || (row.getClass() == RowGroup.class && ((RowGroup) row).isSelected()))
+            if (row == song ||
+                    (row.getClass() == RowGroup.class &&
+                            ((RowGroup) row).isSelected() &&
+                            ((RowGroup) row).isFolded()))
                 break;
         }
         if (i < rows.size())
