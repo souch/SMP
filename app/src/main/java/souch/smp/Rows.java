@@ -19,23 +19,24 @@ public class Rows {
     private ContentResolver musicResolver;
     private Context context;
 
-
     private Filter filter;
     private String rootFolder;
 
     // id of the song at last exiting
     private long savedID;
 
-    // current playing position within rows
-    private int currPos;
+    // todo: see if another Collection than ArrayList would give better perf and code simplicity
     private ArrayList<Row> rows;
-
     private ArrayList<Row> rowsUnfolded;
+    // current selected position within rowsUnfolded
+    // never assign this directly, instead use setCurrPos
+    private int currPos;
 
     public Rows(ContentResolver resolver, Context theContext) {
         musicResolver = resolver;
         context = theContext;
         currPos = -1;
+
         rowsUnfolded = new ArrayList<>();
         rows = new ArrayList<>();
 
@@ -43,23 +44,22 @@ public class Rows {
         init();
     }
 
+    // size of the foldable array
     public int size() {
         return rows.size();
     }
 
+    // the user choose a row
     public void select(int pos) {
-        /*
-        while(songItems.get(position).getClass() != Song.class)
-             position++;
-        */
         if(rows.get(pos).getClass() == RowSong.class) {
-            currPos = pos;
+            setCurrPos(rows.get(pos).getGenuinePos());
         }
         else {
             invertFold(pos);
         }
     }
 
+    // get row from the foldable array
     public Row get(int pos) {
         Row row = null;
         if (pos >= 0 && pos < rows.size())
@@ -67,6 +67,7 @@ public class Rows {
         return row;
     }
 
+    // get the song currently selected (playing or paused) from the unfoldable array
     public RowSong getCurrSong() {
         Row row = null;
         if (currPos >= 0 && currPos < rowsUnfolded.size()) {
@@ -77,11 +78,40 @@ public class Rows {
         return (RowSong) row;
     }
 
-    public int getCurrSongPos() {
-        return currPos;
+    // get the currently selected row (group or song) from the foldable array
+    public int getCurrPos() {
+        int pos = -1;
+        Row song = getCurrSong();
+        int i;
+        for (i = 0; i < rows.size(); i++) {
+            Row row = rows.get(i);
+            if (row == song || (row.getClass() == RowGroup.class && ((RowGroup) row).isSelected()))
+                break;
+        }
+        if (i < rows.size())
+            pos = i;
+        return pos;
+    }
+
+    private void setCurrPos(int pos) {
+        setGroupSelectedState(currPos, false);
+        currPos = pos;
+        setGroupSelectedState(currPos, true);
+    }
+
+    private void setGroupSelectedState(int pos, boolean selected) {
+        if (pos >= 0 && pos < rowsUnfolded.size()) {
+            RowGroup group = (RowGroup) rowsUnfolded.get(pos).getParent();
+            while (group != null) {
+                group.setSelected(selected);
+                group = (RowGroup) group.getParent();
+            }
+        }
     }
 
     public void moveToNextSong() {
+        setGroupSelectedState(currPos, false);
+
         currPos++;
         if (currPos >= rowsUnfolded.size())
             currPos = 0;
@@ -92,9 +122,13 @@ public class Rows {
 
         if (currPos == rowsUnfolded.size())
             currPos = -1;
+
+        setGroupSelectedState(currPos, true);
     }
 
     public void moveToPrevSong() {
+        setGroupSelectedState(currPos, false);
+
         currPos--;
         if (currPos < 0)
             currPos = rowsUnfolded.size() - 1;
@@ -104,6 +138,8 @@ public class Rows {
             if (currPos < 0)
                 currPos = rowsUnfolded.size() - 1;
         }
+
+        setGroupSelectedState(currPos, true);
     }
 
     public void invertFold(int pos) {
@@ -205,7 +241,7 @@ public class Rows {
             int idx;
             for(idx = 0; idx < rowsUnfolded.size(); idx++) {
                 if (rowsUnfolded.get(idx).getClass() == RowSong.class) {
-                    currPos = idx;
+                    setCurrPos(idx);
                     break;
                 }
             }
@@ -222,7 +258,7 @@ public class Rows {
         Log.d("Rows", "songPos: " + currPos);
     }
 
-    public void initByArtist(Cursor musicCursor) {
+    private void initByArtist(Cursor musicCursor) {
         if (musicCursor != null && musicCursor.moveToFirst()) {
             int titleCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
             int idCol = musicCursor.getColumnIndex(MediaStore.Audio.Media._ID);
@@ -250,12 +286,14 @@ public class Rows {
 
                 if (prevAlbumGroup == null || album.compareToIgnoreCase(prevAlbumGroup.getName()) != 0) {
                     RowGroup albumGroup = new RowGroup(rowsUnfolded.size(), 1, album, Typeface.ITALIC);
+                    albumGroup.setParent(prevArtistGroup);
                     rowsUnfolded.add(albumGroup);
                     prevAlbumGroup = albumGroup;
                 }
 
                 RowSong rowSong = new RowSong(rowsUnfolded.size(), 2, id, title, artist, album,
                         duration / 1000, track, null, rootFolder);
+                rowSong.setParent(prevAlbumGroup);
 
                 if(id == savedID)
                     currPos = rowsUnfolded.size();
@@ -263,11 +301,12 @@ public class Rows {
                 rowsUnfolded.add(rowSong);
             }
             while (musicCursor.moveToNext());
+            setGroupSelectedState(currPos, true);
         }
     }
 
 
-    public void initByPath(Cursor musicCursor) {
+    private void initByPath(Cursor musicCursor) {
         if (musicCursor != null && musicCursor.moveToFirst()) {
             int titleCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
             int idCol = musicCursor.getColumnIndex(MediaStore.Audio.Media._ID);
@@ -333,6 +372,7 @@ public class Rows {
             String curArtist = rowSong.getArtist();
             if (prevArtistGroup == null || curArtist.compareToIgnoreCase(prevArtistGroup.getName()) != 0) {
                 RowGroup artistGroup = new RowGroup(idx, 1, curArtist, Typeface.BOLD);
+                artistGroup.setParent(prevFolderGroup);
                 rowsUnfolded.add(idx, artistGroup);
                 idx++;
                 prevArtistGroup = artistGroup;
@@ -342,7 +382,9 @@ public class Rows {
                 currPos = idx;
 
             rowSong.setGenuinePos(idx);
+            rowSong.setParent(prevArtistGroup);
         }
+        setGroupSelectedState(currPos, true);
     }
 
 

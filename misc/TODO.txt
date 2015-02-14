@@ -1,0 +1,60 @@
+# todo
+
+deactivate sensors onpause
+song no match height - scroll put cur song at the middle of the screen - cur_play icon recenter vertically
+action bar for settings
+add slash at the end to folder?
+replace every text by sthg in strings.xml
+make settings icon fatter
+decrease goto icon size (at least the vertical bar)
+wider open lock icon
+On rescan finished, reinitSongs
+make the disc icon turn (when playing?)
+option : on startup, groups are folded or unfolded
+shuffle in sort/shuffle all/no shuffle
+stop at the end of first stack / go to the next stack (go to beginning if at the end)
+help separated from settings
+adjust brightness when on no lock
+
+
+
+# misc
+
+22" at 1600x1200
+sqrt(1600*1600+1200*1200)
+2000.00000000000000000000
+2000/22
+90.90909090909090909090 dpi
+hdpi:240
+xhdp:320
+
+http://androiddrawables.com/
+http://stackoverflow.com/questions/8507726/sending-sms-to-from-a-device-from-to-an-android-virtual-device
+# make icon:
+http://romannurik.github.io/AndroidAssetStudio/icons-actionbar.html
+/opt/android-sdk-linux/platforms/android-10/data/res/
+http://android-holo-colors.com/
+
+# search free icon
+https://www.iconfinder.com/icons/103855/speaker_volume_icon#size=128
+https://www.iconfinder.com/icons/208018/audio_play_sound_start_video_icon#size=128
+https://www.iconfinder.com/icons/111044/closed_lock_secure_icon#size=64
+https://www.iconfinder.com/icons/344692/arrow_audio_media_music_outline_play_player_right_sound_video_icon#size=128
+
+# back key
+http://android-developers.blogspot.fr/2009/12/back-and-other-hard-keys-three-stories.html
+
+# listview
+http://www.vogella.com/tutorials/AndroidListView/article.html#androidlists
+http://udinic.wordpress.com/2011/07/01/selectablelistview-make-selection-work/
+https://github.com/beworker/pinned-section-listview
+
+http://stackoverflow.com/questions/6208315/in-android-how-do-i-query-mediastore-only-for-files-in-a-specific-path-or-alte
+
+# list
+/opt/android-sdk-linux/sources/android-21/java/util/ArrayList.java
+
+# audio focus
+http://developer.android.com/guide/topics/media/mediaplayer.html#audiofocus
+
+

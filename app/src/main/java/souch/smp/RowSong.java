@@ -1,5 +1,6 @@
 package souch.smp;
 
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.widget.TextView;
 
@@ -43,6 +44,12 @@ public class RowSong extends Row {
     public void setText(TextView text) {
         super.setText(text);
         text.setText(title);
+        text.setTextColor(Color.WHITE);
+    }
+
+    public void setDurationText(TextView text) {
+        text.setText(secondsToMinutes(getDuration()));
+        text.setTextColor(Color.WHITE);
     }
 
     public String toString() {

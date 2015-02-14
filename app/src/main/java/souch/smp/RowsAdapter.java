@@ -65,7 +65,7 @@ public class RowsAdapter extends BaseAdapter {
         if(row.getClass() == RowSong.class) {
             RowSong rowSong = (RowSong) row;
             rowSong.setText(holder.text);
-            holder.duration.setText(RowSong.secondsToMinutes(rowSong.getDuration()));
+            rowSong.setDurationText(holder.duration);
 
             int currIcon = android.R.color.transparent;
             if (rowSong == rows.getCurrSong()) {
@@ -81,27 +81,7 @@ public class RowsAdapter extends BaseAdapter {
         else {
             RowGroup group = (RowGroup) row;
             group.setText(holder.text);
-            if(group.isFolded()) {
-                /*
-                int currPlayingGenuinePos = main.getSongItem().getGenuinePos();
-                Log.d("Main", "currPlayingItem: " + main.getSongItem() + " group.getGenuinePos(): " + group.getGenuinePos() +
-                        "position: " + position + " songItems.size(): "  + songItems.size());
-                if(position + 1 < songItems.size())
-                    Log.d("Main", "songItems.get(position + 1).getGenuinePos()" + songItems.get(position + 1).getGenuinePos());
-                if (currPlayingGenuinePos > group.getGenuinePos() &&
-                        (position + 1 >= songItems.size() ||
-                                currPlayingGenuinePos < songItems.get(position + 1).getGenuinePos()
-                        ))
-                    // the currently playing song is inside this folded group
-                    */
-                if(group.isPlaying())
-                    holder.duration.setText("playing...");
-                else
-                    holder.duration.setText("...");
-            }
-            else {
-                holder.duration.setText("");
-            }
+            group.setDurationText(holder.duration);
             holder.image.setImageResource(android.R.color.transparent);
         }
 

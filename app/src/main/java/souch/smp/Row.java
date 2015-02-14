@@ -8,24 +8,28 @@ import android.widget.TextView;
 public class Row {
     // level from the left
     protected int level;
-
     // position of the row within the unfolded rows array
     protected int genuinePos;
-
     protected int typeface;
+    protected Row parent;
 
     public Row(int position, int theLevel, int theTypeface) {
         genuinePos = position;
         level = theLevel;
         typeface = theTypeface;
+        parent = null;
     }
 
     public void setGenuinePos(int position) { genuinePos = position; }
     public int getGenuinePos() { return genuinePos; }
 
+    public Row getParent() { return parent; }
+    public void setParent(Row parent) { this.parent = parent; }
+
     public int getLevel() {
         return level;
     }
+
 
     public void setText(TextView text) {
         text.setPadding(getSongPadding(text.getResources()), 0, 0, 0);
