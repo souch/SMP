@@ -60,6 +60,12 @@ No eye candy graphics.
 - search?
 
 
+
+### Installation
+
+The SicMu Player is available on [F-Droid](https://f-droid.org/wiki/page/SicMu_Player)
+
+
 ### Credits
 
 Lot's of time saved thanks to Sue Smith's [tutorials on creating a Music Player on Android](http://code.tutsplus.com/tutorials/create-a-music-player-on-android-project-setup--mobile-22764).
@@ -72,9 +78,18 @@ Seekbar style created by Jérôme Van Der Linden (Creative Commons Attribution 3
 ### Developer
 
 Compiled with Android Studio.
+
 Robotium non regression tests are available in the androidTest folder.
+
 Tested on Gingerbread (2.3.6), Nexus 4 JellyBean (4.1.2), Samsung S3 (4.3).
+
 Detailed todo list in misc/TODO.txt
+
+
+### Donation
+
+If you don't know what to do with your money or want to make me smile the whole day:
+[Donate](https://rodolphe.souchaud.free.fr/donate)
 
 
 ### License
