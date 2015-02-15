@@ -89,7 +89,7 @@ Detailed todo list in misc/TODO.txt
 ### Donation
 
 If you don't know what to do with your money or want to make me smile the whole day:
-[Donate](https://rodolphe.souchaud.free.fr/donate)
+[Donate](http://rodolphe.souchaud.free.fr/donate)
 
 
 ### License
