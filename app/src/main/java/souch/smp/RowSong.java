@@ -28,8 +28,11 @@ public class RowSong extends Row {
         duration = dur;
         track = songTrack;
         path = songPath;
-        if(path != null)
+        if(path != null) {
             folder = (new File(path.replaceFirst(rootFolder, ""))).getParent();
+            if (folder == null)
+                folder = ".";
+        }
     }
 
     public long getID(){return id;}

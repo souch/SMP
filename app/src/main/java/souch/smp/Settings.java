@@ -128,7 +128,10 @@ public class Settings extends PreferenceActivity
     }
 
     static public String getDefaultMusicDir() {
-        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getPath();
+        String musicDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getPath();
+        if (!musicDir.endsWith(File.separator))
+            musicDir += File.separator;
+        return musicDir;
     }
 
     @Override
