@@ -1,7 +1,7 @@
 # todo
 
 deactivate sensors onpause
-song no match height - scroll put cur song at the middle of the screen - cur_play icon recenter vertically
+scroll put cur song at the middle of the screen
 action bar for settings
 add slash at the end to folder?
 replace every text by sthg in strings.xml
@@ -58,5 +58,12 @@ http://stackoverflow.com/questions/6208315/in-android-how-do-i-query-mediastore-
 
 # audio focus
 http://developer.android.com/guide/topics/media/mediaplayer.html#audiofocus
+
+# get f-droid installations number
+wget https://gitlab.com/fdroid/fdroiddata/raw/master/stats/total_downloads_app.txt -O - 2>/dev/null | sed 's/\([^ ]*\) \([^ ]*\)/\2 \1/' | sort -nr | less -N
+wget https://gitlab.com/fdroid/fdroiddata/raw/master/stats/total_downloads_app_version.txt -O - 2>/dev/null | grep souch.smp
+
+# example metadata f-droid
+https://gitlab.com/fdroid/fdroiddata/blob/master/metadata/org.adaway.txt
 
 
