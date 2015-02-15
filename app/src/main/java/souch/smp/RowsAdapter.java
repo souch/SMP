@@ -84,6 +84,7 @@ public class RowsAdapter extends BaseAdapter {
             group.setDurationText(holder.duration);
             holder.image.setImageResource(android.R.color.transparent);
         }
+        row.setBackgroundColor(rowView);
 
         return rowView;
     }

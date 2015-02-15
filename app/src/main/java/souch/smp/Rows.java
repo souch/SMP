@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.preference.PreferenceManager;
@@ -307,14 +308,14 @@ public class Rows {
                 int track = musicCursor.getInt(trackCol);
 
                 if (prevArtistGroup == null || artist.compareToIgnoreCase(prevArtistGroup.getName()) != 0) {
-                    RowGroup artistGroup = new RowGroup(rowsUnfolded.size(), 0, artist, Typeface.BOLD);
+                    RowGroup artistGroup = new RowGroup(rowsUnfolded.size(), 0, artist, Typeface.BOLD, Color.BLACK);
                     rowsUnfolded.add(artistGroup);
                     prevArtistGroup = artistGroup;
                     prevAlbumGroup = null;
                 }
 
                 if (prevAlbumGroup == null || album.compareToIgnoreCase(prevAlbumGroup.getName()) != 0) {
-                    RowGroup albumGroup = new RowGroup(rowsUnfolded.size(), 1, album, Typeface.ITALIC);
+                    RowGroup albumGroup = new RowGroup(rowsUnfolded.size(), 1, album, Typeface.ITALIC, Color.BLACK);
                     albumGroup.setParent(prevArtistGroup);
                     rowsUnfolded.add(albumGroup);
                     prevAlbumGroup = albumGroup;
@@ -393,7 +394,7 @@ public class Rows {
 
             String curFolder = rowSong.getFolder();
             if (prevFolderGroup == null || curFolder.compareToIgnoreCase(prevFolderGroup.getName()) != 0) {
-                RowGroup folderGroup = new RowGroup(idx, 0, curFolder, Typeface.BOLD_ITALIC);
+                RowGroup folderGroup = new RowGroup(idx, 0, curFolder, Typeface.BOLD, Color.argb(0xff, 0x20, 0x20, 0x20));
                 rowsUnfolded.add(idx, folderGroup);
                 idx++;
                 prevFolderGroup = folderGroup;
@@ -402,7 +403,7 @@ public class Rows {
 
             String curArtist = rowSong.getArtist();
             if (prevArtistGroup == null || curArtist.compareToIgnoreCase(prevArtistGroup.getName()) != 0) {
-                RowGroup artistGroup = new RowGroup(idx, 1, curArtist, Typeface.BOLD);
+                RowGroup artistGroup = new RowGroup(idx, 1, curArtist, Typeface.BOLD, Color.BLACK);
                 artistGroup.setParent(prevFolderGroup);
                 rowsUnfolded.add(idx, artistGroup);
                 idx++;

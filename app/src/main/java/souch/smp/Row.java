@@ -1,7 +1,9 @@
 package souch.smp;
 
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.util.TypedValue;
+import android.view.View;
 import android.widget.TextView;
 
 
@@ -34,6 +36,10 @@ public class Row {
     public void setText(TextView text) {
         text.setPadding(getSongPadding(text.getResources()), 0, 0, 0);
         text.setTypeface(null, typeface);
+    }
+
+    public void setBackgroundColor(View view) {
+        view.setBackgroundColor(Color.BLACK);
     }
 
     // cache result
