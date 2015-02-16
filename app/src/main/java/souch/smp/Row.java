@@ -57,7 +57,7 @@ public class Row {
     }
 
     public void setBackgroundColor(View view) {
-        view.setBackgroundColor(Color.BLACK);
+        view.setBackgroundColor(Color.argb(0x88, 0x0, 0x0, 0x0));
     }
 
     // cache result

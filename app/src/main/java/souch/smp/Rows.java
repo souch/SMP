@@ -326,14 +326,16 @@ public class Rows {
                 int track = musicCursor.getInt(trackCol);
 
                 if (prevArtistGroup == null || artist.compareToIgnoreCase(prevArtistGroup.getName()) != 0) {
-                    RowGroup artistGroup = new RowGroup(rowsUnfolded.size(), 0, artist, Typeface.BOLD, Color.BLACK);
+                    RowGroup artistGroup = new RowGroup(rowsUnfolded.size(), 0, artist,
+                            Typeface.BOLD, Color.argb(0x88, 0x0, 0x0, 0x0));
                     rowsUnfolded.add(artistGroup);
                     prevArtistGroup = artistGroup;
                     prevAlbumGroup = null;
                 }
 
                 if (prevAlbumGroup == null || album.compareToIgnoreCase(prevAlbumGroup.getName()) != 0) {
-                    RowGroup albumGroup = new RowGroup(rowsUnfolded.size(), 1, album, Typeface.ITALIC, Color.BLACK);
+                    RowGroup albumGroup = new RowGroup(rowsUnfolded.size(), 1, album,
+                            Typeface.ITALIC, Color.argb(0x88, 0x0, 0x0, 0x0));
                     albumGroup.setParent(prevArtistGroup);
                     rowsUnfolded.add(albumGroup);
                     prevAlbumGroup = albumGroup;
@@ -412,7 +414,8 @@ public class Rows {
 
             String curFolder = rowSong.getFolder();
             if (prevFolderGroup == null || curFolder.compareToIgnoreCase(prevFolderGroup.getName()) != 0) {
-                RowGroup folderGroup = new RowGroup(idx, 0, curFolder, Typeface.BOLD, Color.argb(0xff, 0x20, 0x20, 0x20));
+                RowGroup folderGroup = new RowGroup(idx, 0, curFolder,
+                        Typeface.BOLD, Color.argb(0x88, 0x35, 0x35, 0x35));
                 rowsUnfolded.add(idx, folderGroup);
                 idx++;
                 prevFolderGroup = folderGroup;
@@ -421,7 +424,8 @@ public class Rows {
 
             String curArtist = rowSong.getArtist();
             if (prevArtistGroup == null || curArtist.compareToIgnoreCase(prevArtistGroup.getName()) != 0) {
-                RowGroup artistGroup = new RowGroup(idx, 1, curArtist, Typeface.BOLD, Color.BLACK);
+                RowGroup artistGroup = new RowGroup(idx, 1, curArtist,
+                        Typeface.BOLD, Color.argb(0x88, 0x0, 0x0, 0x0));
                 artistGroup.setParent(prevFolderGroup);
                 rowsUnfolded.add(idx, artistGroup);
                 idx++;
