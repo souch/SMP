@@ -130,7 +130,15 @@ public class Main extends Activity {
             musicSrv.stopNotification();
 
             updatePlayButton();
-            scrollToCurrSong();
+
+            // listView.getVisiblePosition() is wrong while the listview is not shown.
+            // wait a bit that it is visible (should be replace by sthg like onXXX)
+            (new Timer()).schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    runOnUiThread(firstScroll);
+                }
+            }, 100);
         }
 
         @Override
@@ -261,6 +269,12 @@ public class Main extends Activity {
                     seekbar.setProgress(musicSrv.getCurrentPosition());
                 }
             }
+        }
+    };
+
+    final Runnable firstScroll = new Runnable() {
+        public void run() {
+            scrollToCurrSong();
         }
     };
 
@@ -457,42 +471,47 @@ public class Main extends Activity {
     }
 
     public void scrollToCurrSong() {
+        // this method could be improved, code is a bit obscure :-)
         if(rows.size() == 0)
             return;
 
-        final int firstVisible = songView.getFirstVisiblePosition();
-        final int lastVisible = songView.getLastVisiblePosition();
-        Log.v("Main", "scrollToCurrSong firstVisible:" + firstVisible + " lastVisible:" + lastVisible);
+        int first = songView.getFirstVisiblePosition();
+        int last = songView.getLastVisiblePosition();
+        int nbRow = last - first;
+        // on ListView startup getVisiblePosition gives strange result
+        if (nbRow < 0) {
+            nbRow = 1;
+            last = first + 1;
+        }
+        Log.d("Main", "scrollToCurrSong first: " + first + " last: " + last + " nbRow: " + nbRow);
 
-        final int smoothMaxOffset = 40; // deactivate smooth if too far
-        int showAround = 2; // to show a bit of songItems before or after the cur song
-        /*
-        // for tiny screen that can show less than 5 songItems
-        final int totalVisible = lastVisible - firstVisible;
-        showAround = showAround > totalVisible/2 ? totalVisible/2 : showAround;
-        showAround = showAround < 0 ? 0 : showAround;
-        Log.v("Main", "scrollToCurrSong showAround:" + showAround);
-        */
+        // to show a bit of songItems before or after the cur song
+        int showAround = (nbRow / 2) - 1;
+        showAround = showAround < 1 ? 1 : showAround;
+        Log.d("Main", "scrollToCurrSong showAround:" + showAround);
 
         int gotoSong = rows.getCurrPos();
         Log.d("Main", "scrollToCurrSong getCurrPos:" + gotoSong);
 
         // how far from top or bottom border the song is
         int offset = 0;
-        if(gotoSong > lastVisible)
-            offset = gotoSong - lastVisible;
-        if(gotoSong < firstVisible)
-            offset = firstVisible - gotoSong;
+        if(gotoSong > last)
+            offset = gotoSong - last;
+        if(gotoSong < first)
+            offset = first - gotoSong;
 
+        // deactivate smooth if too far
+        int smoothMaxOffset = 50;
         if(offset > smoothMaxOffset) {
+            // setSelection set position at top of the screen
             gotoSong -= showAround;
             if(gotoSong < 0)
                 gotoSong = 0;
-            // setSelection set position at top of the screen
             songView.setSelection(gotoSong);
         }
         else {
-            if(gotoSong + showAround >= lastVisible) {
+            // smoothScrollToPosition only make position visible
+            if(gotoSong + showAround >= last) {
                 gotoSong += showAround;
                 if(gotoSong >= rows.size())
                     gotoSong = rows.size() - 1;
@@ -502,7 +521,6 @@ public class Main extends Activity {
                 if(gotoSong < 0)
                     gotoSong = 0;
             }
-            // smoothScrollToPosition only make the position visible
             songView.smoothScrollToPosition(gotoSong);
         }
 

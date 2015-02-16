@@ -1,7 +1,6 @@
 # todo
 
 deactivate sensors onpause
-scroll put cur song at the middle of the screen
 action bar for settings
 add slash at the end to folder?
 replace every text by sthg in strings.xml
@@ -53,7 +52,7 @@ https://github.com/beworker/pinned-section-listview
 
 http://stackoverflow.com/questions/6208315/in-android-how-do-i-query-mediastore-only-for-files-in-a-specific-path-or-alte
 
-# list
+# list source code
 /opt/android-sdk-linux/sources/android-21/java/util/ArrayList.java
 
 # audio focus
