@@ -72,7 +72,7 @@ public class RowSong extends Row {
         text.setText(secondsToMinutes(getDuration()) + " ");
         text.setTextColor(Color.WHITE);
         text.setTypeface(null, typeface);
-        text.setBackgroundColor(Color.BLACK);
+        text.setBackgroundColor(Color.argb(0x00, 0x0, 0x0, 0x0));
     }
 
     public String toString() {
