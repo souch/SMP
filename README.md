@@ -31,13 +31,7 @@ No eye candy graphics.
 
 ### Help
 
-- tap on song to start it
-- tap on the left of a group to play the first song it contains or unfolded the group.
-- tap on the right of a group (on the v or ^ letter) to fold / unfold it
-- press on home button or back button to shut the song list and keep the music playing in background
-- press the button to the right of next to scroll the list to current played song
-- open the padlock button to disable lock screen (it prevents locking only when the app is on top; do not work on some device)
-- root folder can be customized: it is used only for hiding the first portion of the folders path when songs are sorted by folder
+- see help section inside settings
 
 
 ### Todo (perhaps :-)
