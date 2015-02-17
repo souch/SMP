@@ -338,7 +338,7 @@ public class MusicService extends Service implements
         seekFinished = false;
         int gotoPos = posn * 1000;
 
-        if(Build.VERSION.SDK_INT <= 10)
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)
             seekPosBug = gotoPos;
 
         player.seekTo(gotoPos);
