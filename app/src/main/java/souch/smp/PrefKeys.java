@@ -25,5 +25,6 @@ public enum PrefKeys {
     ENABLE_SHAKE,
     SHAKE_THRESHOLD,
     FILTER,
-    ROOT_FOLDER
+    ROOT_FOLDER,
+    DEFAULT_FOLD
 }

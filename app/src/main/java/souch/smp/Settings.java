@@ -31,6 +31,7 @@ import android.os.Environment;
 import android.os.IBinder;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
+import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.util.Log;
@@ -83,6 +84,8 @@ public class Settings extends PreferenceActivity
         if(!sharedPreferences.contains(rootFolderKey))
             prefRootFolder.setText(getDefaultMusicDir());
 
+        setFoldSummary(sharedPreferences);
+
         this.onContentChanged();
     }
 
@@ -133,7 +136,10 @@ public class Settings extends PreferenceActivity
             return;
         Log.d("MusicService", "onSharedPreferenceChanged: " + key);
 
-        if(key.equals(PrefKeys.ENABLE_SHAKE.name())) {
+        if(key.equals(PrefKeys.DEFAULT_FOLD.name())) {
+            setFoldSummary(sharedPreferences);
+        }
+        else if(key.equals(PrefKeys.ENABLE_SHAKE.name())) {
             musicSrv.setEnableShake(getShakePref(sharedPreferences));
         }
         else if(key.equals(PrefKeys.SHAKE_THRESHOLD.name())) {
@@ -177,6 +183,16 @@ public class Settings extends PreferenceActivity
             rescan();
         }
         return false;
+    }
+
+    static public int getFoldPref(SharedPreferences sharedPreferences) {
+        return Integer.valueOf(sharedPreferences.getString(PrefKeys.DEFAULT_FOLD.name(), "0"));
+    }
+
+    private void setFoldSummary(SharedPreferences sharedPreferences) {
+        ListPreference prefFold = (ListPreference) findPreference(PrefKeys.DEFAULT_FOLD.name());
+        int idx = getFoldPref(sharedPreferences);
+        prefFold.setSummary((getResources().getStringArray(R.array.settings_fold_entries))[idx]);
     }
 
     public void rescan() {

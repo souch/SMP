@@ -20,6 +20,13 @@
 
     <PreferenceCategory android:title="Song view">
 
+        <ListPreference
+            android:key="DEFAULT_FOLD"
+            android:title="@string/settings_fold_title"
+            android:entryValues="@array/settings_fold_values"
+            android:entries="@array/settings_fold_entries"
+            />
+
         <CheckBoxPreference
             android:key="FOLLOW_SONG"
             android:title="Scroll to new song played"

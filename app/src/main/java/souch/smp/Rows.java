@@ -302,7 +302,21 @@ public class Rows {
         }
 
         // shallow copy
-        rows = (ArrayList<Row>) rowsUnfolded.clone();
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
+        switch(Settings.getFoldPref(settings)) {
+            case 0:
+                // fold except curr
+                initRowsFolded();
+                invertFold(getCurrPos());
+                break;
+            case 1:
+                // fold
+                initRowsFolded();
+                break;
+            default:
+                // unfolded
+                rows = (ArrayList<Row>) rowsUnfolded.clone();
+        }
 
         // to comment in release mode:
         /*
@@ -312,6 +326,15 @@ public class Rows {
         */
         Log.d("Rows", "songItems initialized in " + (System.currentTimeMillis() - startTime) + "ms");
         Log.d("Rows", "songPos: " + currPos);
+    }
+
+    private void initRowsFolded() {
+        for(Row row : rowsUnfolded) {
+            if(row.getClass() == RowGroup.class && row.getLevel() == 0) {
+                rows.add(row);
+                ((RowGroup) row).setFolded(true);
+            }
+        }
     }
 
     private void initByArtist(Cursor musicCursor) {

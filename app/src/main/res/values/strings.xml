@@ -29,6 +29,18 @@
     <string name="action_fold">Fold</string>
     <string name="action_unfold">Unfold</string>
 
+    <string name="settings_fold_title">Fold state on startup</string>
+    <string-array name="settings_fold_entries">
+        <item>Folded except current songs group</item>
+        <item>Folded</item>
+        <item>Unfolded</item>
+    </string-array>
+    <string-array name="settings_fold_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
     <string name="settings_rescan_title">Rescan</string>
     <string name="settings_rescan">Rescan media files</string>
     <string name="settings_rescan_key">RESCAN</string>
