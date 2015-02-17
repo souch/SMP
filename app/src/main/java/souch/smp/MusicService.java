@@ -451,7 +451,7 @@ public class MusicService extends Service implements
 
     private void restore() {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-        enableShake = settings.getBoolean(PrefKeys.ENABLE_SHAKE.name(), false);
+        enableShake = Settings.getShakePref(settings);
         shakeThreshold = Float.valueOf(settings.getString(PrefKeys.SHAKE_THRESHOLD.name(),
                 getString(R.string.settings_default_shake_threshold))) / 10.0f;
         Log.d("MusicService", "restore enable shake: " + enableShake +
@@ -459,6 +459,10 @@ public class MusicService extends Service implements
     }
 
     private void save() {
+        saveEnableShake();
+    }
+
+    private void saveEnableShake() {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = settings.edit();
 
@@ -466,8 +470,6 @@ public class MusicService extends Service implements
         editor.putBoolean(PrefKeys.ENABLE_SHAKE.name(), enableShake);
         editor.commit();
     }
-
-
 
     /*** SENSORS ***/
 
@@ -521,6 +523,7 @@ public class MusicService extends Service implements
             startSensor();
         else
             stopSensor();
+        saveEnableShake();
     }
 
     public boolean getEnableShake() { return enableShake; }

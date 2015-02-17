@@ -7,7 +7,7 @@ replace every text by sthg in strings.xml
 make settings icon fatter
 decrease goto icon size (at least the vertical bar)
 wider open lock icon
-On rescan finished, reinitSongs
+Fix rescan on every android version - on rescan finished, reinitSongs
 make the disc icon turn (when playing?)
 option : on startup, groups are folded or unfolded
 shuffle in sort/shuffle all/no shuffle

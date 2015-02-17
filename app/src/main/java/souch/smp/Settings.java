@@ -29,6 +29,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
+import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -49,7 +50,9 @@ public class Settings extends PreferenceActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d("Settings", "onCreate");
         super.onCreate(savedInstanceState);
+        // fixme: everything should be put in onResume?
         addPreferencesFromResource(R.xml.preferences);
         playIntent = new Intent(this, MusicService.class);
         bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
@@ -58,10 +61,18 @@ public class Settings extends PreferenceActivity
 
         String thresholdKeys = PrefKeys.SHAKE_THRESHOLD.name();
         EditTextPreference prefShakeThreshold = (EditTextPreference) findPreference(thresholdKeys);
-        if(getPackageManager().hasSystemFeature(PackageManager.FEATURE_SENSOR_ACCELEROMETER))
+        CheckBoxPreference prefEnableShake = (CheckBoxPreference) findPreference(PrefKeys.ENABLE_SHAKE.name());
+        if(getPackageManager().hasSystemFeature(PackageManager.FEATURE_SENSOR_ACCELEROMETER)) {
             prefShakeThreshold.setSummary(sharedPreferences.getString(thresholdKeys, getString(R.string.settings_default_shake_threshold)));
-        else
+            prefEnableShake.setChecked(getShakePref(getPreferenceScreen().getSharedPreferences()));
+        }
+        else {
             prefShakeThreshold.setEnabled(false);
+            prefEnableShake.setEnabled(false);
+            Toast.makeText(getApplicationContext(),
+                    getResources().getString(R.string.settings_no_accelerometer),
+                    Toast.LENGTH_LONG).show();
+        }
 
         Preference rescan = findPreference(getResources().getString(R.string.settings_rescan_key));
         rescan.setOnPreferenceClickListener(this);
@@ -122,7 +133,10 @@ public class Settings extends PreferenceActivity
             return;
         Log.d("MusicService", "onSharedPreferenceChanged: " + key);
 
-        if(key.equals(PrefKeys.SHAKE_THRESHOLD.name())) {
+        if(key.equals(PrefKeys.ENABLE_SHAKE.name())) {
+            musicSrv.setEnableShake(getShakePref(sharedPreferences));
+        }
+        else if(key.equals(PrefKeys.SHAKE_THRESHOLD.name())) {
             String strThreshold = sharedPreferences.getString(PrefKeys.SHAKE_THRESHOLD.name(), getString(R.string.settings_default_shake_threshold));
             float threshold = Float.valueOf(strThreshold) / 10.0f;
             musicSrv.setShakeThreshold(threshold);
@@ -151,6 +165,10 @@ public class Settings extends PreferenceActivity
         if (!musicDir.endsWith(File.separator))
             musicDir += File.separator;
         return musicDir;
+    }
+
+    static public boolean getShakePref(SharedPreferences sharedPreferences) {
+        return sharedPreferences.getBoolean(PrefKeys.ENABLE_SHAKE.name(), false);
     }
 
     @Override
