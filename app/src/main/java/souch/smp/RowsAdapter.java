@@ -19,6 +19,7 @@
 package souch.smp;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -106,7 +107,18 @@ public class RowsAdapter extends BaseAdapter {
             holder.duration.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View durationView) {
                     Log.d("Main", "durationView.getId(): " + durationView.getId());
-                    main.invertFold(durationView.getId());
+                    durationView.setBackgroundColor(Color.argb(0x88, 0x65, 0x65, 0x65));
+
+                    // todo: rearrange code, this should be elsewhere
+                    class InvertFold implements Runnable {
+                        View view;
+                        InvertFold(View view) { this.view = view; }
+                        public void run() {
+                            main.invertFold(view.getId());
+                            // todo: reset highlight color for a few ms after invertFold?
+                        }
+                    }
+                    durationView.postDelayed(new InvertFold(durationView), 300);
                 }
             });
         }
@@ -114,5 +126,4 @@ public class RowsAdapter extends BaseAdapter {
 
         return rowView;
     }
-
 }

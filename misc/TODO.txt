@@ -1,7 +1,5 @@
 # todo
 
-
-higlight duration background onclick
 deactivate sensors onpause
 action bar for settings
 add slash at the end to folder?
@@ -58,6 +56,9 @@ http://stackoverflow.com/questions/6208315/in-android-how-do-i-query-mediastore-
 
 # audio focus
 http://developer.android.com/guide/topics/media/mediaplayer.html#audiofocus
+
+# unicode table
+http://unicode-table.com/en/#028C
 
 # get f-droid installations number
 wget https://gitlab.com/fdroid/fdroiddata/raw/master/stats/total_downloads_app.txt -O - 2>/dev/null | sed 's/\([^ ]*\) \([^ ]*\)/\2 \1/' | sort -nr | less -N
