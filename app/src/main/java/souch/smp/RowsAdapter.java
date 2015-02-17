@@ -19,6 +19,7 @@
 package souch.smp;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -84,7 +85,7 @@ public class RowsAdapter extends BaseAdapter {
             RowSong rowSong = (RowSong) row;
             rowSong.setText(holder.text);
             rowSong.setDurationText(holder.duration);
-
+            holder.duration.setOnClickListener(null);
             int currIcon = android.R.color.transparent;
             if (rowSong == rows.getCurrSong()) {
                 if (main.getMusicSrv().playingLaunched())
@@ -99,8 +100,15 @@ public class RowsAdapter extends BaseAdapter {
         else {
             RowGroup group = (RowGroup) row;
             group.setText(holder.text);
-            group.setDurationText(holder.duration);
             holder.image.setImageResource(android.R.color.transparent);
+            group.setDurationText(holder.duration);
+            holder.duration.setId(position);
+            holder.duration.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View durationView) {
+                    Log.d("Main", "durationView.getId(): " + durationView.getId());
+                    main.invertFold(durationView.getId());
+                }
+            });
         }
         row.setBackgroundColor(rowView);
 

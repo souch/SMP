@@ -13,6 +13,7 @@ No eye candy graphics.
 
 [More Screenshots](Screenshots.md)
 
+
 ### detailed features
 
 - play mp3, ogg, flac, midi, wav, mp4, 3gp... see android mediaplayer supported media formats (depends on android version).
@@ -31,11 +32,12 @@ No eye candy graphics.
 ### Help
 
 - tap on song to start it
-- tap on a group to fold / unfold it
+- tap on the left of a group to play the first song it contains or unfolded the group.
+- tap on the right of a group (on the v or ^ letter) to fold / unfold it
 - press on home button or back button to shut the song list and keep the music playing in background
 - press the button to the right of next to scroll the list to current played song
-- open the padlock button to disable lock screen (it prevents locking only when the app is on top)
-- root folder can be customized : useful only to hide the first portion of the folders path when songs are sorted by folder
+- open the padlock button to disable lock screen (it prevents locking only when the app is on top; do not work on some device)
+- root folder can be customized: it is used only for hiding the first portion of the folders path when songs are sorted by folder
 
 
 ### Todo (perhaps :-)
@@ -60,7 +62,6 @@ No eye candy graphics.
 - search?
 
 
-
 ### Installation
 
 The SicMu Player is available on [F-Droid](https://f-droid.org/wiki/page/SicMu_Player)
@@ -78,21 +79,21 @@ Seekbar style created by Jérôme Van Der Linden (Creative Commons Attribution 3
 ### Developer
 
 Compiled with Android Studio.
-
 Robotium non regression tests are available in the androidTest folder.
-
 Tested on Gingerbread (2.3.6), Nexus 4 JellyBean (4.1.2), Samsung S3 (4.3).
 
 Detailed todo list in misc/TODO.txt
+
+Feel free to add GitHub issues (feature request, bugs...).
 
 
 ### Donation
 
 If you don't know what to do with your money or want to make me smile the whole day:
-[Donate](http://rodolphe.souchaud.free.fr/donate)
+[donate](http://rodolphe.souchaud.free.fr/donate)
 
 
 ### License
 
-Simple Music Player is licensed under the GPLv3. See file LICENSE for more details.
+SicMu Player is licensed under the GPLv3. See file LICENSE for more details.
 

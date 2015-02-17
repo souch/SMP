@@ -16,6 +16,7 @@
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="19dp"
@@ -27,28 +28,40 @@
         android:layout_width="wrap_content"
         android:textColor="#FFFFFFFF"
         android:ellipsize="end"
+        android:singleLine="true"
         android:textSize="14sp"
         android:layout_alignParentLeft="true"
         android:layout_toLeftOf="@+id/song_duration"
+        android:layout_marginRight="40dp"
         />
+    <!--
+    android:layout_marginRight is a bad hack to force song_title not squeeze song_duration when
+    the text is too long. I don't know why the relativelayout don't make song_duration not squeezed.
+    Better solution (to adapt to include ImageView):
+    http://stackoverflow.com/questions/3785221/two-textviews-side-by-side-only-one-to-ellipsize
+    -->
 
     <ImageView
+        android:id="@+id/curr_play"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/curr_play"
         android:src="@null"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
         />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="#FFFFFFFF"
-        android:text="0:00"
-        android:textSize="14sp"
         android:id="@+id/song_duration"
+        android:layout_height="wrap_content"
+        android:layout_width="40dp"
+        android:textColor="#FFFFFFFF"
+        android:textSize="14sp"
+        android:singleLine="true"
         android:layout_alignParentRight="true"
+        android:gravity="right"
         />
+    <!--
+    android:layout_width should permit to have the view large enough to be easily clickable
+    -->
 
 </RelativeLayout>

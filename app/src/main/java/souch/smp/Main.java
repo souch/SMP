@@ -117,12 +117,17 @@ public class Main extends Activity {
                                         int position, long id) {
                     if (!serviceBound)
                         return;
-                    //Toast.makeText(getApplicationContext(),
-                    //        "Click ListItem Number " + position + " id: " + id, Toast.LENGTH_LONG).show();
-                    rows.select(position);
-                    if(rows.get(position).getClass() == RowSong.class)
+
+                    Row row = rows.get(position);
+                    if (row.getClass() == RowGroup.class && ((RowGroup) row).isFolded()) {
+                        rows.invertFold(position);
+                        songAdt.notifyDataSetChanged();
+                    }
+                    else {
+                        rows.selectNearestSong(position);
                         musicSrv.playSong();
-                    updatePlayButton();
+                        updatePlayButton();
+                    }
                 }
             });
             serviceBound = true;
@@ -147,6 +152,11 @@ public class Main extends Activity {
             serviceBound = false;
         }
     };
+
+    public void invertFold(int pos) {
+        rows.invertFold(pos);
+        songAdt.notifyDataSetChanged();
+    }
 
     private SeekBar.OnSeekBarChangeListener seekBarChangeListener
             = new SeekBar.OnSeekBarChangeListener() {

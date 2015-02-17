@@ -78,6 +78,14 @@ public class Rows {
         }
     }
 
+    // select first song encountered from pos
+    public void selectNearestSong(int pos) {
+        Row row = rows.get(pos);
+        while (row.getClass() != RowSong.class)
+            row = rowsUnfolded.get(row.getGenuinePos() + 1);
+        setCurrPos(row.getGenuinePos());
+    }
+
     // get row from the foldable array
     public Row get(int pos) {
         Row row = null;
@@ -327,7 +335,7 @@ public class Rows {
 
                 if (prevArtistGroup == null || artist.compareToIgnoreCase(prevArtistGroup.getName()) != 0) {
                     RowGroup artistGroup = new RowGroup(rowsUnfolded.size(), 0, artist,
-                            Typeface.BOLD, Color.argb(0x88, 0x0, 0x0, 0x0));
+                            Typeface.BOLD, Color.argb(0x88, 0x35, 0x35, 0x35));
                     rowsUnfolded.add(artistGroup);
                     prevArtistGroup = artistGroup;
                     prevAlbumGroup = null;

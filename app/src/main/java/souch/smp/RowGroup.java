@@ -19,6 +19,7 @@
 package souch.smp;
 
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.view.View;
 import android.widget.TextView;
 
@@ -67,12 +68,14 @@ public class RowGroup extends Row {
                 text.setTextColor(Color.RED);
             else
                 text.setTextColor(Color.WHITE);
-            text.setText(nbRowSong + ".");
+            text.setText(nbRowSong + " v");
         }
         else {
-            text.setText("");
+            text.setText("\u028c");
+            text.setTextColor(Color.WHITE);
         }
-        text.setTypeface(null, typeface);
+        text.setTypeface(null, typeface == Typeface.ITALIC ? Typeface.NORMAL : typeface);
+        text.setBackgroundColor(Color.argb(0x88, 0x45, 0x45, 0x45));
     }
 
     public void setBackgroundColor(View view) {
