@@ -53,7 +53,7 @@
     <string name="settings_about">About</string>
     <string name="settings_about_summary">Some info on app and author.</string>
 
-    <string name="settings_version_title">0.2</string>
+    <string name="settings_version_title">0.3</string>
     <string name="settings_author">Mathieu Souchaud</string>
     <string name="settings_source">https://github.com/souch/SMP</string>
     <string name="settings_opensource">GPLv3</string>
