@@ -16,7 +16,52 @@
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
+
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceScreen
+        android:key="button_help"
+        android:title="@string/settings_help"
+        android:summary="@string/settings_help_summary"
+        android:persistent="false">
+
+        <Preference
+            android:title="Start playing song"
+            android:summary="Tap on the middle of a song to start it."/>
+
+         <Preference
+            android:title="Start playing from group"
+            android:summary="Tap on the middle (or left) of a group to unfold the group if it is folded or start the first song it contains if it is already unfolded."/>
+
+         <Preference
+            android:title="Fold / unfold group"
+            android:summary="Tap on the right side of a group (near the v or &#652; letter) to fold / unfold it."/>
+
+        <Preference
+            android:title="Scroll to current song"
+            android:summary="Press the button to the right of 'next button' to scroll the list to current playing song."
+            android:icon="@drawable/ic_action_goto_play"/>
+
+        <Preference
+            android:title="Disable lock screen"
+            android:summary="Open the padlock button to disable the lock screen (it prevents locking only when the app is on foreground; do not work on some device)."
+            android:icon="@drawable/ic_action_unlocked"/>
+
+        <Preference
+            android:title="Root folder"
+            android:summary="Root folder can be customized: it is used only for hiding the first portion of folders path when songs are sorted by folder."
+            android:icon="@drawable/ic_menu_folder"/>
+
+        <Preference
+            android:title="Background"
+            android:summary="While playing music, press on home button or back button to close the song list and keep the music playing in background."/>
+
+        <Preference
+            android:title="Quit"
+            android:summary="The app is killed if no song is playing and back or home button is pressed. If not, Android will do it automatically when memory is under pressure."/>
+
+    </PreferenceScreen>
+
 
     <PreferenceCategory android:title="Song view">
 
@@ -68,37 +113,51 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="About">
+    <PreferenceScreen
+        android:key="button_about"
+        android:title="@string/settings_about"
+        android:summary="@string/settings_about_summary"
+        android:persistent="false">
 
-        <Preference
-            android:title="Author"
-            android:summary="@string/settings_author"/>
+        <PreferenceCategory android:title="@string/settings_about">
 
-        <Preference
-            android:title="Version number"
-            android:summary="@string/settings_version_title"/>
+            <Preference
+                android:title="Author"
+                android:summary="@string/settings_author"/>
 
-        <Preference
-            android:title="Sources"
-            android:summary="@string/settings_source"/>
+            <Preference
+                android:title="Version number"
+                android:summary="@string/settings_version_title"/>
 
-        <Preference
-            android:title="License"
-            android:summary="@string/settings_opensource"/>
-    </PreferenceCategory>
+            <Preference
+                android:title="Sources"
+                android:summary="@string/settings_source"/>
 
-    <PreferenceCategory android:title="Special thanks">
+            <Preference
+                android:title="License"
+                android:summary="@string/settings_opensource"/>
 
-        <Preference
-            android:title="Daniele De Santis &amp; WPZOOM"
-            android:summary="icons found on iconfinder.com">
-        </Preference>
+            <Preference
+                android:key="donate"
+                android:title="Donate"
+                android:summary="@string/settings_donate"/>
 
-        <Preference
-            android:title="Sue Smith's"
-            android:summary="tutorials on creating a Music Player on Android">
-        </Preference>
+        </PreferenceCategory>
 
-    </PreferenceCategory>
+        <PreferenceCategory android:title="Special thanks">
+
+            <Preference
+                android:title="Daniele De Santis &amp; WPZOOM"
+                android:summary="icons found on iconfinder.com">
+            </Preference>
+
+            <Preference
+                android:title="Sue Smith's"
+                android:summary="tutorials on creating a Music Player on Android">
+            </Preference>
+
+        </PreferenceCategory>
+
+    </PreferenceScreen>
 
 </PreferenceScreen>

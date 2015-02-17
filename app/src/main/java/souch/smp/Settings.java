@@ -78,6 +78,9 @@ public class Settings extends PreferenceActivity
         Preference rescan = findPreference(getResources().getString(R.string.settings_rescan_key));
         rescan.setOnPreferenceClickListener(this);
 
+        Preference donate = findPreference("donate");
+        donate.setOnPreferenceClickListener(this);
+
         String rootFolderKey = PrefKeys.ROOT_FOLDER.name();
         EditTextPreference prefRootFolder = (EditTextPreference) findPreference(rootFolderKey);
         prefRootFolder.setSummary(sharedPreferences.getString(rootFolderKey, getDefaultMusicDir()));
@@ -181,6 +184,8 @@ public class Settings extends PreferenceActivity
     public boolean onPreferenceClick(Preference preference) {
         if(preference.getKey().equals(getResources().getString(R.string.settings_rescan_key))) {
             rescan();
+        } else if (preference.getKey().equals("donate")) {
+            showDonateWebsite();
         }
         return false;
     }
@@ -193,6 +198,12 @@ public class Settings extends PreferenceActivity
         ListPreference prefFold = (ListPreference) findPreference(PrefKeys.DEFAULT_FOLD.name());
         int idx = getFoldPref(sharedPreferences);
         prefFold.setSummary((getResources().getStringArray(R.array.settings_fold_entries))[idx]);
+    }
+
+    private void showDonateWebsite() {
+        Intent webIntent = new Intent(Intent.ACTION_VIEW);
+        webIntent.setData(Uri.parse(getString(R.string.settings_donate_www)));
+        this.startActivity(webIntent);
     }
 
     public void rescan() {

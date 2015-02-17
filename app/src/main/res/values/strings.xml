@@ -42,15 +42,24 @@
     </string-array>
 
     <string name="settings_rescan_title">Rescan</string>
-    <string name="settings_rescan">Rescan media files</string>
+    <string name="settings_rescan">Rescan media files.</string>
     <string name="settings_rescan_key">RESCAN</string>
 
     <string name="settings_root_folder">Root folder of folder filter</string>
+
+    <string name="settings_help">Help</string>
+    <string name="settings_help_summary">If you are a bit lost.</string>
+
+    <string name="settings_about">About</string>
+    <string name="settings_about_summary">Some info on app and author.</string>
 
     <string name="settings_version_title">0.2</string>
     <string name="settings_author">Mathieu Souchaud</string>
     <string name="settings_source">https://github.com/souch/SMP</string>
     <string name="settings_opensource">GPLv3</string>
+    <string name="settings_donate">If you\'ve got too much money, click here to give me some.</string>
+    <string name="settings_donate_www">http://rodolphe.souchaud.free.fr/donate</string>
+
 
     <string name="settings_default_shake_threshold">100</string>
     <string name="settings_no_accelerometer">Your device has no accelerometer. Shake functionality is disabled.</string>
