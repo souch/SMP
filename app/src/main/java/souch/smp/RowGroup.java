@@ -75,7 +75,7 @@ public class RowGroup extends Row {
             text.setTextColor(Color.WHITE);
         }
         text.setTypeface(null, typeface == Typeface.ITALIC ? Typeface.NORMAL : typeface);
-        text.setBackgroundColor(Color.argb(0x88, 0x45, 0x45, 0x45));
+        text.setBackgroundColor(Color.argb(0x88, 0x30, 0x30, 0x30));
     }
 
     public void setBackgroundColor(View view) {
