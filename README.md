@@ -17,17 +17,17 @@ No eye candy graphics.
 
 ### detailed features
 
-- play mp3, ogg, flac, midi, wav, mp4, 3gp... see android mediaplayer supported media formats (depends on android version).
-- bluetooth support
 - sorted by artists, albums and track number
 - or sorted by folders, artists, albums and track number
-- groups can be fold/unfold
-- show current played song in list
+- groups can be folded / unfolded
+- shake the phone to go to next song
+- show current playing song in the list
 - notification when playing
 - seek bar
-- shake the phone to go to next song
-- disable/enable lockscreen
+- disable / enable lockscreen
 - on app startup, scroll to last song played
+- play mp3, ogg, flac, midi, wav, mp4, 3gp... see android mediaplayer supported media formats (depends on android version).
+- bluetooth support
 
 
 ### Installation
