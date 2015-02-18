@@ -1,10 +1,8 @@
+4.7" screen
 
-Foldable groups example :
-- / is not folded
-- /bestof/electro is folded and a song inside it is currently playing. This group contains 13 songs.
-- /bestof/mou is folded and hide 28 songs
-- /bestof/mou/black\_keys is not folded
+![Menu settings](misc/screenshots/screen4.7_settings.png)&nbsp;
+![Folder 4.7](misc/screenshots/screen4.7_folder.png)
 
-![Folded folder list](screen3.5_folder_folded.png)
-
+Menu option on 3.5" screen
+![Menu option](misc/screenshots/screen3.5_menu_options.png)&nbsp;
 

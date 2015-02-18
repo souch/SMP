@@ -8,8 +8,9 @@ Works on old slow small devices (from Android froyo 2.2).
 
 No eye candy graphics.
 
-![Folder list](screen4.7_folder.png)&nbsp;
-![Artist list](screen3.5_artist.png)
+![Folder list](misc/screenshots/screen3.5_folder.png)&nbsp;
+![Artist list](misc/screenshots/screen3.5_artist.png)
+![Menu option](misc/screenshots/screen3.5_menu_options_small.png)
 
 [More Screenshots](Screenshots.md)
 
@@ -27,6 +28,11 @@ No eye candy graphics.
 - shake the phone to go to next song
 - disable/enable lockscreen
 - on app startup, scroll to last song played
+
+
+### Installation
+
+The SicMu Player is available on [F-Droid](https://f-droid.org/wiki/page/SicMu_Player)
 
 
 ### Help
@@ -56,11 +62,6 @@ No eye candy graphics.
 - search?
 
 
-### Installation
-
-The SicMu Player is available on [F-Droid](https://f-droid.org/wiki/page/SicMu_Player)
-
-
 ### Credits
 
 Lot's of time saved thanks to Sue Smith's [tutorials on creating a Music Player on Android](http://code.tutsplus.com/tutorials/create-a-music-player-on-android-project-setup--mobile-22764).
@@ -73,8 +74,8 @@ Seekbar style created by Jérôme Van Der Linden (Creative Commons Attribution 3
 ### Developer
 
 Compiled with Android Studio.
-Robotium non regression tests are available in the androidTest folder.
-Tested on Gingerbread (2.3.6), Nexus 4 JellyBean (4.1.2), Samsung S3 (4.3).
+Robotium non regression tests are available in the androidTest folder (but must be fixed).
+Tested on Gingerbread (2.3.6), Nexus 4 JellyBean (4.1.2), Samsung S3 (4.3), Nexus 5 Lollipop (5.0).
 
 Detailed todo list in misc/TODO.txt
 
