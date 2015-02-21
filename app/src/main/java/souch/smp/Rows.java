@@ -190,6 +190,9 @@ public class Rows {
     }
 
     public void invertFold(int pos) {
+        if (pos < 0 || pos >= rows.size()) {
+            return;
+        }
         if(rows.get(pos).getClass() != RowGroup.class) {
             Log.w("Rows", "invertFold called on class that is not SongGroup!");
             return;
