@@ -32,7 +32,7 @@ No eye candy graphics.
 
 ### Installation
 
-The SicMu Player is available on [F-Droid](https://f-droid.org/wiki/page/SicMu_Player)
+The SicMu Player is available on [F-Droid](https://f-droid.org/repository/browse/?fdid=souch.smp)
 
 
 ### Help
@@ -42,24 +42,24 @@ The SicMu Player is available on [F-Droid](https://f-droid.org/wiki/page/SicMu_P
 
 ### Todo (perhaps :-)
 
+- zoom make letter (and button) bigger or smaller
+- small vibration on action?
 - group by genre
-- fast on big music list (> 5Go)
 - guess "smart" track number (2 < 11, song file name vs id tag, ...)
 - quick jump with letter in the right (like in contact)
-- zoom make letter (and button) bigger or smaller
 - speak the title ?
 - cursor for volume ? ( half/full?)
 - swipe to go to list of song <-> song details
 - mp3 tag editor ?
 - help + infobulle ?
 - playlist?
-- small vibration on action?
 - pinned section (upper group level stay at top until another one appears)?
 - shuffle
 - long press on back button kill the app
 - button to go to the last position after automatic scrolling
 - option: relock on pause even if unlocked
 - search?
+- benchmark on big music list (> 10Go)
 
 
 ### Credits
@@ -80,6 +80,7 @@ Tested on Gingerbread (2.3.6), Nexus 4 JellyBean (4.1.2), Samsung S3 (4.3), Nexu
 Detailed todo list in misc/TODO.txt
 
 Feel free to add GitHub issues (feature request, bugs...).
+If you need a feature that is in the todolist, open a feature request on github to speed up its development.
 
 
 ### Donation

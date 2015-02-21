@@ -1,7 +1,10 @@
 # todo
 
+disable bluetooth on call?
+fix ui blocked onseek on android 2.3
 deactivate sensors onpause
 scrollto button open group if current song folded
+volume from app icon
 action bar for settings
 add slash at the end to folder?
 replace every text by sthg in strings.xml
@@ -62,6 +65,7 @@ http://unicode-table.com/en/#028C
 # get f-droid installations number
 wget https://gitlab.com/fdroid/fdroiddata/raw/master/stats/total_downloads_app.txt -O - 2>/dev/null | sed 's/\([^ ]*\) \([^ ]*\)/\2 \1/' | sort -nr | less -N
 wget https://gitlab.com/fdroid/fdroiddata/raw/master/stats/total_downloads_app_version.txt -O - 2>/dev/null | grep souch.smp
+
 
 # example metadata f-droid
 https://gitlab.com/fdroid/fdroiddata/blob/master/metadata/org.adaway.txt
