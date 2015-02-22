@@ -61,6 +61,8 @@ The SicMu Player is available on [F-Droid](https://f-droid.org/repository/browse
 - search?
 - benchmark on big music list (> 10Go)
 
+Detailed todo list available in [TODO.txt](misc/TODO.txt).
+
 
 ### Credits
 
@@ -77,8 +79,6 @@ Compiled with Android Studio.
 Robotium non regression tests are available in the androidTest folder (but must be fixed).
 Tested on Gingerbread (2.3.6), Nexus 4 JellyBean (4.1.2), Samsung S3 (4.3), Nexus 5 Lollipop (5.0).
 
-Detailed todo list in misc/TODO.txt
-
 Feel free to add GitHub issues (feature request, bugs...).
 If you need a feature that is in the todolist, open a feature request on github to speed up its development.
 
@@ -91,5 +91,5 @@ If you don't know what to do with your money or want to make me smile the whole 
 
 ### License
 
-SicMu Player is licensed under the GPLv3. See file LICENSE for more details.
+SicMu Player is licensed under the GPLv3. See file [LICENSE](LICENSE) for more details.
 
