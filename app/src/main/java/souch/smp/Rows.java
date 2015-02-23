@@ -51,6 +51,8 @@ public class Rows {
     // never assign this directly, instead use setCurrPos
     private int currPos;
 
+    static final public String defaultStr = "<null>";
+
     public Rows(ContentResolver resolver, Context theContext) {
         musicResolver = resolver;
         context = theContext;
@@ -353,9 +355,9 @@ public class Rows {
             RowGroup prevAlbumGroup = null;
             do {
                 long id = musicCursor.getLong(idCol);
-                String title = musicCursor.getString(titleCol);
-                String artist = musicCursor.getString(artistCol);
-                String album = musicCursor.getString(albumCol);
+                String title = getDefaultStrIfNull(musicCursor.getString(titleCol));
+                String artist = getDefaultStrIfNull(musicCursor.getString(artistCol));
+                String album = getDefaultStrIfNull(musicCursor.getString(albumCol));
                 int duration = musicCursor.getInt(durationCol);
                 int track = musicCursor.getInt(trackCol);
 
@@ -404,12 +406,12 @@ public class Rows {
 
             do {
                 long id = musicCursor.getLong(idCol);
-                String title = musicCursor.getString(titleCol);
-                String artist = musicCursor.getString(artistCol);
-                String album = musicCursor.getString(albumCol);
+                String title = getDefaultStrIfNull(musicCursor.getString(titleCol));
+                String artist = getDefaultStrIfNull(musicCursor.getString(artistCol));
+                String album = getDefaultStrIfNull(musicCursor.getString(albumCol));
                 int duration = musicCursor.getInt(durationCol);
                 int track = musicCursor.getInt(trackCol);
-                String path = musicCursor.getString(pathCol);
+                String path = getDefaultStrIfNull(musicCursor.getString(pathCol));
 
                 RowSong rowSong = new RowSong(-1, 2, id, title, artist, album, duration / 1000, track, path,
                         rootFolder);
@@ -478,6 +480,7 @@ public class Rows {
         setGroupSelectedState(currPos, true);
     }
 
+    private String getDefaultStrIfNull(String str) { return str != null ? str : defaultStr; }
 
     private void restore() {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
