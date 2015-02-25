@@ -77,7 +77,7 @@ Seekbar style created by Jérôme Van Der Linden (Creative Commons Attribution 3
 ### Developer
 
 Compiled with Android Studio.
-Robotium non regression tests are available in the androidTest folder (but must be fixed).
+Robotium non regression tests are available in the androidTest folder.
 Tested on Gingerbread (2.3.6), Nexus 4 JellyBean (4.1.2), Samsung S3 (4.3), Nexus 5 Lollipop (5.0).
 
 Feel free to add GitHub issues (feature request, bugs...).
