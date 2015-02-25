@@ -1,5 +1,6 @@
 # todo
 
+expand only the current group.
 disable bluetooth on call?
 fix ui blocked onseek on android 2.3
 deactivate sensors onpause

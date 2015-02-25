@@ -60,6 +60,7 @@ The SicMu Player is available on [F-Droid](https://f-droid.org/repository/browse
 - option: relock on pause even if unlocked
 - search?
 - benchmark on big music list (> 10Go)
+- audioeffect/equalizer  
 
 Detailed todo list available in [TODO.txt](misc/TODO.txt).
 
