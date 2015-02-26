@@ -40,7 +40,7 @@ public class RowsTest extends AndroidTestCase {
 
     public void testEmpty() throws Exception {
         Log.d("RowsTest", "== testEmpty ==");
-        Rows rows = initRows(null);
+        Rows rows = initRows(null, Filter.FOLDER);
         checkRowSize(rows, 0);
     }
 
@@ -48,14 +48,20 @@ public class RowsTest extends AndroidTestCase {
         Log.d("RowsTest", "== testNullCursorGetString ==");
         //String[][] data = new String[][]{{"1", "Salut", null, "head", "80000", "2", null, "1"}};
         String[][] data = new String[][]{{null, null, null, null, null, null, null, "1"}};
-        Rows rows = initRows(data);
+        Rows rows;
+        rows = initRows(data, Filter.FOLDER);
+        checkRowSize(rows, 3);
+        rows = initRows(data, Filter.ARTIST);
         checkRowSize(rows, 3);
     }
 
     public void testOneSong() throws Exception {
         Log.d("RowsTest", "== testOneSong ==");
         String[][] data = new String[][]{{"1", "Salut", "Tortoise", "head", "80000", "2", "/mnt/sdcard/yo", "1"}};
-        Rows rows = initRows(data);
+        Rows rows;
+        rows = initRows(data, Filter.FOLDER);
+        checkRowSize(rows, 3);
+        rows = initRows(data, Filter.ARTIST);
         checkRowSize(rows, 3);
     }
 
@@ -65,8 +71,22 @@ public class RowsTest extends AndroidTestCase {
                 {"1", "Artist1", "Album2", "title", "80000", "1", "/mnt/sdcard/yo", "1"},
                 {"2", "Artist2", "album1", "title1", "80000", "2", "/mnt/sdcard/yo", "1"}
         };
-        Rows rows = initRows(data);
-        checkRowSize(rows, 5);
+        Rows rows = null;
+        try {
+            rows = initRows(data, Filter.FOLDER);
+            checkRowSize(rows, 5);
+            rows = initRows(data, Filter.ARTIST);
+            checkRowSize(rows, 6);
+        } catch(Exception e) {
+            if (rows != null) {
+                printRowArray((ArrayList<Row>) getField(rows, "rowsUnfolded"));
+                printRowArray((ArrayList<Row>) getField(rows, "rows"));
+            }
+            else {
+                Log.d("RowsTest", "rows is null");
+            }
+            throw e;
+        }
     }
 
     public void testMergeNameCase() throws Exception {
@@ -76,15 +96,19 @@ public class RowsTest extends AndroidTestCase {
         String[][] data = new String[][]{
                 {"1", "Artist1", "Album2", "title", "80000", "1", "/mnt/sdcard/yo", "1"},
                 {"2", "artist1", "album2", "title", "80000", "2", "/mnt/sdcard/yo", "1"}};
-        Rows rows = initRows(data);
+        Rows rows;
+        rows = initRows(data, Filter.FOLDER);
+        checkRowSize(rows, 4);
+        rows = initRows(data, Filter.ARTIST);
         checkRowSize(rows, 4);
     }
 
-    private Rows initRows(String[][] data) {
+    private Rows initRows(String[][] data, Filter filter) {
         MockContentResolver resolver = new MockContentResolver();
         TestContentProvider provider = new TestContentProvider(getContext(), data);
         resolver.addProvider(MediaStore.AUTHORITY, provider);
         Rows rows = new Rows(resolver, getContext());
+        rows.setFilter(filter);
         rows.init();
         return rows;
     }
@@ -103,9 +127,14 @@ public class RowsTest extends AndroidTestCase {
         return field.get(o);
     }
 
-    public void printRow(ArrayList<Row> rows) {
-        for(int i = 0; i < rows.size() ; i++)
-            Log.d("RowsTest", i + " " + rows.get(i).toString());
+    public void printRowArray(ArrayList<Row> rows) {
+        if(rows != null) {
+            for (int i = 0; i < rows.size(); i++)
+                Log.d("RowsTest", i + " " + rows.get(i).toString());
+        }
+        else {
+            Log.d("RowsTest", "RowArray is null");
+        }
     }
 
     class TestContentProvider extends MockContentProvider {
