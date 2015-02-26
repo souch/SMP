@@ -35,7 +35,7 @@
 
          <Preference
             android:title="Fold / unfold group"
-            android:summary="Tap on the right side of a group (near the v or &#652; letter) to fold / unfold it."/>
+            android:summary="Tap on the right side of a group (near the | or / letter) to fold / unfold it."/>
 
         <Preference
             android:title="Scroll to current song"
