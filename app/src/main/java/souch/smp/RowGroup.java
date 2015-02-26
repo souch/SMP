@@ -62,16 +62,17 @@ public class RowGroup extends Row {
     }
 
     public void setDurationText(TextView text) {
+        String rightSpace = getStringOffset();
         //super.setText(text);
         if (isFolded()) {
             if (isSelected())
                 text.setTextColor(Color.RED);
             else
                 text.setTextColor(Color.WHITE);
-            text.setText(nbRowSong + " v");
+            text.setText(nbRowSong + " |" + rightSpace);
         }
         else {
-            text.setText("\u028c");
+            text.setText("/" + rightSpace);
             text.setTextColor(Color.WHITE);
         }
         text.setTypeface(null, typeface == Typeface.ITALIC ? Typeface.NORMAL : typeface);
@@ -80,6 +81,14 @@ public class RowGroup extends Row {
 
     public void setBackgroundColor(View view) {
         view.setBackgroundColor(color);
+    }
+
+    private String getStringOffset() {
+        String offset = "", s = " ";
+        for(int i = level ; i > 0 ; i--) {
+            offset += s;
+        }
+        return offset;
     }
 
     public String toString() {
