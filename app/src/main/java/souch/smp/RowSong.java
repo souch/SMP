@@ -20,6 +20,7 @@ package souch.smp;
 
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.File;
@@ -62,17 +63,38 @@ public class RowSong extends Row {
     public String getPath(){return path;}
     public String getFolder(){return folder;}
 
-    public void setText(TextView text) {
-        super.setText(text);
+    public void setView(RowViewHolder holder, Main main, int position) {
+        super.setView(holder, main, position);
+
+        setText(holder.text);
+        setDuration(holder.duration);
+        setCurrIcon(holder.image, main);
+    }
+
+    private void setText(TextView text) {
         text.setText(title);
         text.setTextColor(Color.WHITE);
     }
 
-    public void setDurationText(TextView text) {
-        text.setText(secondsToMinutes(getDuration()) + " ");
-        text.setTextColor(Color.WHITE);
-        text.setTypeface(null, typeface);
-        text.setBackgroundColor(Color.argb(0x00, 0x0, 0x0, 0x0));
+    private void setDuration(TextView duration) {
+        duration.setText(secondsToMinutes(getDuration()) + " ");
+        duration.setTextColor(Color.WHITE);
+        duration.setTypeface(null, typeface);
+        duration.setBackgroundColor(Color.argb(0x00, 0x0, 0x0, 0x0));
+        duration.setOnClickListener(null);
+    }
+
+    private void setCurrIcon(ImageView img, Main main) {
+        int currIcon = android.R.color.transparent;
+        if (this == main.getMusicSrv().getRows().getCurrSong()) {
+            if (main.getMusicSrv().playingLaunched())
+                currIcon = R.drawable.ic_curr_play;
+            else
+                currIcon = R.drawable.ic_curr_pause;
+        }
+        img.setImageResource(currIcon);
+        // useful only for the tests
+        img.setTag(currIcon);
     }
 
     public String toString() {

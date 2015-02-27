@@ -20,6 +20,7 @@ package souch.smp;
 
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -50,8 +51,17 @@ public class RowGroup extends Row {
     public int nbRowSong() { return nbRowSong; }
     public void incNbRowSong() { nbRowSong++; }
 
-    public void setText(TextView text) {
-        super.setText(text);
+    public void setView(RowViewHolder holder, Main main, int position) {
+        super.setView(holder, main, position);
+
+        setText(holder.text);
+        setDuration(holder.duration, main, position);
+        holder.image.setImageResource(android.R.color.transparent);
+
+        holder.layout.setBackgroundColor(color);
+    }
+
+    private void setText(TextView text) {
         text.setText(name);
         if (isFolded() && isSelected())
             text.setTextColor(Color.RED);
@@ -61,26 +71,39 @@ public class RowGroup extends Row {
         //text.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
     }
 
-    public void setDurationText(TextView text) {
+    private void setDuration(TextView duration, final Main main, int position) {
         String rightSpace = getStringOffset();
         //super.setText(text);
         if (isFolded()) {
             if (isSelected())
-                text.setTextColor(Color.RED);
+                duration.setTextColor(Color.RED);
             else
-                text.setTextColor(Color.WHITE);
-            text.setText(nbRowSong + " |" + rightSpace);
+                duration.setTextColor(Color.WHITE);
+            duration.setText(nbRowSong + " |" + rightSpace);
         }
         else {
-            text.setText("/" + rightSpace);
-            text.setTextColor(Color.WHITE);
+            duration.setText("/" + rightSpace);
+            duration.setTextColor(Color.WHITE);
         }
-        text.setTypeface(null, typeface == Typeface.ITALIC ? Typeface.NORMAL : typeface);
-        text.setBackgroundColor(Color.argb(0x88, 0x30, 0x30, 0x30));
-    }
+        duration.setTypeface(null, typeface == Typeface.ITALIC ? Typeface.NORMAL : typeface);
+        duration.setBackgroundColor(Color.argb(0x88, 0x30, 0x30, 0x30));
+        duration.setId(position);
+        duration.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View durationView) {
+                Log.d("Main", "durationView.getId(): " + durationView.getId());
+                durationView.setBackgroundColor(Color.argb(0x88, 0x65, 0x65, 0x65));
 
-    public void setBackgroundColor(View view) {
-        view.setBackgroundColor(color);
+                class InvertFold implements Runnable {
+                    View view;
+                    InvertFold(View view) { this.view = view; }
+                    public void run() {
+                        main.invertFold(view.getId());
+                        // todo: reset highlight color for a few ms after invertFold?
+                    }
+                }
+                durationView.postDelayed(new InvertFold(durationView), 300);
+            }
+        });
     }
 
     private String getStringOffset() {

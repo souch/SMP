@@ -21,8 +21,6 @@ package souch.smp;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.util.TypedValue;
-import android.view.View;
-import android.widget.TextView;
 
 
 public class Row {
@@ -50,14 +48,11 @@ public class Row {
         return level;
     }
 
+    public void setView(RowViewHolder holder, Main main, int position) {
+        holder.layout.setBackgroundColor(Color.argb(0x88, 0x0, 0x0, 0x0));
 
-    public void setText(TextView text) {
-        text.setPadding(getSongPadding(text.getResources()), 0, 0, 0);
-        text.setTypeface(null, typeface);
-    }
-
-    public void setBackgroundColor(View view) {
-        view.setBackgroundColor(Color.argb(0x88, 0x0, 0x0, 0x0));
+        holder.text.setPadding(getSongPadding(holder.text.getResources()), 0, 0, 0);
+        holder.text.setTypeface(null, typeface);
     }
 
     // cache result
