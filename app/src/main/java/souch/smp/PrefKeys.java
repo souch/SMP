@@ -26,5 +26,6 @@ public enum PrefKeys {
     SHAKE_THRESHOLD,
     FILTER,
     ROOT_FOLDER,
-    DEFAULT_FOLD
+    DEFAULT_FOLD,
+    TEXT_SIZE
 }

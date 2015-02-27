@@ -577,6 +577,8 @@ public class Main extends Activity {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
         noLock = settings.getBoolean(PrefKeys.NO_LOCK.name(), false);
         followSong = settings.getBoolean(PrefKeys.FOLLOW_SONG.name(), true);
+        Row.textSize = Integer.valueOf(settings.getString(PrefKeys.TEXT_SIZE.name(),
+                getString(R.string.settings_default_textsize)));
 
         Log.d("MusicService", "restorePreferences noLock: " + noLock + " follow: " + followSong);
     }

@@ -75,6 +75,11 @@ public class Settings extends PreferenceActivity
                     Toast.LENGTH_LONG).show();
         }
 
+        String textSizeKey = PrefKeys.TEXT_SIZE.name();
+        EditTextPreference prefTextSize = (EditTextPreference) findPreference(textSizeKey);
+        prefTextSize.setSummary(sharedPreferences.getString(textSizeKey,
+                getString(R.string.settings_default_textsize)));
+
         Preference rescan = findPreference(getResources().getString(R.string.settings_rescan_key));
         rescan.setOnPreferenceClickListener(this);
 
@@ -142,23 +147,30 @@ public class Settings extends PreferenceActivity
         if(key.equals(PrefKeys.DEFAULT_FOLD.name())) {
             setFoldSummary(sharedPreferences);
         }
+        else if(key.equals(PrefKeys.TEXT_SIZE.name())) {
+            String strTextSize = sharedPreferences.getString(key,
+                    getString(R.string.settings_default_textsize));
+            findPreference(key).setSummary(strTextSize);
+            Row.textSize = Integer.valueOf(strTextSize);
+            // todo a bit dirty, we actually just need notifyDataSetChanged called
+            musicSrv.setChanged();
+        }
         else if(key.equals(PrefKeys.ENABLE_SHAKE.name())) {
             musicSrv.setEnableShake(getShakePref(sharedPreferences));
         }
         else if(key.equals(PrefKeys.SHAKE_THRESHOLD.name())) {
-            String strThreshold = sharedPreferences.getString(PrefKeys.SHAKE_THRESHOLD.name(), getString(R.string.settings_default_shake_threshold));
+            String strThreshold = sharedPreferences.getString(key,
+                    getString(R.string.settings_default_shake_threshold));
             float threshold = Float.valueOf(strThreshold) / 10.0f;
             musicSrv.setShakeThreshold(threshold);
             Log.d("MusicService", "Set shake threshold to: " + threshold);
 
-            EditTextPreference pref = (EditTextPreference) findPreference(key);
-            pref.setSummary(strThreshold);
+            findPreference(key).setSummary(strThreshold);
             this.onContentChanged();
         }
         else if(key.equals(PrefKeys.ROOT_FOLDER.name())) {
-            EditTextPreference prefRootFolder = (EditTextPreference) findPreference(key);
             String rootFolder = sharedPreferences.getString(key, getDefaultMusicDir());
-            prefRootFolder.setSummary(rootFolder);
+            findPreference(key).setSummary(rootFolder);
             if(!(new File(rootFolder)).exists())
                 Toast.makeText(getApplicationContext(),
                         "! The path '" + rootFolder + "' does not exists on the phone !",

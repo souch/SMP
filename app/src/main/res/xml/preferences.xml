@@ -85,6 +85,14 @@
             android:summary="@string/settings_root_folder"
             />
 
+        <EditTextPreference
+            android:key="TEXT_SIZE"
+            android:title="@string/settings_text_size"
+            android:numeric="integer"
+            android:summary=""
+            android:defaultValue="@string/settings_default_textsize"
+            />
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="Accelerometer shake">
