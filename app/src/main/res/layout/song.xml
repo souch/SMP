@@ -19,8 +19,9 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="19dp"
-    android:gravity="center_vertical">
+    android:layout_height="20dp"
+    android:gravity="center_vertical"
+    android:id="@+id/song_layout">
 
     <TextView
         android:id="@+id/song_title"
@@ -29,10 +30,9 @@
         android:textColor="#FFFFFFFF"
         android:ellipsize="end"
         android:singleLine="true"
-        android:textSize="14sp"
         android:layout_alignParentLeft="true"
         android:layout_toLeftOf="@+id/song_duration"
-        android:layout_marginRight="50dp"
+        android:layout_marginRight="55dp"
         />
     <!--
     android:layout_marginRight is a bad hack to force song_title not squeeze song_duration when
@@ -53,9 +53,7 @@
     <TextView
         android:id="@+id/song_duration"
         android:layout_height="wrap_content"
-        android:layout_width="50dp"
-        android:textColor="#FFFFFFFF"
-        android:textSize="14sp"
+        android:layout_width="55dp"
         android:singleLine="true"
         android:layout_alignParentRight="true"
         android:gravity="right"

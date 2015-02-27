@@ -22,6 +22,9 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.util.TypedValue;
 
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class Row {
     // level from the left
@@ -30,6 +33,7 @@ public class Row {
     protected int genuinePos;
     protected int typeface;
     protected Row parent;
+    protected static int textSize = 15;
 
     public Row(int position, int theLevel, int theTypeface) {
         genuinePos = position;
@@ -50,35 +54,28 @@ public class Row {
 
     public void setView(RowViewHolder holder, Main main, int position) {
         holder.layout.setBackgroundColor(Color.argb(0x88, 0x0, 0x0, 0x0));
+        holder.layout.getLayoutParams().height = convertDpToPixels((int) (textSize * 1.6),
+                holder.layout.getResources());
 
-        holder.text.setPadding(getSongPadding(holder.text.getResources()), 0, 0, 0);
+        holder.text.setPadding(convertDpToPixels(level * 10, holder.layout.getResources()), 0, 0, 0);
         holder.text.setTypeface(null, typeface);
+        holder.text.setTextSize(TypedValue.COMPLEX_UNIT_DIP, textSize);
+
+        holder.duration.setTextSize(TypedValue.COMPLEX_UNIT_DIP, textSize);
     }
 
     // cache result
-    private static int lastPx1 = -1;
-    private static int lastPx2 = -1;
-    private int getSongPadding(Resources resources) {
+    private static Map<Integer, Integer> converted = new HashMap<>();
+    public static int convertDpToPixels(int dp, Resources resources) {
         int px;
-        switch(level) {
-            case 1:
-                if(lastPx1 < 0)
-                    lastPx1 = convertDpToPixels(10, resources);
-                px = lastPx1;
-                break;
-            case 2:
-                if(lastPx2 < 0)
-                    lastPx2 = convertDpToPixels(20, resources);
-                px = lastPx2;
-                break;
-            default:
-                px = 0;
+        if (converted.containsKey(dp)) {
+            px = converted.get(dp);
+        }
+        else {
+            px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
+                    resources.getDisplayMetrics());
+            converted.put(dp, px);
         }
         return px;
-    }
-
-    private int convertDpToPixels(int dp, Resources resources) {
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
-                resources.getDisplayMetrics());
     }
 }
