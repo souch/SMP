@@ -119,7 +119,7 @@ public class Main extends Activity {
                         return;
 
                     Row row = rows.get(position);
-                    if (row.getClass() == RowGroup.class && ((RowGroup) row).isFolded()) {
+                    if (row.getClass() == RowGroup.class) {
                         rows.invertFold(position);
                         songAdt.notifyDataSetChanged();
                     }
@@ -128,6 +128,20 @@ public class Main extends Activity {
                         musicSrv.playSong();
                         updatePlayButton();
                     }
+                }
+            });
+            songView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> parent, View view,
+                                               int position, long id) {
+                    if (!serviceBound)
+                        return false;
+
+                    rows.selectNearestSong(position);
+                    musicSrv.playSong();
+                    updatePlayButton();
+
+                    return true;
                 }
             });
             serviceBound = true;
@@ -152,11 +166,6 @@ public class Main extends Activity {
             serviceBound = false;
         }
     };
-
-    public void invertFold(int pos) {
-        rows.invertFold(pos);
-        songAdt.notifyDataSetChanged();
-    }
 
     private SeekBar.OnSeekBarChangeListener seekBarChangeListener
             = new SeekBar.OnSeekBarChangeListener() {

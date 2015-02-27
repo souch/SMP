@@ -20,9 +20,7 @@ package souch.smp;
 
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.util.Log;
 import android.util.TypedValue;
-import android.view.View;
 import android.widget.TextView;
 
 public class RowGroup extends Row {
@@ -60,7 +58,7 @@ public class RowGroup extends Row {
                 holder.layout.getResources());
 
         setText(holder.text);
-        setDuration(holder.duration, main, position);
+        setDuration(holder.duration);
         holder.image.setImageResource(android.R.color.transparent);
 
         holder.layout.setBackgroundColor(color);
@@ -79,7 +77,7 @@ public class RowGroup extends Row {
         //text.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
     }
 
-    private void setDuration(TextView duration, final Main main, int position) {
+    private void setDuration(TextView duration) {
         String rightSpace = getStringOffset();
         //super.setText(text);
         if (isFolded()) {
@@ -96,6 +94,7 @@ public class RowGroup extends Row {
 
         duration.setTextSize(TypedValue.COMPLEX_UNIT_DIP, textSize);
         duration.setTypeface(null, typeface == Typeface.ITALIC ? Typeface.NORMAL : typeface);
+        /*
         duration.setBackgroundColor(Color.argb(0x88, 0x30, 0x30, 0x30));
         duration.setId(position);
         duration.setOnClickListener(new View.OnClickListener() {
@@ -114,6 +113,7 @@ public class RowGroup extends Row {
                 durationView.postDelayed(new InvertFold(durationView), 200);
             }
         });
+        */
     }
 
     private String getStringOffset() {

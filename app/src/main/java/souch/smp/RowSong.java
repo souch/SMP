@@ -88,8 +88,10 @@ public class RowSong extends Row {
         duration.setTextColor(Color.WHITE);
         duration.setTextSize(TypedValue.COMPLEX_UNIT_DIP, textSize);
         duration.setTypeface(null, typeface);
+        /*
         duration.setBackgroundColor(Color.argb(0x00, 0x0, 0x0, 0x0));
         duration.setOnClickListener(null);
+        */
     }
 
     private void setCurrIcon(ImageView img, Main main) {

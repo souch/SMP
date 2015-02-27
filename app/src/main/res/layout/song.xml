@@ -32,7 +32,7 @@
         android:singleLine="true"
         android:layout_alignParentLeft="true"
         android:layout_toLeftOf="@+id/song_duration"
-        android:layout_marginRight="50dp"
+        android:layout_marginRight="0dp"
         />
     <!--
     android:layout_marginRight is a bad hack to force song_title not squeeze song_duration when
@@ -53,7 +53,7 @@
     <TextView
         android:id="@+id/song_duration"
         android:layout_height="wrap_content"
-        android:layout_width="50dp"
+        android:layout_width="45dp"
         android:singleLine="true"
         android:layout_alignParentRight="true"
         android:gravity="right"

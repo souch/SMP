@@ -27,15 +27,15 @@
 
         <Preference
             android:title="Start playing song"
-            android:summary="Tap on the middle of a song to start it."/>
+            android:summary="Tap on a song to start it."/>
 
          <Preference
-            android:title="Start playing from group"
-            android:summary="Tap on the middle (or left) of a group to unfold the group if it is folded or start the first song it contains if it is already unfolded."/>
+            android:title="Start playing from a group"
+            android:summary="Long tap on a group to start the first song it contains."/>
 
          <Preference
             android:title="Fold / unfold group"
-            android:summary="Tap on the right side of a group (near the | or / letter) to fold / unfold it."/>
+            android:summary="Tap on a group to fold / unfold it."/>
 
         <Preference
             android:title="Scroll to current song"
