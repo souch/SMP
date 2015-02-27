@@ -41,8 +41,10 @@
         <item>2</item>
     </string-array>
 
-    <string name="settings_text_size">Text size</string>
-    <string name="settings_default_textsize">15</string>
+    <string name="settings_text_size_group">Group text size</string>
+    <string name="settings_text_size_group_default">16</string>
+    <string name="settings_text_size_song">Song text size</string>
+    <string name="settings_text_size_song_default">14</string>
 
     <string name="settings_rescan_title">Rescan</string>
     <string name="settings_rescan">Rescan media files.</string>

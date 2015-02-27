@@ -20,6 +20,7 @@ package souch.smp;
 
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.util.TypedValue;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -36,6 +37,8 @@ public class RowSong extends Row {
     private String path;
     // folder of the path
     private String folder;
+
+    protected static int textSize = 14;
 
     public RowSong(int pos, int offset, long songID, String songTitle, String songArtist, String songAlbum,
                    int dur, int songTrack, String songPath, String rootFolder) {
@@ -66,6 +69,9 @@ public class RowSong extends Row {
     public void setView(RowViewHolder holder, Main main, int position) {
         super.setView(holder, main, position);
 
+        holder.layout.getLayoutParams().height = convertDpToPixels((int) (textSize * 1.5),
+                holder.layout.getResources());
+
         setText(holder.text);
         setDuration(holder.duration);
         setCurrIcon(holder.image, main);
@@ -74,11 +80,13 @@ public class RowSong extends Row {
     private void setText(TextView text) {
         text.setText(title);
         text.setTextColor(Color.WHITE);
+        text.setTextSize(TypedValue.COMPLEX_UNIT_DIP, textSize);
     }
 
     private void setDuration(TextView duration) {
         duration.setText(secondsToMinutes(getDuration()) + " ");
         duration.setTextColor(Color.WHITE);
+        duration.setTextSize(TypedValue.COMPLEX_UNIT_DIP, textSize);
         duration.setTypeface(null, typeface);
         duration.setBackgroundColor(Color.argb(0x00, 0x0, 0x0, 0x0));
         duration.setOnClickListener(null);

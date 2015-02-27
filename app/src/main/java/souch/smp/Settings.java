@@ -75,10 +75,16 @@ public class Settings extends PreferenceActivity
                     Toast.LENGTH_LONG).show();
         }
 
-        String textSizeKey = PrefKeys.TEXT_SIZE.name();
-        EditTextPreference prefTextSize = (EditTextPreference) findPreference(textSizeKey);
+        String textSizeKey;
+        EditTextPreference prefTextSize;
+        textSizeKey = PrefKeys.TEXT_SIZE_GROUP.name();
+        prefTextSize = (EditTextPreference) findPreference(textSizeKey);
         prefTextSize.setSummary(sharedPreferences.getString(textSizeKey,
-                getString(R.string.settings_default_textsize)));
+                getString(R.string.settings_text_size_group_default)));
+        textSizeKey = PrefKeys.TEXT_SIZE_SONG.name();
+        prefTextSize = (EditTextPreference) findPreference(textSizeKey);
+        prefTextSize.setSummary(sharedPreferences.getString(textSizeKey,
+                getString(R.string.settings_text_size_song_default)));
 
         Preference rescan = findPreference(getResources().getString(R.string.settings_rescan_key));
         rescan.setOnPreferenceClickListener(this);
@@ -147,12 +153,19 @@ public class Settings extends PreferenceActivity
         if(key.equals(PrefKeys.DEFAULT_FOLD.name())) {
             setFoldSummary(sharedPreferences);
         }
-        else if(key.equals(PrefKeys.TEXT_SIZE.name())) {
+        else if(key.equals(PrefKeys.TEXT_SIZE_GROUP.name())) {
             String strTextSize = sharedPreferences.getString(key,
-                    getString(R.string.settings_default_textsize));
+                    getString(R.string.settings_text_size_group_default));
             findPreference(key).setSummary(strTextSize);
-            Row.textSize = Integer.valueOf(strTextSize);
-            // todo a bit dirty, we actually just need notifyDataSetChanged called
+            RowGroup.textSize = Integer.valueOf(strTextSize);
+            // todo a bit dirty, we actually just need to call Adapter.notifyDataSetChanged
+            musicSrv.setChanged();
+        }
+        else if(key.equals(PrefKeys.TEXT_SIZE_SONG.name())) {
+            String strTextSize = sharedPreferences.getString(key,
+                    getString(R.string.settings_text_size_song_default));
+            findPreference(key).setSummary(strTextSize);
+            RowSong.textSize = Integer.valueOf(strTextSize);
             musicSrv.setChanged();
         }
         else if(key.equals(PrefKeys.ENABLE_SHAKE.name())) {

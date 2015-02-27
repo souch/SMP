@@ -21,6 +21,7 @@ package souch.smp;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.TextView;
 
@@ -30,6 +31,7 @@ public class RowGroup extends Row {
     protected boolean selected;
     private int color;
     private int nbRowSong;
+    protected static int textSize = 18;
 
     public RowGroup(int pos, int offset, String name, int typeface, int color) {
         super(pos, offset, typeface);
@@ -54,6 +56,9 @@ public class RowGroup extends Row {
     public void setView(RowViewHolder holder, Main main, int position) {
         super.setView(holder, main, position);
 
+        holder.layout.getLayoutParams().height = convertDpToPixels((int) (textSize * 1.5),
+                holder.layout.getResources());
+
         setText(holder.text);
         setDuration(holder.duration, main, position);
         holder.image.setImageResource(android.R.color.transparent);
@@ -61,12 +66,15 @@ public class RowGroup extends Row {
         holder.layout.setBackgroundColor(color);
     }
 
+    static int normalTextColor = Color.argb(0xFF, 0xf0, 0xf0, 0xf0);
     private void setText(TextView text) {
         text.setText(name);
         if (isFolded() && isSelected())
             text.setTextColor(Color.RED);
         else
-            text.setTextColor(Color.WHITE);
+            text.setTextColor(normalTextColor);
+
+        text.setTextSize(TypedValue.COMPLEX_UNIT_DIP, textSize);
         //text.setPaintFlags(text.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
         //text.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
     }
@@ -78,13 +86,15 @@ public class RowGroup extends Row {
             if (isSelected())
                 duration.setTextColor(Color.RED);
             else
-                duration.setTextColor(Color.WHITE);
+                duration.setTextColor(normalTextColor);
             duration.setText(nbRowSong + " |" + rightSpace);
         }
         else {
             duration.setText("/" + rightSpace);
-            duration.setTextColor(Color.WHITE);
+            duration.setTextColor(normalTextColor);
         }
+
+        duration.setTextSize(TypedValue.COMPLEX_UNIT_DIP, textSize);
         duration.setTypeface(null, typeface == Typeface.ITALIC ? Typeface.NORMAL : typeface);
         duration.setBackgroundColor(Color.argb(0x88, 0x30, 0x30, 0x30));
         duration.setId(position);
@@ -101,7 +111,7 @@ public class RowGroup extends Row {
                         // todo: reset highlight color for a few ms after invertFold?
                     }
                 }
-                durationView.postDelayed(new InvertFold(durationView), 300);
+                durationView.postDelayed(new InvertFold(durationView), 200);
             }
         });
     }

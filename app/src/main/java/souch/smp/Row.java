@@ -33,7 +33,6 @@ public class Row {
     protected int genuinePos;
     protected int typeface;
     protected Row parent;
-    protected static int textSize = 15;
 
     public Row(int position, int theLevel, int theTypeface) {
         genuinePos = position;
@@ -54,14 +53,8 @@ public class Row {
 
     public void setView(RowViewHolder holder, Main main, int position) {
         holder.layout.setBackgroundColor(Color.argb(0x88, 0x0, 0x0, 0x0));
-        holder.layout.getLayoutParams().height = convertDpToPixels((int) (textSize * 1.5),
-                holder.layout.getResources());
-
         holder.text.setPadding(convertDpToPixels(level * 10, holder.layout.getResources()), 0, 0, 0);
         holder.text.setTypeface(null, typeface);
-        holder.text.setTextSize(TypedValue.COMPLEX_UNIT_DIP, textSize);
-
-        holder.duration.setTextSize(TypedValue.COMPLEX_UNIT_DIP, textSize);
     }
 
     // cache result

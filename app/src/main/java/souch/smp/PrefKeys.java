@@ -27,5 +27,6 @@ public enum PrefKeys {
     FILTER,
     ROOT_FOLDER,
     DEFAULT_FOLD,
-    TEXT_SIZE
+    TEXT_SIZE_GROUP,
+    TEXT_SIZE_SONG
 }

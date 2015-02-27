@@ -86,11 +86,19 @@
             />
 
         <EditTextPreference
-            android:key="TEXT_SIZE"
-            android:title="@string/settings_text_size"
+            android:key="TEXT_SIZE_GROUP"
+            android:title="@string/settings_text_size_group"
             android:numeric="integer"
             android:summary=""
-            android:defaultValue="@string/settings_default_textsize"
+            android:defaultValue="@string/settings_text_size_group_default"
+            />
+
+        <EditTextPreference
+            android:key="TEXT_SIZE_SONG"
+            android:title="@string/settings_text_size_song"
+            android:numeric="integer"
+            android:summary=""
+            android:defaultValue="@string/settings_text_size_song_default"
             />
 
     </PreferenceCategory>
