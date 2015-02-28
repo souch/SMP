@@ -350,16 +350,15 @@ public class Main extends Activity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         if(musicSrv != null) {
-            MenuItem itemArtist = menu.findItem(R.id.action_sort_artist);
-            MenuItem itemFolder = menu.findItem(R.id.action_sort_folder);
+            MenuItem itemSort = menu.findItem(R.id.action_sort);
             switch(rows.getFilter()) {
                 case ARTIST:
-                    itemArtist.setIcon(R.drawable.ic_menu_artist_checked);
-                    itemFolder.setIcon(R.drawable.ic_menu_folder);
+                    itemSort.setIcon(R.drawable.ic_menu_artist);
+                    itemSort.setTitle(getString(R.string.action_sort_artist));
                     break;
                 case FOLDER:
-                    itemArtist.setIcon(R.drawable.ic_menu_artist);
-                    itemFolder.setIcon(R.drawable.ic_menu_folder_checked);
+                    itemSort.setIcon(R.drawable.ic_menu_folder);
+                    itemSort.setTitle(getString(R.string.action_sort_folder));
                     break;
             }
 
@@ -418,20 +417,21 @@ public class Main extends Activity {
                     }
                 }
                 return true;
-            case R.id.action_sort_artist:
-                if(musicSrv != null && rows.getFilter() != Filter.ARTIST) {
-                    item.setIcon(R.drawable.ic_menu_artist_checked);
-                    Toast.makeText(getApplicationContext(), item.getTitle(), Toast.LENGTH_LONG).show();
-                    rows.setFilter(Filter.ARTIST);
-                    songAdt.notifyDataSetChanged();
-                    scrollToCurrSong();
-                }
-                return true;
-            case R.id.action_sort_folder:
-                if(musicSrv != null && rows.getFilter() != Filter.FOLDER) {
-                    item.setIcon(R.drawable.ic_menu_folder_checked);
-                    Toast.makeText(getApplicationContext(), item.getTitle(), Toast.LENGTH_LONG).show();
-                    rows.setFilter(Filter.FOLDER);
+            case R.id.action_sort:
+                if(musicSrv != null) {
+                    String title;
+                    if (rows.getFilter() == Filter.FOLDER) {
+                        item.setIcon(R.drawable.ic_menu_artist);
+                        title = getString(R.string.action_sort_artist);
+                        rows.setFilter(Filter.ARTIST);
+                    }
+                    else {
+                        item.setIcon(R.drawable.ic_menu_folder);
+                        title = getString(R.string.action_sort_folder);
+                        rows.setFilter(Filter.FOLDER);
+                    }
+                    Toast.makeText(getApplicationContext(), title, Toast.LENGTH_LONG).show();
+                    item.setTitle(title);
                     songAdt.notifyDataSetChanged();
                     scrollToCurrSong();
                 }

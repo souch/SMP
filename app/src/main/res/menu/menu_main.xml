@@ -40,17 +40,7 @@
         android:title="@string/action_settings"
         android:icon="@drawable/ic_menu_settings" />
 
-    <item android:id="@+id/action_sort_artist"
-        android:title="Sort by artist"
-        android:icon="@drawable/ic_menu_artist"
-        android:checkable="true"
-        />
-
     <!-- icon ic_menu_folder done by ionicons (MIT license) found on iconfinder.com -->
-    <item android:id="@+id/action_sort_folder"
-        android:title="Sort by folder"
-        android:icon="@drawable/ic_menu_folder"
-        android:checkable="true"
-        />
+    <item android:id="@+id/action_sort"/>
 
 </menu>

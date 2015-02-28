@@ -24,6 +24,9 @@
     <string name="action_shake_disabled">Shake off</string>
     <string name="action_shake_enabled">Shake on</string>
 
+    <string name="action_sort_folder">Sort by folder</string>
+    <string name="action_sort_artist">Sort by artist</string>
+
     <string name="settings_title">Settings</string>
 
     <string name="action_fold">Fold</string>
