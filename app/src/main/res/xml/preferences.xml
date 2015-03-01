@@ -58,7 +58,11 @@
 
         <Preference
             android:title="Quit"
-            android:summary="The app is killed if no song is playing and back or home button is pressed. If not, Android will do it automatically when memory is under pressure."/>
+            android:summary="The app should be killed if no song is playing and back button is pressed. If not, Android will automatically kill it when memory is under pressure."/>
+
+        <Preference
+            android:title="Stop"
+            android:summary="The app should remain in memory if no song is playing and home button is pressed, but Android will automatically kill it when memory is under pressure."/>
 
     </PreferenceScreen>
 
