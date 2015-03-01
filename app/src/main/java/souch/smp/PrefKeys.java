@@ -30,5 +30,5 @@ public enum PrefKeys {
     TEXT_SIZE_NORMAL,
     TEXT_SIZE_BIG,
     TEXT_SIZE_RATIO,
-    TEX_SIZE_CHOOSED
+    TEXT_SIZE_CHOOSED
 }

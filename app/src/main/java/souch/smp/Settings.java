@@ -110,7 +110,7 @@ public class Settings extends PreferenceActivity
         if(key.equals(PrefKeys.DEFAULT_FOLD.name())) {
             setFoldSummary();
         }
-        else if(key.equals(PrefKeys.TEX_SIZE_CHOOSED.name())) {
+        else if(key.equals(PrefKeys.TEXT_SIZE_CHOOSED.name())) {
             setChoosedTextSizeSummary();
             Main.applyTextSize(params);
             // todo a bit dirty? we actually just need to call Adapter.notifyDataSetChanged
@@ -172,7 +172,7 @@ public class Settings extends PreferenceActivity
             r = R.string.settings_text_size_regular;
         else
             r = R.string.settings_text_size_big;
-        findPreference(PrefKeys.TEX_SIZE_CHOOSED.name()).setSummary(getResources().getString(r));
+        findPreference(PrefKeys.TEXT_SIZE_CHOOSED.name()).setSummary(getResources().getString(r));
     }
 
 

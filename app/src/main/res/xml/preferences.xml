@@ -95,7 +95,7 @@
     <PreferenceCategory android:title="Song view font">
 
         <CheckBoxPreference
-            android:key="TEX_SIZE_CHOOSED"
+            android:key="TEXT_SIZE_CHOOSED"
             android:title="@string/settings_text_size_choosed"
             android:summary=""
             android:defaultValue="false"

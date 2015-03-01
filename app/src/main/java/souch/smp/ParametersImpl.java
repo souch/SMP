@@ -57,10 +57,10 @@ public class ParametersImpl implements Parameters {
     }
 
     public void setChooseTextSize(boolean big) {
-        getEditor().putBoolean(PrefKeys.TEX_SIZE_CHOOSED.name(), big).commit();
+        getEditor().putBoolean(PrefKeys.TEXT_SIZE_CHOOSED.name(), big).commit();
     }
     public boolean getChoosedTextSize() {
-        return getPref().getBoolean(PrefKeys.TEX_SIZE_CHOOSED.name(),
+        return getPref().getBoolean(PrefKeys.TEXT_SIZE_CHOOSED.name(),
                 Boolean.valueOf(context.getString(R.string.settings_text_size_choosed_default)));
     }
     public int getBigTextSize() {
