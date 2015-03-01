@@ -453,7 +453,7 @@ public class Main extends Activity {
         }
         else {
             item.setIcon(R.drawable.ic_menu_text_regular);
-            item.setTitle(getString(R.string.settings_text_size_normal));
+            item.setTitle(getString(R.string.settings_text_size_regular));
         }
     }
 

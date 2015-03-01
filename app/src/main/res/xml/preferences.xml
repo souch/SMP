@@ -103,10 +103,11 @@
 
         <EditTextPreference
             android:key="TEXT_SIZE_NORMAL"
-            android:title="@string/settings_text_size_normal"
+            android:title="@string/settings_text_size_regular"
             android:numeric="integer"
+            android:icon="@drawable/ic_menu_text_regular"
             android:summary=""
-            android:defaultValue="@string/settings_text_size_normal_default"
+            android:defaultValue="@string/settings_text_size_regular_default"
             />
 
         <EditTextPreference
@@ -114,6 +115,7 @@
             android:title="@string/settings_text_size_big"
             android:numeric="integer"
             android:summary=""
+            android:icon="@drawable/ic_menu_text_big"
             android:defaultValue="@string/settings_text_size_big_default"
             />
 
@@ -133,6 +135,7 @@
             android:key="ENABLE_SHAKE"
             android:title="Accelerometer shake"
             android:summary="Go to next song when shaked."
+            android:icon="@drawable/ic_menu_shake_checked"
             android:defaultValue="false"/>
 
         <!-- todo: improve this with a number picker or slider or shake force counter... -->

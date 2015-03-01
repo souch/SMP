@@ -46,8 +46,8 @@
 
     <string name="settings_text_size_choosed">Choose font size</string>
     <string name="settings_text_size_choosed_default">false</string>
-    <string name="settings_text_size_normal">Regular font</string>
-    <string name="settings_text_size_normal_default">14</string>
+    <string name="settings_text_size_regular">Regular font</string>
+    <string name="settings_text_size_regular_default">14</string>
     <string name="settings_text_size_big">Big font</string>
     <string name="settings_text_size_big_default">17</string>
     <string name="settings_text_size_ratio">Group/song ratio text size</string>

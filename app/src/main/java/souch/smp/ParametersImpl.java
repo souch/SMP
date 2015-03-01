@@ -69,7 +69,7 @@ public class ParametersImpl implements Parameters {
     }
     public int getNormalTextSize() {
         return Integer.valueOf(getPref().getString(PrefKeys.TEXT_SIZE_NORMAL.name(),
-                context.getString(R.string.settings_text_size_normal_default)));
+                context.getString(R.string.settings_text_size_regular_default)));
     }
     public float getTextSizeRatio() {
         return Float.valueOf(getPref().getString(PrefKeys.TEXT_SIZE_RATIO.name(),

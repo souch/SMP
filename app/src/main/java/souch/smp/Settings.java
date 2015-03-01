@@ -169,7 +169,7 @@ public class Settings extends PreferenceActivity
     private void setChoosedTextSizeSummary() {
         int r;
         if (!params.getChoosedTextSize())
-            r = R.string.settings_text_size_normal;
+            r = R.string.settings_text_size_regular;
         else
             r = R.string.settings_text_size_big;
         findPreference(PrefKeys.TEX_SIZE_CHOOSED.name()).setSummary(getResources().getString(r));
