@@ -100,6 +100,15 @@ public class ParametersImpl implements Parameters {
         return Integer.valueOf(getPref().getString(PrefKeys.DEFAULT_FOLD.name(), "0"));
     }
 
+    public boolean getUnfoldSubGroup() {
+        return getPref().getBoolean(PrefKeys.UNFOLD_SUBGROUP.name(), true);
+    }
+
+    public int getUnfoldSubGroupThreshold() {
+        return Integer.valueOf(getPref().getString(PrefKeys.UNFOLD_SUBGROUP_THRESHOLD.name(),
+                context.getString(R.string.settings_unfold_subgroup_threshold_default)));
+    }
+
     public boolean getEnableShake() {
         return getPref().getBoolean(PrefKeys.ENABLE_SHAKE.name(), false);
     }

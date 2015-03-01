@@ -62,6 +62,14 @@ public class ParametersMock implements Parameters {
         return 0;
     }
 
+    public boolean getUnfoldSubGroup() {
+        return true;
+    }
+
+    public int getUnfoldSubGroupThreshold() {
+        return 20;
+    }
+
     public boolean getEnableShake() {
         return false;
     }

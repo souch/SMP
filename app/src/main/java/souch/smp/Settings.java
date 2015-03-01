@@ -88,6 +88,9 @@ public class Settings extends PreferenceActivity
         Preference donate = findPreference("donate");
         donate.setOnPreferenceClickListener(this);
 
+        setUnfoldSubgroup();
+        setUnfoldThresholdSummary();
+
         String rootFolderKey = PrefKeys.ROOT_FOLDER.name();
         EditTextPreference prefRootFolder = (EditTextPreference) findPreference(rootFolderKey);
         prefRootFolder.setSummary(params.getRootFolder());
@@ -138,7 +141,12 @@ public class Settings extends PreferenceActivity
             final float threshold = params.getShakeThreshold();
             musicSrv.setShakeThreshold(threshold);
             findPreference(key).setSummary(String.valueOf(threshold));
-            //this.onContentChanged(); // useful?
+        }
+        else if(key.equals(PrefKeys.UNFOLD_SUBGROUP.name())) {
+            setUnfoldSubgroup();
+        }
+        else if(key.equals(PrefKeys.UNFOLD_SUBGROUP_THRESHOLD.name())) {
+            setUnfoldThresholdSummary();
         }
         else if(key.equals(PrefKeys.ROOT_FOLDER.name())) {
             final String rootFolder = params.getRootFolder();
@@ -153,6 +161,14 @@ public class Settings extends PreferenceActivity
         }
     }
 
+    private void setUnfoldSubgroup() {
+        findPreference(PrefKeys.UNFOLD_SUBGROUP_THRESHOLD.name()).setEnabled(!params.getUnfoldSubGroup());
+    }
+
+    private void setUnfoldThresholdSummary() {
+        final String s = "has less than " + String.valueOf(params.getUnfoldSubGroupThreshold()) + " songs";
+        findPreference(PrefKeys.UNFOLD_SUBGROUP_THRESHOLD.name()).setSummary(s);
+    }
 
     private void setFoldSummary() {
         int idx = params.getDefaultFold();

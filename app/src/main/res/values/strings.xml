@@ -43,6 +43,10 @@
         <item>1</item>
         <item>2</item>
     </string-array>
+    <string name="settings_unfold_subgroup">Unfold subgroups</string>
+    <string name="settings_unfold_subgroup_summary">If checked: tap on group unfold every subgroups and songs.</string>
+    <string name="settings_unfold_subgroup_threshold">Unfold subgroups if group</string>
+    <string name="settings_unfold_subgroup_threshold_default">18</string>
 
     <string name="settings_text_size_choosed">Choose font size</string>
     <string name="settings_text_size_choosed_default">false</string>

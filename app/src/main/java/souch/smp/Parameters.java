@@ -40,6 +40,9 @@ public interface Parameters {
 
     public int getDefaultFold();
 
+    public boolean getUnfoldSubGroup();
+    public int getUnfoldSubGroupThreshold();
+
     public boolean getEnableShake();
     public void setEnableShake(boolean shakeEnabled);
 

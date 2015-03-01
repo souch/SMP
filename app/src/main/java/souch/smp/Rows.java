@@ -200,9 +200,6 @@ public class Rows {
         RowGroup group = (RowGroup) rows.get(pos);
 
         if(group.isFolded()) {
-            // avoid duplication
-            fold(group, pos);
-
             unfold(group, pos);
         }
         else {
@@ -225,17 +222,32 @@ public class Rows {
     private void unfold(RowGroup group, int pos) {
         // add every missing rows
         Row row;
-        for (int i = 1;
-             group.getGenuinePos() + i < rowsUnfolded.size() &&
-                     (row = rowsUnfolded.get(group.getGenuinePos() + i)).getLevel() > group.getLevel() ;
-             i++) {
-            // todo: keeps the sub group folded?
-            // unfold if previously folded
-            if(row.getClass() == RowGroup.class)
-                ((RowGroup) row).setFolded(false);
+        final int autoUnfoldThreshold = params.getUnfoldSubGroupThreshold();
+        if (params.getUnfoldSubGroup() ||
+                group.getLevel() != 0 ||
+                group.nbRowSong() < autoUnfoldThreshold) {
+            for (int i = 1;
+                 group.getGenuinePos() + i < rowsUnfolded.size() &&
+                         (row = rowsUnfolded.get(group.getGenuinePos() + i)).getLevel() > group.getLevel();
+                 i++) {
+                // unfold if previously folded
+                if (row.getClass() == RowGroup.class)
+                    ((RowGroup) row).setFolded(false);
 
-            rows.add(pos + i, row);
-            //Log.d("Rows", "Item added pos: " + pos + i + " row: " + songItem);
+                rows.add(pos + i, row);
+                //Log.d("Rows", "Item added pos: " + pos + i + " row: " + songItem);
+            }
+        }
+        else {
+            for (int i = 1, j = 1;
+                 group.getGenuinePos() + i < rowsUnfolded.size() &&
+                         (row = rowsUnfolded.get(group.getGenuinePos() + i)).getLevel() > group.getLevel();
+                 i++) {
+                if (row.getClass() == RowGroup.class) {
+                    ((RowGroup) row).setFolded(true);
+                    rows.add(pos + j++, row);
+                }
+            }
         }
         group.setFolded(false);
     }
