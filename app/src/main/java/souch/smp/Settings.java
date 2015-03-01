@@ -43,6 +43,7 @@ public class Settings extends PreferenceActivity
         implements SharedPreferences.OnSharedPreferenceChangeListener,
         Preference.OnPreferenceClickListener
 {
+    private Parameters params;
     private MusicService musicSrv;
     private Intent playIntent;
     private boolean serviceBound = false;
@@ -53,6 +54,7 @@ public class Settings extends PreferenceActivity
     protected void onCreate(Bundle savedInstanceState) {
         Log.d("Settings", "onCreate");
         super.onCreate(savedInstanceState);
+        params = new ParametersImpl(this);
         // fixme: everything should be put in onResume?
         addPreferencesFromResource(R.xml.preferences);
         playIntent = new Intent(this, MusicService.class);
@@ -64,8 +66,8 @@ public class Settings extends PreferenceActivity
         EditTextPreference prefShakeThreshold = (EditTextPreference) findPreference(thresholdKeys);
         CheckBoxPreference prefEnableShake = (CheckBoxPreference) findPreference(PrefKeys.ENABLE_SHAKE.name());
         if(getPackageManager().hasSystemFeature(PackageManager.FEATURE_SENSOR_ACCELEROMETER)) {
-            prefShakeThreshold.setSummary(sharedPreferences.getString(thresholdKeys, getString(R.string.settings_default_shake_threshold)));
-            prefEnableShake.setChecked(getShakePref(getPreferenceScreen().getSharedPreferences()));
+            prefShakeThreshold.setSummary(String.valueOf(params.getShakeThreshold()));
+            prefEnableShake.setChecked(params.getEnableShake());
         }
         else {
             prefShakeThreshold.setEnabled(false);
@@ -75,16 +77,10 @@ public class Settings extends PreferenceActivity
                     Toast.LENGTH_LONG).show();
         }
 
-        String textSizeKey;
-        EditTextPreference prefTextSize;
-        textSizeKey = PrefKeys.TEXT_SIZE_GROUP.name();
-        prefTextSize = (EditTextPreference) findPreference(textSizeKey);
-        prefTextSize.setSummary(sharedPreferences.getString(textSizeKey,
-                getString(R.string.settings_text_size_group_default)));
-        textSizeKey = PrefKeys.TEXT_SIZE_SONG.name();
-        prefTextSize = (EditTextPreference) findPreference(textSizeKey);
-        prefTextSize.setSummary(sharedPreferences.getString(textSizeKey,
-                getString(R.string.settings_text_size_song_default)));
+        findPreference(PrefKeys.TEXT_SIZE_NORMAL.name()).setSummary(String.valueOf(params.getNormalTextSize()));
+        findPreference(PrefKeys.TEXT_SIZE_BIG.name()).setSummary(String.valueOf(params.getBigTextSize()));
+        findPreference(PrefKeys.TEXT_SIZE_RATIO.name()).setSummary(String.valueOf(params.getTextSizeRatio()));
+        setChoosedTextSizeSummary();
 
         Preference rescan = findPreference(getResources().getString(R.string.settings_rescan_key));
         rescan.setOnPreferenceClickListener(this);
@@ -94,14 +90,92 @@ public class Settings extends PreferenceActivity
 
         String rootFolderKey = PrefKeys.ROOT_FOLDER.name();
         EditTextPreference prefRootFolder = (EditTextPreference) findPreference(rootFolderKey);
-        prefRootFolder.setSummary(sharedPreferences.getString(rootFolderKey, getDefaultMusicDir()));
+        prefRootFolder.setSummary(params.getRootFolder());
         if(!sharedPreferences.contains(rootFolderKey))
-            prefRootFolder.setText(getDefaultMusicDir());
+            prefRootFolder.setText(ParametersImpl.getDefaultMusicDir());
 
-        setFoldSummary(sharedPreferences);
+        setFoldSummary();
 
         this.onContentChanged();
     }
+
+
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if(!serviceBound)
+            return;
+        Log.d("MusicService", "onSharedPreferenceChanged: " + key);
+
+        if(key.equals(PrefKeys.DEFAULT_FOLD.name())) {
+            setFoldSummary();
+        }
+        else if(key.equals(PrefKeys.TEX_SIZE_CHOOSED.name())) {
+            setChoosedTextSizeSummary();
+            Main.applyTextSize(params);
+            // todo a bit dirty? we actually just need to call Adapter.notifyDataSetChanged
+            musicSrv.setChanged();
+        }
+        else if(key.equals(PrefKeys.TEXT_SIZE_NORMAL.name())) {
+            findPreference(key).setSummary(String.valueOf(params.getNormalTextSize()));
+            Main.applyTextSize(params);
+            musicSrv.setChanged();
+        }
+        else if(key.equals(PrefKeys.TEXT_SIZE_BIG.name())) {
+            findPreference(key).setSummary(String.valueOf(params.getBigTextSize()));
+            Main.applyTextSize(params);
+            musicSrv.setChanged();
+        }
+        else if(key.equals(PrefKeys.TEXT_SIZE_RATIO.name())) {
+            findPreference(key).setSummary(String.valueOf(String.valueOf(params.getTextSizeRatio())));
+            Main.applyTextSize(params);
+            musicSrv.setChanged();
+        }
+        else if(key.equals(PrefKeys.ENABLE_SHAKE.name())) {
+            musicSrv.setEnableShake(params.getEnableShake());
+        }
+        else if(key.equals(PrefKeys.SHAKE_THRESHOLD.name())) {
+            final float threshold = params.getShakeThreshold();
+            musicSrv.setShakeThreshold(threshold);
+            findPreference(key).setSummary(String.valueOf(threshold));
+            //this.onContentChanged(); // useful?
+        }
+        else if(key.equals(PrefKeys.ROOT_FOLDER.name())) {
+            final String rootFolder = params.getRootFolder();
+            findPreference(key).setSummary(rootFolder);
+            if(!(new File(rootFolder)).exists())
+                Toast.makeText(getApplicationContext(),
+                        "! The path '" + rootFolder + "' does not exists on the phone !",
+                        Toast.LENGTH_LONG).show();
+            boolean reinited = musicSrv.getRows().setRootFolder(rootFolder);
+            if(reinited)
+                musicSrv.setChanged();
+        }
+    }
+
+
+    private void setFoldSummary() {
+        int idx = params.getDefaultFold();
+        ListPreference prefFold = (ListPreference) findPreference(PrefKeys.DEFAULT_FOLD.name());
+        prefFold.setSummary((getResources().getStringArray(R.array.settings_fold_entries))[idx]);
+    }
+
+    private void showDonateWebsite() {
+        Intent webIntent = new Intent(Intent.ACTION_VIEW);
+        webIntent.setData(Uri.parse(getString(R.string.settings_donate_www)));
+        this.startActivity(webIntent);
+    }
+
+    private void setChoosedTextSizeSummary() {
+        int r;
+        if (!params.getChoosedTextSize())
+            r = R.string.settings_text_size_normal;
+        else
+            r = R.string.settings_text_size_big;
+        findPreference(PrefKeys.TEX_SIZE_CHOOSED.name()).setSummary(getResources().getString(r));
+    }
+
+
 
     private ServiceConnection musicConnection = new ServiceConnection() {
 
@@ -145,67 +219,6 @@ public class Settings extends PreferenceActivity
     }
 
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if(!serviceBound)
-            return;
-        Log.d("MusicService", "onSharedPreferenceChanged: " + key);
-
-        if(key.equals(PrefKeys.DEFAULT_FOLD.name())) {
-            setFoldSummary(sharedPreferences);
-        }
-        else if(key.equals(PrefKeys.TEXT_SIZE_GROUP.name())) {
-            String strTextSize = sharedPreferences.getString(key,
-                    getString(R.string.settings_text_size_group_default));
-            findPreference(key).setSummary(strTextSize);
-            RowGroup.textSize = Integer.valueOf(strTextSize);
-            // todo a bit dirty, we actually just need to call Adapter.notifyDataSetChanged
-            musicSrv.setChanged();
-        }
-        else if(key.equals(PrefKeys.TEXT_SIZE_SONG.name())) {
-            String strTextSize = sharedPreferences.getString(key,
-                    getString(R.string.settings_text_size_song_default));
-            findPreference(key).setSummary(strTextSize);
-            RowSong.textSize = Integer.valueOf(strTextSize);
-            musicSrv.setChanged();
-        }
-        else if(key.equals(PrefKeys.ENABLE_SHAKE.name())) {
-            musicSrv.setEnableShake(getShakePref(sharedPreferences));
-        }
-        else if(key.equals(PrefKeys.SHAKE_THRESHOLD.name())) {
-            String strThreshold = sharedPreferences.getString(key,
-                    getString(R.string.settings_default_shake_threshold));
-            float threshold = Float.valueOf(strThreshold) / 10.0f;
-            musicSrv.setShakeThreshold(threshold);
-            Log.d("MusicService", "Set shake threshold to: " + threshold);
-
-            findPreference(key).setSummary(strThreshold);
-            this.onContentChanged();
-        }
-        else if(key.equals(PrefKeys.ROOT_FOLDER.name())) {
-            String rootFolder = sharedPreferences.getString(key, getDefaultMusicDir());
-            findPreference(key).setSummary(rootFolder);
-            if(!(new File(rootFolder)).exists())
-                Toast.makeText(getApplicationContext(),
-                        "! The path '" + rootFolder + "' does not exists on the phone !",
-                        Toast.LENGTH_LONG).show();
-            boolean reinited = musicSrv.getRows().setRootFolder(rootFolder);
-            if(reinited)
-                musicSrv.setChanged();
-        }
-    }
-
-    static public String getDefaultMusicDir() {
-        String musicDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getPath();
-        if (!musicDir.endsWith(File.separator))
-            musicDir += File.separator;
-        return musicDir;
-    }
-
-    static public boolean getShakePref(SharedPreferences sharedPreferences) {
-        return sharedPreferences.getBoolean(PrefKeys.ENABLE_SHAKE.name(), false);
-    }
-
-    @Override
     public boolean onPreferenceClick(Preference preference) {
         if(preference.getKey().equals(getResources().getString(R.string.settings_rescan_key))) {
             rescan();
@@ -215,21 +228,6 @@ public class Settings extends PreferenceActivity
         return false;
     }
 
-    static public int getFoldPref(SharedPreferences sharedPreferences) {
-        return Integer.valueOf(sharedPreferences.getString(PrefKeys.DEFAULT_FOLD.name(), "0"));
-    }
-
-    private void setFoldSummary(SharedPreferences sharedPreferences) {
-        ListPreference prefFold = (ListPreference) findPreference(PrefKeys.DEFAULT_FOLD.name());
-        int idx = getFoldPref(sharedPreferences);
-        prefFold.setSummary((getResources().getStringArray(R.array.settings_fold_entries))[idx]);
-    }
-
-    private void showDonateWebsite() {
-        Intent webIntent = new Intent(Intent.ACTION_VIEW);
-        webIntent.setData(Uri.parse(getString(R.string.settings_donate_www)));
-        this.startActivity(webIntent);
-    }
 
     public void rescan() {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {

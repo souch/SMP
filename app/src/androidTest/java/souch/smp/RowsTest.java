@@ -99,7 +99,7 @@ public class RowsTest extends AndroidTestCase {
         MockContentResolver resolver = new MockContentResolver();
         TestContentProvider provider = new TestContentProvider(getContext(), data);
         resolver.addProvider(MediaStore.AUTHORITY, provider);
-        Rows rows = new Rows(resolver, getContext());
+        Rows rows = new Rows(resolver, new ParametersImpl(getContext()));
         rows.setFilter(filter);
         rows.init();
         return rows;

@@ -19,13 +19,10 @@
 package souch.smp;
 
 import android.content.ContentResolver;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
-import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.util.Log;
 
@@ -36,7 +33,7 @@ import java.util.Comparator;
 public class Rows {
 
     private ContentResolver musicResolver;
-    private Context context;
+    private Parameters params;
 
     private Filter filter;
     private String rootFolder;
@@ -51,11 +48,12 @@ public class Rows {
     // never assign this directly, instead use setCurrPos
     private int currPos;
 
+
     static final public String defaultStr = "<null>";
 
-    public Rows(ContentResolver resolver, Context theContext) {
+    public Rows(ContentResolver resolver, Parameters params) {
+        this.params = params;
         musicResolver = resolver;
-        context = theContext;
         currPos = -1;
 
         rowsUnfolded = new ArrayList<>();
@@ -307,8 +305,7 @@ public class Rows {
         }
 
         // shallow copy
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
-        switch(Settings.getFoldPref(settings)) {
+        switch (params.getDefaultFold()) {
             case 0:
                 // fold except curr
                 initRowsFolded();
@@ -483,23 +480,15 @@ public class Rows {
     private String getDefaultStrIfNull(String str) { return str != null ? str : defaultStr; }
 
     private void restore() {
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
-        savedID = settings.getLong(PrefKeys.SONG_ID.name(), -1);
-        filter = Filter.valueOf(settings.getString(PrefKeys.FILTER.name(), Filter.FOLDER.name()));
-        Log.d("Rows", "restore savedID: " + savedID);
-
-        rootFolder = settings.getString(PrefKeys.ROOT_FOLDER.name(), Settings.getDefaultMusicDir());
+        savedID = params.getSongID();
+        filter = params.getFilter();
+        rootFolder = params.getRootFolder();
     }
 
     public void save() {
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
-        SharedPreferences.Editor editor = settings.edit();
-
         updateSavedId();
-        Log.d("Rows", "save savedID: " + savedID);
-        editor.putLong(PrefKeys.SONG_ID.name(), savedID);
-        editor.putString(PrefKeys.FILTER.name(), filter.name());
-        editor.commit();
+        params.setSongID(savedID);
+        params.setFilter(filter);
     }
 
     

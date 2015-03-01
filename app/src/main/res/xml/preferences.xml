@@ -85,20 +85,40 @@
             android:summary="@string/settings_root_folder"
             />
 
-        <EditTextPreference
-            android:key="TEXT_SIZE_GROUP"
-            android:title="@string/settings_text_size_group"
-            android:numeric="integer"
+    </PreferenceCategory>
+
+
+    <PreferenceCategory android:title="Song view font">
+
+        <CheckBoxPreference
+            android:key="TEX_SIZE_CHOOSED"
+            android:title="@string/settings_text_size_choosed"
             android:summary=""
-            android:defaultValue="@string/settings_text_size_group_default"
+            android:defaultValue="false"
             />
 
         <EditTextPreference
-            android:key="TEXT_SIZE_SONG"
-            android:title="@string/settings_text_size_song"
+            android:key="TEXT_SIZE_NORMAL"
+            android:title="@string/settings_text_size_normal"
             android:numeric="integer"
             android:summary=""
-            android:defaultValue="@string/settings_text_size_song_default"
+            android:defaultValue="@string/settings_text_size_normal_default"
+            />
+
+        <EditTextPreference
+            android:key="TEXT_SIZE_BIG"
+            android:title="@string/settings_text_size_big"
+            android:numeric="integer"
+            android:summary=""
+            android:defaultValue="@string/settings_text_size_big_default"
+            />
+
+        <EditTextPreference
+            android:key="TEXT_SIZE_RATIO"
+            android:title="@string/settings_text_size_ratio"
+            android:digits="0123456789."
+            android:summary=""
+            android:defaultValue="@string/settings_text_size_ratio_default"
             />
 
     </PreferenceCategory>

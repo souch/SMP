@@ -23,11 +23,9 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -69,6 +67,8 @@ public class Main extends Activity {
     // true if you want to keep the current song played visible
     private boolean followSong;
 
+    private Parameters params;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +94,8 @@ public class Main extends Activity {
         seekbar.setOnSeekBarChangeListener(seekBarChangeListener);
 
         followSong = false;
+
+        params = new ParametersImpl(this);
     }
 
 
@@ -350,27 +352,9 @@ public class Main extends Activity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         if(musicSrv != null) {
-            MenuItem itemSort = menu.findItem(R.id.action_sort);
-            switch(rows.getFilter()) {
-                case ARTIST:
-                    itemSort.setIcon(R.drawable.ic_menu_artist);
-                    itemSort.setTitle(getString(R.string.action_sort_artist));
-                    break;
-                case FOLDER:
-                    itemSort.setIcon(R.drawable.ic_menu_folder);
-                    itemSort.setTitle(getString(R.string.action_sort_folder));
-                    break;
-            }
-
-            MenuItem ic_menu_shake = menu.findItem(R.id.action_shake);
-            if(musicSrv.getEnableShake()) {
-                ic_menu_shake.setIcon(R.drawable.ic_menu_shake_checked);
-                ic_menu_shake.setTitle(R.string.action_shake_enabled);
-            }
-            else {
-                ic_menu_shake.setIcon(R.drawable.ic_menu_shake);
-                ic_menu_shake.setTitle(R.string.action_shake_disabled);
-            }
+            setFilterItem(menu.findItem(R.id.action_sort));
+            setShakeItem(menu.findItem(R.id.action_shake));
+            setChoosedTextSizeItem(menu.findItem(R.id.action_text_size));
         }
 
         return true;
@@ -401,13 +385,9 @@ public class Main extends Activity {
                 if(musicSrv != null) {
                     if(getPackageManager().hasSystemFeature(PackageManager.FEATURE_SENSOR_ACCELEROMETER)) {
                         musicSrv.setEnableShake(!musicSrv.getEnableShake());
-                        int msgId;
-                        if(musicSrv.getEnableShake())
-                            msgId = R.string.action_shake_enabled;
-                        else
-                            msgId = R.string.action_shake_disabled;
-                        Toast.makeText(getApplicationContext(),
-                                getResources().getString(msgId),
+                        // todo: only useful for item.getTitle() as the item is not changed, it just disapear
+                        setShakeItem(item);
+                        Toast.makeText(getApplicationContext(), item.getTitle(),
                                 Toast.LENGTH_LONG).show();
                     }
                     else {
@@ -419,21 +399,23 @@ public class Main extends Activity {
                 return true;
             case R.id.action_sort:
                 if(musicSrv != null) {
-                    String title;
-                    if (rows.getFilter() == Filter.FOLDER) {
-                        item.setIcon(R.drawable.ic_menu_artist);
-                        title = getString(R.string.action_sort_artist);
+                    if (rows.getFilter() == Filter.FOLDER)
                         rows.setFilter(Filter.ARTIST);
-                    }
-                    else {
-                        item.setIcon(R.drawable.ic_menu_folder);
-                        title = getString(R.string.action_sort_folder);
+                    else
                         rows.setFilter(Filter.FOLDER);
-                    }
-                    Toast.makeText(getApplicationContext(), title, Toast.LENGTH_LONG).show();
-                    item.setTitle(title);
+                    setFilterItem(item);
+                    Toast.makeText(getApplicationContext(), item.getTitle(), Toast.LENGTH_LONG).show();
                     songAdt.notifyDataSetChanged();
                     scrollToCurrSong();
+                }
+                return true;
+            case R.id.action_text_size:
+                if(musicSrv != null) {
+                    params.setChooseTextSize(!params.getChoosedTextSize());
+                    setChoosedTextSizeItem(item);
+                    applyTextSize(params);
+                    Toast.makeText(getApplicationContext(), item.getTitle(), Toast.LENGTH_LONG).show();
+                    songAdt.notifyDataSetChanged();
                 }
                 return true;
         }
@@ -441,6 +423,39 @@ public class Main extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    private void setFilterItem(MenuItem item) {
+        switch (rows.getFilter()) {
+            case ARTIST:
+                item.setIcon(R.drawable.ic_menu_artist);
+                item.setTitle(getString(R.string.action_sort_artist));
+                break;
+            case FOLDER:
+                item.setIcon(R.drawable.ic_menu_folder);
+                item.setTitle(getString(R.string.action_sort_folder));
+                break;
+        }
+    }
+
+    private void setShakeItem(MenuItem item) {
+        if (musicSrv.getEnableShake()) {
+            item.setIcon(R.drawable.ic_menu_shake_checked);
+            item.setTitle(R.string.action_shake_enabled);
+        } else {
+            item.setIcon(R.drawable.ic_menu_shake);
+            item.setTitle(R.string.action_shake_disabled);
+        }
+    }
+
+    private void setChoosedTextSizeItem(MenuItem item) {
+        if (params.getChoosedTextSize()) {
+            item.setIcon(R.drawable.ic_menu_text_big);
+            item.setTitle(getString(R.string.settings_text_size_big));
+        }
+        else {
+            item.setIcon(R.drawable.ic_menu_text_regular);
+            item.setTitle(getString(R.string.settings_text_size_normal));
+        }
+    }
 
     public void playOrPause(View view) {
         if(!serviceBound)
@@ -582,25 +597,26 @@ public class Main extends Activity {
     }
 */
 
-    private void restore() {
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-        noLock = settings.getBoolean(PrefKeys.NO_LOCK.name(), false);
-        followSong = settings.getBoolean(PrefKeys.FOLLOW_SONG.name(), true);
-        RowGroup.textSize = Integer.valueOf(settings.getString(PrefKeys.TEXT_SIZE_GROUP.name(),
-                getString(R.string.settings_text_size_group_default)));
-        RowSong.textSize = Integer.valueOf(settings.getString(PrefKeys.TEXT_SIZE_SONG.name(),
-                getString(R.string.settings_text_size_song_default)));
+    static public void applyTextSize(Parameters params) {
+        int textSize;
+        if (!params.getChoosedTextSize())
+            textSize = params.getNormalTextSize();
+        else
+            textSize = params.getBigTextSize();
 
-        Log.d("MusicService", "restorePreferences noLock: " + noLock + " follow: " + followSong);
+        RowSong.textSize = textSize;
+        RowGroup.textSize = (int) (textSize * params.getTextSizeRatio());
+    }
+
+    private void restore() {
+        noLock = params.getNoLock();
+        followSong = params.getFollowSong();
+        applyTextSize(params);
     }
 
     private void save() {
-        Log.d("MusicService", "save noLock: " + noLock);
-
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putBoolean(PrefKeys.NO_LOCK.name(), noLock);
-        editor.commit();
+        params.setNoLock(noLock);
     }
 }
+
 

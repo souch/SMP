@@ -44,10 +44,14 @@
         <item>2</item>
     </string-array>
 
-    <string name="settings_text_size_group">Group text size</string>
-    <string name="settings_text_size_group_default">16</string>
-    <string name="settings_text_size_song">Song text size</string>
-    <string name="settings_text_size_song_default">14</string>
+    <string name="settings_text_size_choosed">Choose font size</string>
+    <string name="settings_text_size_choosed_default">false</string>
+    <string name="settings_text_size_normal">Regular font</string>
+    <string name="settings_text_size_normal_default">14</string>
+    <string name="settings_text_size_big">Big font</string>
+    <string name="settings_text_size_big_default">17</string>
+    <string name="settings_text_size_ratio">Group/song ratio text size</string>
+    <string name="settings_text_size_ratio_default">1.1</string>
 
     <string name="settings_rescan_title">Rescan</string>
     <string name="settings_rescan">Rescan media files.</string>

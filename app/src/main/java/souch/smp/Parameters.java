@@ -18,17 +18,30 @@
 
 package souch.smp;
 
-public enum PrefKeys {
-    SONG_ID,
-    NO_LOCK,
-    FOLLOW_SONG,
-    ENABLE_SHAKE,
-    SHAKE_THRESHOLD,
-    FILTER,
-    ROOT_FOLDER,
-    DEFAULT_FOLD,
-    TEXT_SIZE_NORMAL,
-    TEXT_SIZE_BIG,
-    TEXT_SIZE_RATIO,
-    TEX_SIZE_CHOOSED
+public interface Parameters {
+    public boolean getNoLock();
+    public void setNoLock(boolean noLock);
+
+    public boolean getFollowSong();
+
+    public void setChooseTextSize(boolean big);
+    public boolean getChoosedTextSize();
+    public int getBigTextSize();
+    public int getNormalTextSize();
+    public float getTextSizeRatio();
+
+    public long getSongID();
+    public void setSongID(long songID);
+
+    public Filter getFilter();
+    public void setFilter(Filter filter);
+
+    public String getRootFolder();
+
+    public int getDefaultFold();
+
+    public boolean getEnableShake();
+    public void setEnableShake(boolean shakeEnabled);
+
+    public float getShakeThreshold();
 }

@@ -24,7 +24,6 @@ import android.app.Service;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -37,7 +36,6 @@ import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.SystemClock;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -46,6 +44,7 @@ public class MusicService extends Service implements
         MediaPlayer.OnCompletionListener, MediaPlayer.OnSeekCompleteListener,
         AudioManager.OnAudioFocusChangeListener, SensorEventListener
 {
+    private Parameters params;
     private MediaPlayer player;
     private Rows rows;
 
@@ -110,9 +109,11 @@ public class MusicService extends Service implements
         player = null;
         audioManager = null;
 
+        params = new ParametersImpl(this);
+
         restore();
 
-        rows = new Rows(getContentResolver(), this.getApplicationContext());
+        rows = new Rows(getContentResolver(), params);
         rows.init();
 
         if(enableShake) {
@@ -450,26 +451,14 @@ public class MusicService extends Service implements
     /*** PREFERENCES ***/
 
     private void restore() {
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-        enableShake = Settings.getShakePref(settings);
-        shakeThreshold = Float.valueOf(settings.getString(PrefKeys.SHAKE_THRESHOLD.name(),
-                getString(R.string.settings_default_shake_threshold))) / 10.0f;
-        Log.d("MusicService", "restore enable shake: " + enableShake +
-                " threshold:" + shakeThreshold);
+        enableShake = params.getEnableShake();
+        shakeThreshold = params.getShakeThreshold() / 10;
     }
 
     private void save() {
-        saveEnableShake();
+        params.setEnableShake(enableShake);
     }
 
-    private void saveEnableShake() {
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor = settings.edit();
-
-        Log.d("MusicService", "save enableShake: " + enableShake);
-        editor.putBoolean(PrefKeys.ENABLE_SHAKE.name(), enableShake);
-        editor.commit();
-    }
 
     /*** SENSORS ***/
 
@@ -523,13 +512,13 @@ public class MusicService extends Service implements
             startSensor();
         else
             stopSensor();
-        saveEnableShake();
+        params.setEnableShake(enableShake);
     }
 
     public boolean getEnableShake() { return enableShake; }
 
     public void setShakeThreshold(float threshold) {
-        shakeThreshold = threshold;
+        shakeThreshold = threshold / 10;
     }
 
     // can be called twice
