@@ -69,7 +69,10 @@ public class RowSong extends Row {
     public void setView(RowViewHolder holder, Main main, int position) {
         super.setView(holder, main, position);
 
-        holder.layout.getLayoutParams().height = convertDpToPixels((int) (textSize * 1.5),
+        float factor = 1.5f;
+        if (main.getMusicSrv().getRows().isLastRow(position))
+            factor = 3f;
+        holder.layout.getLayoutParams().height = convertDpToPixels((int) (textSize * factor),
                 holder.layout.getResources());
 
         setText(holder.text);

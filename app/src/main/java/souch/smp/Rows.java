@@ -252,6 +252,10 @@ public class Rows {
         group.setFolded(false);
     }
 
+    public boolean isLastRow(int pos) {
+        return pos == rows.size() - 1;
+    }
+
 
 
     public void init() {
