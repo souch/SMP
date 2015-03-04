@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  SicMu Player - Lightweight music player for Android
+  Copyright (C) 2015  Mathieu Souchaud
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<resources>
+
+    <string name="app_name">ЗикаМу плејер</string>
+
+    <string name="action_settings">Поставке</string>
+    <string name="action_shake_disabled">Дрмање иск.</string>
+    <string name="action_shake_enabled">Дрмање укљ.</string>
+
+    <string name="action_sort_folder">Поређај по фасцикли</string>
+    <string name="action_sort_artist">Поређај по извођачу</string>
+
+    <string name="settings_title">Поставке</string>
+
+    <string name="action_fold">Сажми</string>
+    <string name="action_unfold">Рашири</string>
+
+    <string name="settings_fold_title">Стање фасцикли по покретању</string>
+    <string-array name="settings_fold_entries">
+        <item>Сажете осим групе текуће песме</item>
+        <item>Сажете</item>
+        <item>Раширене</item>
+    </string-array>
+    <string name="settings_unfold_subgroup">Рашири подгрупе</string>
+    <string name="settings_unfold_subgroup_summary">Омогућено: раширивање групе раширује све подгрупе и песме.</string>
+    <string name="settings_unfold_subgroup_threshold">Рашири подгрупе ако група</string>
+
+    <string name="settings_text_size_choosed">Изаберите величину фонта</string>
+    <string name="settings_text_size_regular">Нормални фонт</string>
+    <string name="settings_text_size_big">Велики фонт</string>
+    <string name="settings_text_size_ratio">Однос величине текста извођач/песма</string>
+
+    <string name="settings_rescan_title">Поново скенирај</string>
+    <string name="settings_rescan">Поновна претрага медијалних фајлова.</string>
+
+    <string name="settings_root_folder">Корена фасцикла</string>
+
+    <string name="settings_help">Помоћ</string>
+    <string name="settings_help_summary">Ако сте мало изгубљени.</string>
+
+    <string name="settings_about">О програму</string>
+    <string name="settings_about_summary">Подаци о апликацији и аутору.</string>
+
+    <string name="settings_author">Mathieu Souchaud</string>
+    <string name="settings_source">https://github.com/souch/SMP</string>
+    <string name="settings_opensource">ГПЛв3</string>
+    <string name="settings_donate">ако вам се свиђа апликација.</string>
+    <string name="settings_donate_www">http://rodolphe.souchaud.free.fr/donate</string>
+    <string name="settings_no_accelerometer">Ваш уређај нема акцелерометар. Ова функција је онемогућена.</string>
+
+</resources>
