@@ -1,5 +1,7 @@
 # todo
 
+when unfold last song scroll selected group to the middle of the screen
+fix curr play icon when on last song row
 disable bluetooth on call?
 fix ui blocked onseek on android 2.3
 deactivate sensors onpause
@@ -62,6 +64,10 @@ http://developer.android.com/guide/topics/media/mediaplayer.html#audiofocus
 
 # unicode table
 http://unicode-table.com/en/#028C
+
+# zoom
+http://android-developers.blogspot.fr/2010/06/making-sense-of-multitouch.html
+https://developer.android.com/training/gestures/multi.html
 
 # get f-droid installations number
 wget https://gitlab.com/fdroid/fdroiddata/raw/master/stats/total_downloads_app.txt -O - 2>/dev/null | sed 's/\([^ ]*\) \([^ ]*\)/\2 \1/' | sort -nr | less -N
