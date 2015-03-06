@@ -157,7 +157,8 @@ public class MusicService extends Service implements
                     AudioManager.AUDIOFOCUS_GAIN);
 
             if (result != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-                Toast.makeText(getApplicationContext(), "Could not get audio focus! Restart the app!",
+                Toast.makeText(getApplicationContext(),
+                        getResources().getString(R.string.focus_error),
                         Toast.LENGTH_LONG).show();
             }
         }
@@ -433,8 +434,8 @@ public class MusicService extends Service implements
         Notification notification = new Notification(R.drawable.ic_launcher,
                 rowSong.getTitle(),
                 System.currentTimeMillis());
-        notification.setLatestEventInfo(this, "SicMu playing", rowSong.getTitle() +
-                " - " + rowSong.getArtist(), pendInt);
+        notification.setLatestEventInfo(this, getResources().getString(R.string.app_playing),
+                rowSong.getTitle() + " - " + rowSong.getArtist(), pendInt);
 
         startForeground(NOTIFY_ID, notification);
         foreground = true;

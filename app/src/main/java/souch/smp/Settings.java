@@ -85,7 +85,7 @@ public class Settings extends PreferenceActivity
         Preference rescan = findPreference(getResources().getString(R.string.settings_rescan_key));
         rescan.setOnPreferenceClickListener(this);
 
-        Preference donate = findPreference("donate");
+        Preference donate = findPreference(getResources().getString(R.string.settings_donate_key));
         donate.setOnPreferenceClickListener(this);
 
         setUnfoldSubgroup();
@@ -153,7 +153,9 @@ public class Settings extends PreferenceActivity
             findPreference(key).setSummary(rootFolder);
             if(!(new File(rootFolder)).exists())
                 Toast.makeText(getApplicationContext(),
-                        "! The path '" + rootFolder + "' does not exists on the phone !",
+                        getResources().getString(R.string.settings_root_folder_summary1) +
+                                " '" + rootFolder + "' " +
+                                getResources().getString(R.string.settings_root_folder_summary2),
                         Toast.LENGTH_LONG).show();
             boolean reinited = musicSrv.getRows().setRootFolder(rootFolder);
             if(reinited)
@@ -166,7 +168,9 @@ public class Settings extends PreferenceActivity
     }
 
     private void setUnfoldThresholdSummary() {
-        final String s = "has less than " + String.valueOf(params.getUnfoldSubGroupThreshold()) + " songs";
+        final String s = getResources().getString(R.string.settings_unfold_subgroup_threshold_summary1) +
+                " " + String.valueOf(params.getUnfoldSubGroupThreshold()) + " " +
+                getResources().getString(R.string.settings_unfold_subgroup_threshold_summary2);
         findPreference(PrefKeys.UNFOLD_SUBGROUP_THRESHOLD.name()).setSummary(s);
     }
 
@@ -238,7 +242,7 @@ public class Settings extends PreferenceActivity
     public boolean onPreferenceClick(Preference preference) {
         if(preference.getKey().equals(getResources().getString(R.string.settings_rescan_key))) {
             rescan();
-        } else if (preference.getKey().equals("donate")) {
+        } else if (preference.getKey().equals(getResources().getString(R.string.settings_donate_key))) {
             showDonateWebsite();
         }
         return false;
@@ -248,7 +252,8 @@ public class Settings extends PreferenceActivity
     public void rescan() {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             Toast.makeText(getApplicationContext(),
-                "Rescan broadcast disabled from Android KitKat.", Toast.LENGTH_LONG).show();
+                    getResources().getString(R.string.settings_rescan_disabled),
+                    Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -256,7 +261,7 @@ public class Settings extends PreferenceActivity
         sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri
                 .parse("file://" + Environment.getExternalStorageDirectory())));
         Toast toast = Toast.makeText(getApplicationContext(),
-                "Media Scanner Triggered...", Toast.LENGTH_SHORT);
+                getResources().getString(R.string.settings_rescan_triggered), Toast.LENGTH_SHORT);
         toast.show();
 
         // todo: should be improved with this?

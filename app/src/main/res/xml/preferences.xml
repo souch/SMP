@@ -26,48 +26,48 @@
         android:persistent="false">
 
         <Preference
-            android:title="Start playing song"
-            android:summary="Tap on a song to start it."/>
-
-         <Preference
-            android:title="Start playing from a group"
-            android:summary="Long tap on a group to start the first song it contains."/>
-
-         <Preference
-            android:title="Fold / unfold group"
-            android:summary="Tap on a group to fold / unfold it."/>
+            android:title="@string/help_start_song"
+            android:summary="@string/help_start_song_summary"/>
 
         <Preference
-            android:title="Scroll to current song"
-            android:summary="Press the button to the right of 'next button' to scroll the list to current playing song."
+            android:title="@string/help_start_group"
+            android:summary="@string/help_start_group_summary"/>
+
+        <Preference
+            android:title="@string/help_unfold_group"
+            android:summary="@string/help_unfold_group_summary"/>
+
+        <Preference
+            android:title="@string/help_scroll"
+            android:summary="@string/help_scroll_summary"
             android:icon="@drawable/ic_action_goto_play"/>
 
         <Preference
-            android:title="Disable lock screen"
-            android:summary="Open the padlock button to disable the lock screen (it prevents locking only when the app is on foreground; do not work on some device)."
+            android:title="@string/help_lock"
+            android:summary="@string/help_lock_summary"
             android:icon="@drawable/ic_action_unlocked"/>
 
         <Preference
-            android:title="Root folder"
-            android:summary="Root folder can be customized: it is used only for hiding the first portion of folders path when songs are sorted by folder."
+            android:title="@string/help_root_folder"
+            android:summary="@string/help_root_folder_summary"
             android:icon="@drawable/ic_menu_folder"/>
 
         <Preference
-            android:title="Background"
-            android:summary="While playing music, press on home button or back button to close the song list and keep the music playing in background."/>
+            android:title="@string/help_background"
+            android:summary="@string/help_background_summary"/>
 
         <Preference
-            android:title="Quit"
-            android:summary="The app should be killed if no song is playing and back button is pressed. If not, Android will automatically kill it when memory is under pressure."/>
+            android:title="@string/help_quit"
+            android:summary="@string/help_quit_summary"/>
 
         <Preference
-            android:title="Stop"
-            android:summary="The app should remain in memory if no song is playing and home button is pressed, but Android will automatically kill it when memory is under pressure."/>
+            android:title="@string/help_stop"
+            android:summary="@string/help_stop_summary"/>
 
     </PreferenceScreen>
 
 
-    <PreferenceCategory android:title="Song view font">
+    <PreferenceCategory android:title="@string/settings_song_view_font">
 
         <CheckBoxPreference
             android:key="TEXT_SIZE_CHOOSED"
@@ -105,19 +105,19 @@
     </PreferenceCategory>
 
 
-    <PreferenceCategory android:title="Accelerometer shake">
+    <PreferenceCategory android:title="@string/settings_accelerometer">
 
         <CheckBoxPreference
             android:key="ENABLE_SHAKE"
-            android:title="Accelerometer shake"
-            android:summary="Go to next song when shaked."
+            android:title="@string/settings_accelerometer"
+            android:summary="@string/settings_accelerometer_summary"
             android:icon="@drawable/ic_menu_shake_checked"
             android:defaultValue="false"/>
 
         <!-- todo: improve this with a number picker or slider or shake force counter... -->
         <EditTextPreference
             android:key="SHAKE_THRESHOLD"
-            android:title="Shake force threshold"
+            android:title="@string/settings_accelerometer_threshold"
             android:summary="@string/settings_default_shake_threshold"
             android:numeric="integer"
             android:defaultValue="@string/settings_default_shake_threshold"/>
@@ -125,7 +125,7 @@
     </PreferenceCategory>
 
 
-    <PreferenceCategory android:title="Song view">
+    <PreferenceCategory android:title="@string/settings_song_view">
 
         <ListPreference
             android:key="DEFAULT_FOLD"
@@ -150,21 +150,20 @@
 
         <CheckBoxPreference
             android:key="FOLLOW_SONG"
-            android:title="Scroll to new song played"
-            android:summary="When song start playing, scroll to it"
+            android:title="@string/settings_autoscroll"
+            android:summary="@string/settings_autoscroll_summary"
             android:defaultValue="true"
             />
 
         <EditTextPreference
             android:key="ROOT_FOLDER"
-            android:title="Root folder"
-            android:summary="@string/settings_root_folder"
+            android:title="@string/settings_root_folder"
             />
 
     </PreferenceCategory>
 
 
-    <PreferenceCategory android:title="Miscellaneous">
+    <PreferenceCategory android:title="@string/settings_misc">
         <Preference
             android:key="@string/settings_rescan_key"
             android:title="@string/settings_rescan_title"
@@ -179,38 +178,43 @@
             <PreferenceCategory android:title="@string/settings_about">
 
                 <Preference
-                    android:title="Author"
+                    android:title="@string/settings_author_title"
                     android:summary="@string/settings_author"/>
 
                 <Preference
-                    android:title="Version number"
-                    android:summary="@string/settings_version_title"/>
+                    android:title="@string/settings_version_title"
+                    android:summary="@string/settings_version"/>
 
                 <Preference
-                    android:title="Sources"
+                    android:title="@string/settings_source_title"
                     android:summary="@string/settings_source"/>
 
                 <Preference
-                    android:title="License"
-                    android:summary="@string/settings_opensource"/>
+                    android:title="@string/settings_licence_title"
+                    android:summary="@string/settings_licence"/>
 
                 <Preference
-                    android:key="donate"
-                    android:title="Donate"
-                    android:summary="@string/settings_donate"/>
+                    android:key="@string/settings_donate_key"
+                    android:title="@string/settings_donate_title"
+                    android:summary="@string/settings_donate_summary"/>
 
             </PreferenceCategory>
 
-            <PreferenceCategory android:title="Special thanks">
+            <PreferenceCategory android:title="@string/settings_thanks">
 
                 <Preference
-                    android:title="Daniele De Santis &amp; WPZOOM"
-                    android:summary="icons found on iconfinder.com">
+                    android:title="@string/settings_thanks_icons"
+                    android:summary="@string/settings_thanks_icons_summary">
                 </Preference>
 
                 <Preference
-                    android:title="Sue Smith's"
-                    android:summary="tutorials on creating a Music Player on Android">
+                    android:title="@string/settings_thanks_doc"
+                    android:summary="@string/settings_thanks_doc_summary">
+                </Preference>
+
+                <Preference
+                    android:title="@string/settings_thanks_i15n"
+                    android:summary="@string/settings_thanks_i15n_summary">
                 </Preference>
 
             </PreferenceCategory>

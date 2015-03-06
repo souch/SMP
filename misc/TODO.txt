@@ -9,7 +9,6 @@ scrollto button open group if current song folded
 volume from app icon
 action bar for settings
 add slash at the end to folder?
-replace every text by sthg in strings.xml
 make settings icon fatter
 decrease goto icon size (at least the vertical bar)
 wider open lock icon
