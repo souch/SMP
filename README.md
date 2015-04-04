@@ -8,6 +8,8 @@ Works on old slow small devices (from Android froyo 2.2).
 
 No eye candy graphics.
 
+3.5" screen:
+
 ![Folder list](misc/screenshots/screen3.5_folder.png)&nbsp;
 ![Artist list](misc/screenshots/screen3.5_artist.png)
 ![Menu option](misc/screenshots/screen3.5_menu_options_small.png)
@@ -72,6 +74,8 @@ Lot's of time saved thanks to Sue Smith's [tutorials on creating a Music Player 
 Use some icons done by Daniele De Santis (Creative Commons Attribution 3.0 Unported), found on iconfinder.com.
 
 Seekbar style created by Jérôme Van Der Linden (Creative Commons Attribution 3.0 Unported), found on http://android-holo-colors.com.
+
+MediaButtonIntentReceiver.java file mostly copied from official android music player (Apache License, Version 2.0).
 
 
 ### Developer

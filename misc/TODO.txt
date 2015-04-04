@@ -1,8 +1,10 @@
 # todo
 
 when unfold last song scroll selected group to the middle of the screen
+
 fix curr play icon when on last song row
 disable bluetooth on call?
+control music player volume even if song is not playing
 fix ui blocked onseek on android 2.3
 deactivate sensors onpause
 scrollto button open group if current song folded
@@ -75,5 +77,8 @@ wget https://gitlab.com/fdroid/fdroiddata/raw/master/stats/total_downloads_app_v
 
 # example metadata f-droid
 https://gitlab.com/fdroid/fdroiddata/blob/master/metadata/org.adaway.txt
+
+setprop persist.sys.language sr;setprop persist.sys.country SR;stop;sleep 5;start
+setprop persist.sys.language fr;setprop persist.sys.country FR;stop;sleep 5;start
 
 

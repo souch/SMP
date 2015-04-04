@@ -21,6 +21,7 @@ package souch.smp;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.ComponentName;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
@@ -39,11 +40,28 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.widget.Toast;
 
+
 public class MusicService extends Service implements
         MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener,
         MediaPlayer.OnCompletionListener, MediaPlayer.OnSeekCompleteListener,
         AudioManager.OnAudioFocusChangeListener, SensorEventListener
 {
+    // drive app from hardware key (from MediaButtonIntentReceiver)
+    public static final String SERVICECMD = "souch.smp.musicservicecommand";
+    public static final String CMDNAME = "command";
+    public static final String CMDTOGGLEPAUSE = "togglepause";
+    public static final String CMDSTOP = "stop";
+    public static final String CMDPAUSE = "pause";
+    public static final String CMDPLAY = "play";
+    public static final String CMDPREVIOUS = "previous";
+    public static final String CMDNEXT = "next";
+
+    // drive the app from another app
+    public static final String TOGGLEPAUSE_ACTION = "souch.smp.musicservicecommand.togglepause";
+    public static final String PAUSE_ACTION       = "souch.smp.musicservicecommand.pause";
+    public static final String PREVIOUS_ACTION    = "souch.smp.musicservicecommand.previous";
+    public static final String NEXT_ACTION        = "souch.smp.musicservicecommand.next";
+
     private Parameters params;
     private MediaPlayer player;
     private Rows rows;
@@ -62,6 +80,8 @@ public class MusicService extends Service implements
 
     private final IBinder musicBind = new MusicBinder();
 
+    private ComponentName remoteControlResponder;
+    private boolean hasAudioFocus;
     private AudioManager audioManager;
 
     // current state of the MediaPlayer
@@ -107,7 +127,9 @@ public class MusicService extends Service implements
         wasPlaying = false;
 
         player = null;
+        remoteControlResponder = null;
         audioManager = null;
+        hasAudioFocus = false;
 
         params = new ParametersImpl(this);
 
@@ -119,7 +141,12 @@ public class MusicService extends Service implements
         if(enableShake) {
             startSensor();
         }
+
+        remoteControlResponder = new ComponentName(getPackageName(), MediaButtonIntentReceiver.class.getName());
+        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        audioManager.registerMediaButtonEventReceiver(remoteControlResponder);
     }
+
 
     public class MusicBinder extends Binder {
         MusicService getService() {
@@ -139,10 +166,14 @@ public class MusicService extends Service implements
         save();
         rows.save();
         releaseAudio();
+
+        // do not unregister the receiver so that sicmu can be started directly from the bluetooth button
+        // (android default music player does this too)
+        // I will reenable that or make it an option if someone complains about it
+        //audioManager.unregisterMediaButtonEventReceiver(remoteControlResponder);
+
         stopSensor();
     }
-
-
 
     /*** PLAYER ***/
 
@@ -151,12 +182,14 @@ public class MusicService extends Service implements
     private MediaPlayer getPlayer() {
         seekPosBug = -1;
 
-        if (audioManager == null) {
-            audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        if (!hasAudioFocus) {
             int result = audioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC,
                     AudioManager.AUDIOFOCUS_GAIN);
 
-            if (result != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+            if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+                hasAudioFocus = true;
+            }
+            else {
                 Toast.makeText(getApplicationContext(),
                         getResources().getString(R.string.focus_error),
                         Toast.LENGTH_LONG).show();
@@ -190,13 +223,57 @@ public class MusicService extends Service implements
             player.release();
             player = null;
         }
-        if (audioManager != null) {
+
+        if (hasAudioFocus) {
             audioManager.abandonAudioFocus(this);
-            audioManager = null;
+            hasAudioFocus = false;
         }
 
         stopNotification();
     }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        handleCommand(intent);
+
+        return super.onStartCommand(intent, flags, startId);
+    }
+
+    private void handleCommand(Intent intent) {
+        String action = intent.getAction();
+        String cmd = intent.getStringExtra("command");
+        Log.d("MusicService", "intentReceiver.onReceive" + action + " / " + cmd);
+        if (CMDNEXT.equals(cmd) || NEXT_ACTION.equals(action)) {
+            playNext();
+            changed = true;
+        } else if (CMDPREVIOUS.equals(cmd) || PREVIOUS_ACTION.equals(action)) {
+            playPrev();
+            changed = true;
+        } else if (CMDTOGGLEPAUSE.equals(cmd) || TOGGLEPAUSE_ACTION.equals(action)) {
+            if (isInState(PlayerState.Started)) {
+                pause();
+            }
+            else {
+                if (isInState(PlayerState.Paused))
+                    start();
+                else
+                    playSong();
+            }
+            changed = true;
+        } else if (CMDSTOP.equals(cmd) || CMDPAUSE.equals(cmd) || PAUSE_ACTION.equals(action)) {
+            if (isInState(PlayerState.Started)) {
+                pause();
+                changed = true;
+            }
+        } else if (CMDPLAY.equals(cmd)) {
+            if (isInState(PlayerState.Paused))
+                start();
+            else
+                playSong();
+            changed = true;
+        }
+    }
+
 
     @Override
     public void onAudioFocusChange(int focusChange) {
@@ -206,6 +283,7 @@ public class MusicService extends Service implements
                 if (wasPlaying) {
                     getPlayer().start();
                     state.setState(PlayerState.Started);
+                    changed = true;
                 }
                 //player.setVolume(1.0f, 1.0f);
                 break;
@@ -223,6 +301,7 @@ public class MusicService extends Service implements
                     getPlayer().pause();
                     state.setState(PlayerState.Paused);
                     wasPlaying = true;
+                    changed = true;
                 }
                 else {
                     wasPlaying = false;
@@ -237,6 +316,7 @@ public class MusicService extends Service implements
                     getPlayer().pause();
                     state.setState(PlayerState.Paused);
                     wasPlaying = true;
+                    changed = true;
                 }
                 else {
                     wasPlaying = false;
