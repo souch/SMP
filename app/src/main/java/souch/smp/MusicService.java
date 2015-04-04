@@ -78,6 +78,9 @@ public class MusicService extends Service implements
     private boolean foreground;
     private static final int NOTIFY_ID = 1;
 
+    private boolean mainIsVisible;
+    public void setMainIsVisible(boolean visible) { mainIsVisible = visible; }
+
     private final IBinder musicBind = new MusicBinder();
 
     private ComponentName remoteControlResponder;
@@ -145,6 +148,8 @@ public class MusicService extends Service implements
         remoteControlResponder = new ComponentName(getPackageName(), MediaButtonIntentReceiver.class.getName());
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         audioManager.registerMediaButtonEventReceiver(remoteControlResponder);
+        foreground = false;
+        mainIsVisible = false;
     }
 
 
@@ -235,6 +240,10 @@ public class MusicService extends Service implements
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         handleCommand(intent);
+
+        // show the notification if MusicService has been started from the MediaButtonIntentReceiver
+        if (!mainIsVisible && !foreground && changed)
+            startNotification();
 
         return super.onStartCommand(intent, flags, startId);
     }

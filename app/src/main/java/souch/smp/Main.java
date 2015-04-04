@@ -149,6 +149,7 @@ public class Main extends Activity {
             serviceBound = true;
 
             musicSrv.stopNotification();
+            musicSrv.setMainIsVisible(true);
 
             updatePlayButton();
 
@@ -218,8 +219,11 @@ public class Main extends Activity {
             }
         }, 10, updateInterval);
 
-        if (serviceBound)
-            musicSrv.stopNotification();  // if service not bound stopNotification is called onServiceConnected
+        if (serviceBound) {
+            // if service not bound stopNotification and setMainIsVisible is called onServiceConnected
+            musicSrv.stopNotification();
+            musicSrv.setMainIsVisible(true);
+        }
     }
 
 /*
@@ -246,6 +250,8 @@ public class Main extends Activity {
 
         if (!finishing && serviceBound && musicSrv.playingLaunched())
             musicSrv.startNotification();
+
+        musicSrv.setMainIsVisible(false);
     }
 
 
