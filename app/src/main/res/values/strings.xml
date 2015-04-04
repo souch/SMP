@@ -73,6 +73,9 @@
     <string name="settings_rescan_disabled">Rescan broadcast disabled from Android KitKat.</string>
     <string name="settings_rescan_triggered">Media Scanner Triggered...</string>
 
+    <string name="settings_media_button_start_app_title">Media buttons auto start</string>
+    <string name="settings_media_button_start_app">Media buttons launch the app if not already started.</string>
+
     <string name="settings_autoscroll">Scroll to new song played</string>
     <string name="settings_autoscroll_summary">When song start playing, scroll to it</string>
 
@@ -108,6 +111,10 @@
     <string name="help_quit_summary">The app should be killed if no song is playing and back button is pressed. If not, Android will automatically kill it when memory is under pressure.</string>
     <string name="help_stop">Stop</string>
     <string name="help_stop_summary">The app should remain in memory if no song is playing and home button is pressed, but Android will automatically kill it when memory is under pressure.</string>
+    <string name="help_mediabutton">Media buttons</string>
+    <string name="help_mediabutton_summary">Media buttons (like in bluetooth headphones) can control the app (next, prev, pause/play).</string>
+    <string name="help_mediabutton_autostart">Media buttons auto start</string>
+    <string name="help_mediabutton_autostart_summary">If the app is closed media button will start it. To disable media button ability to start the app automatically uncheck settings->media buttons auto start.</string>
 
 
     <string name="settings_misc">Miscellaneous</string>

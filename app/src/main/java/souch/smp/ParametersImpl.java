@@ -121,4 +121,8 @@ public class ParametersImpl implements Parameters {
         return Float.valueOf(getPref().getString(PrefKeys.SHAKE_THRESHOLD.name(),
                 context.getString(R.string.settings_default_shake_threshold)));
     }
+
+    public boolean getMediaButtonStartAppShake() {
+        return getPref().getBoolean(PrefKeys.MEDIA_BUTTON_START_APP.name(), true);
+    }
 }

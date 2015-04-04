@@ -47,4 +47,6 @@ public interface Parameters {
     public void setEnableShake(boolean shakeEnabled);
 
     public float getShakeThreshold();
+
+    public boolean getMediaButtonStartAppShake();
 }

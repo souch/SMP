@@ -172,10 +172,8 @@ public class MusicService extends Service implements
         rows.save();
         releaseAudio();
 
-        // do not unregister the receiver so that sicmu can be started directly from the bluetooth button
-        // (android default music player does this too)
-        // I will reenable that or make it an option if someone complains about it
-        //audioManager.unregisterMediaButtonEventReceiver(remoteControlResponder);
+        if (!params.getMediaButtonStartAppShake())
+            audioManager.unregisterMediaButtonEventReceiver(remoteControlResponder);
 
         stopSensor();
     }

@@ -79,4 +79,6 @@ public class ParametersMock implements Parameters {
     public float getShakeThreshold() {
         return 100;
     }
+
+    public boolean getMediaButtonStartAppShake() { return true; }
 }

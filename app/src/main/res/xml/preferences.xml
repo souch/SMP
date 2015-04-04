@@ -53,6 +53,14 @@
             android:icon="@drawable/ic_menu_folder"/>
 
         <Preference
+            android:title="@string/help_mediabutton"
+            android:summary="@string/help_mediabutton_summary"/>
+
+        <Preference
+            android:title="@string/help_mediabutton_autostart"
+            android:summary="@string/help_mediabutton_autostart_summary"/>
+
+        <Preference
             android:title="@string/help_background"
             android:summary="@string/help_background_summary"/>
 
@@ -168,6 +176,12 @@
             android:key="@string/settings_rescan_key"
             android:title="@string/settings_rescan_title"
             android:summary="@string/settings_rescan"/>
+
+        <CheckBoxPreference
+            android:key="MEDIA_BUTTON_START_APP"
+            android:title="@string/settings_media_button_start_app_title"
+            android:summary="@string/settings_media_button_start_app"
+            android:defaultValue="true"/>
 
         <PreferenceScreen
             android:key="button_about"
