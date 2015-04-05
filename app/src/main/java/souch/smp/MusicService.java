@@ -36,9 +36,11 @@ import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
-import android.os.SystemClock;
 import android.util.Log;
 import android.widget.Toast;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class MusicService extends Service implements
@@ -332,20 +334,32 @@ public class MusicService extends Service implements
         }
     }
 
+    private int seekPosNbLoop;
+    private final int seekPosMaxLoop = 15;
     @Override
     public void onSeekComplete(MediaPlayer mp) {
         // on a 4.1 phone no bug : calling getCurrentPosition now gives the new seeked position
         // on My 2.3.6 phone, the phone seems bugged : calling now getCurrentPosition gives
         // last position. So wait the seekpos goes after the asked seekpos.
         if(seekPosBug != -1) {
-            int i = 15;
-            while(i-- > 0 && getCurrentPosition() < seekPosBug) {
-                SystemClock.sleep(300);
-            }
-            seekPosBug = -1;
-        }
+            // todo: make it thread safe?
+            seekPosNbLoop = seekPosMaxLoop;
 
-        seekFinished = true;
+            final Timer seekPosTimer = new Timer();
+            seekPosTimer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    if (seekPosNbLoop-- > 0 || getCurrentPosition() >= seekPosBug) {
+                        seekFinished = true;
+                        seekPosBug = -1;
+                        seekPosTimer.cancel();
+                    }
+                }
+            }, 300);
+        }
+        else {
+            seekFinished = true;
+        }
         Log.d("MusicService", "onSeekComplete setProgress" + RowSong.secondsToMinutes(getCurrentPosition()));
     }
 
