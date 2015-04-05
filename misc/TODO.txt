@@ -1,12 +1,12 @@
 # todo
 
-when unfold last song scroll selected group to the middle of the screen
+scrollto button open group if current song folded
+expend subfolder if only one subfolder
 
 fix curr play icon when on last song row
 disable bluetooth on call?
 control music player volume even if song is not playing
 deactivate sensors onpause
-scrollto button open group if current song folded
 volume from app icon
 action bar for settings
 add slash at the end to folder?

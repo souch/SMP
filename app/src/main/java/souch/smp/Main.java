@@ -136,6 +136,7 @@ public class Main extends Activity {
                         musicSrv.playSong();
                         updatePlayButton();
                     }
+                    scrollToSong(position);
                 }
             });
             songView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -148,6 +149,7 @@ public class Main extends Activity {
                     rows.selectNearestSong(position);
                     musicSrv.playSong();
                     updatePlayButton();
+                    scrollToSong(position);
 
                     return true;
                 }
@@ -570,6 +572,12 @@ public class Main extends Activity {
     }
 
     public void scrollToCurrSong() {
+        scrollToSong(rows.getCurrPos());
+    }
+
+    public void scrollToSong(int gotoSong) {
+        Log.d("Main", "scrollToCurrSong getCurrPos:" + gotoSong);
+
         // this method could be improved, code is a bit obscure :-)
         if(rows.size() == 0)
             return;
@@ -585,12 +593,13 @@ public class Main extends Activity {
         Log.d("Main", "scrollToCurrSong first: " + first + " last: " + last + " nbRow: " + nbRow);
 
         // to show a bit of songItems before or after the cur song
-        int showAround = (nbRow / 2) - 1;
-        showAround = showAround < 1 ? 1 : showAround;
-        Log.d("Main", "scrollToCurrSong showAround:" + showAround);
+        int showAroundTop = nbRow / 5;
+        showAroundTop = showAroundTop < 1 ? 1 : showAroundTop;
+        // show more song after the gotoSong
+        int showAroundBottom = nbRow / 2;
+        showAroundBottom = showAroundBottom < 1 ? 1 : showAroundBottom;
+        Log.d("Main", "scrollToCurrSong showAroundTop: " + showAroundTop + " showAroundBottom: " + showAroundBottom);
 
-        int gotoSong = rows.getCurrPos();
-        Log.d("Main", "scrollToCurrSong getCurrPos:" + gotoSong);
 
         // how far from top or bottom border the song is
         int offset = 0;
@@ -603,20 +612,20 @@ public class Main extends Activity {
         int smoothMaxOffset = 50;
         if(offset > smoothMaxOffset) {
             // setSelection set position at top of the screen
-            gotoSong -= showAround;
+            gotoSong -= showAroundTop;
             if(gotoSong < 0)
                 gotoSong = 0;
             songView.setSelection(gotoSong);
         }
         else {
             // smoothScrollToPosition only make position visible
-            if(gotoSong + showAround >= last) {
-                gotoSong += showAround;
+            if(gotoSong + showAroundBottom >= last) {
+                gotoSong += showAroundBottom;
                 if(gotoSong >= rows.size())
                     gotoSong = rows.size() - 1;
             }
             else {
-                gotoSong -= showAround;
+                gotoSong -= showAroundTop;
                 if(gotoSong < 0)
                     gotoSong = 0;
             }
