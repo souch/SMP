@@ -149,7 +149,7 @@ public class Main extends Activity {
                     rows.selectNearestSong(position);
                     musicSrv.playSong();
                     updatePlayButton();
-                    scrollToSong(position);
+                    unfoldAndscrollToCurrSong();
 
                     return true;
                 }
@@ -293,7 +293,7 @@ public class Main extends Activity {
                 Log.d("Main", "updateInfo changed");
                 updatePlayButton();
                 if(followSong)
-                    scrollToCurrSong();
+                    unfoldAndscrollToCurrSong();
             } else {
                 if(musicSrv.playingStopped()) {
                     stopPlayButton();
@@ -309,7 +309,7 @@ public class Main extends Activity {
 
     final Runnable firstScroll = new Runnable() {
         public void run() {
-            scrollToCurrSong();
+            unfoldAndscrollToCurrSong();
         }
     };
 
@@ -420,7 +420,7 @@ public class Main extends Activity {
                     setFilterItem(item);
                     Toast.makeText(getApplicationContext(), item.getTitle(), Toast.LENGTH_LONG).show();
                     songAdt.notifyDataSetChanged();
-                    scrollToCurrSong();
+                    unfoldAndscrollToCurrSong();
                 }
                 return true;
             case R.id.action_text_size:
@@ -500,7 +500,7 @@ public class Main extends Activity {
         musicSrv.playNext();
         updatePlayButton();
         if(followSong)
-            scrollToCurrSong();
+            unfoldAndscrollToCurrSong();
     }
 
     public void playPrev(View view){
@@ -510,7 +510,7 @@ public class Main extends Activity {
         musicSrv.playPrev();
         updatePlayButton();
         if(followSong)
-            scrollToCurrSong();
+            unfoldAndscrollToCurrSong();
     }
 
     private RepeatingImageButton.RepeatListener rewindListener =
@@ -567,22 +567,11 @@ public class Main extends Activity {
             }
     };
 
-    /*
-    // return first song pos found
-    public int unfoldGroupRecursive(int rowNum) {
-        Row row = rows.get(rowNum);
-        if (row.getClass() == RowGroup.class) {
-            rows.unfold(rowNum);
-            return unfoldGroupRecursive(++rowNum);
-        }
-        else {
-            songAdt.notifyDataSetChanged();
-            return rowNum;
-        }
-    }
-    */
-
     public void gotoCurrSong(View view) {
+        unfoldAndscrollToCurrSong();
+    }
+
+    public void unfoldAndscrollToCurrSong() {
         if(rows.unfoldRecursive(rows.getCurrPos()))
             songAdt.notifyDataSetChanged();
         scrollToSong(rows.getCurrPos());
@@ -593,7 +582,7 @@ public class Main extends Activity {
     }
 
     public void scrollToSong(int gotoSong) {
-        Log.d("Main", "scrollToCurrSong getCurrPos:" + gotoSong);
+        Log.d("Main", "scrollToSong getCurrPos:" + gotoSong);
 
         // this method could be improved, code is a bit obscure :-)
         if(rows.size() == 0)
@@ -607,7 +596,7 @@ public class Main extends Activity {
             nbRow = 1;
             last = first + 1;
         }
-        Log.d("Main", "scrollToCurrSong first: " + first + " last: " + last + " nbRow: " + nbRow);
+        Log.d("Main", "scrollToSong first: " + first + " last: " + last + " nbRow: " + nbRow);
 
         // to show a bit of songItems before or after the cur song
         int showAroundTop = nbRow / 5;
@@ -615,7 +604,7 @@ public class Main extends Activity {
         // show more song after the gotoSong
         int showAroundBottom = nbRow / 2;
         showAroundBottom = showAroundBottom < 1 ? 1 : showAroundBottom;
-        Log.d("Main", "scrollToCurrSong showAroundTop: " + showAroundTop + " showAroundBottom: " + showAroundBottom);
+        Log.d("Main", "scrollToSong showAroundTop: " + showAroundTop + " showAroundBottom: " + showAroundBottom);
 
 
         // how far from top or bottom border the song is
@@ -649,7 +638,7 @@ public class Main extends Activity {
             songView.smoothScrollToPosition(gotoSong);
         }
 
-        Log.d("Main", "scrollToCurrSong position:" + gotoSong);
+        Log.d("Main", "scrollToSong position:" + gotoSong);
     }
 
     public void lockUnlock(View view) {
