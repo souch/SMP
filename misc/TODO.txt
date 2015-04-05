@@ -1,6 +1,5 @@
 # todo
 
-expend subfolder if only one subfolder
 scrollbar simulated seekpos.
 
 fix curr play icon when on last song row

@@ -234,6 +234,26 @@ public class Rows {
         return changed;
     }
 
+    private boolean hasOneSubGroup(RowGroup group, int pos) {
+        if (group.getLevel() != 0)
+            return true;
+
+        int nbSubGroup = 0;
+        Row row;
+        for (int i = 1;
+             group.getGenuinePos() + i < rowsUnfolded.size() &&
+                     (row = rowsUnfolded.get(group.getGenuinePos() + i)).getLevel() > group.getLevel();
+             i++) {
+            if (row.getClass() == RowGroup.class) {
+                nbSubGroup++;
+                if (nbSubGroup > 1)
+                    return false;
+            }
+        }
+
+        return true;
+    }
+
     // group and pos must correspond in the foldable rows
     // group must be folded
     private void unfold(RowGroup group, int pos) {
@@ -242,7 +262,9 @@ public class Rows {
         final int autoUnfoldThreshold = params.getUnfoldSubGroupThreshold();
         if (params.getUnfoldSubGroup() ||
                 group.getLevel() != 0 ||
-                group.nbRowSong() < autoUnfoldThreshold) {
+                group.nbRowSong() < autoUnfoldThreshold ||
+                hasOneSubGroup(group, pos)) {
+            // unfold everything
             for (int i = 1;
                  group.getGenuinePos() + i < rowsUnfolded.size() &&
                          (row = rowsUnfolded.get(group.getGenuinePos() + i)).getLevel() > group.getLevel();
@@ -256,6 +278,7 @@ public class Rows {
             }
         }
         else {
+            // unfold only subgroup
             for (int i = 1, j = 1;
                  group.getGenuinePos() + i < rowsUnfolded.size() &&
                          (row = rowsUnfolded.get(group.getGenuinePos() + i)).getLevel() > group.getLevel();
