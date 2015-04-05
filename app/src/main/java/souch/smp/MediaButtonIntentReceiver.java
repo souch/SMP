@@ -33,10 +33,10 @@ public class MediaButtonIntentReceiver extends BroadcastReceiver {
 //    private static final int MSG_LONGPRESS_TIMEOUT = 1;
 //    private static final int LONG_PRESS_DELAY = 1000;
 
-//    private static long mLastClickTime = 0;
+    private static long mLastClickTime = 0;
 //    private static boolean mDown = false;
 
-    // souch: does not support shuffle mode
+    // souch: disable shuffle mode support
     /*
     private static boolean mLaunched = false;
 
@@ -77,7 +77,7 @@ public class MediaButtonIntentReceiver extends BroadcastReceiver {
 
             int keycode = event.getKeyCode();
             int action = event.getAction();
-//            long eventtime = event.getEventTime();
+            long eventtime = event.getEventTime();
 
             // single quick press: pause/resume.
             // double press: next track
@@ -88,7 +88,7 @@ public class MediaButtonIntentReceiver extends BroadcastReceiver {
                 case KeyEvent.KEYCODE_MEDIA_STOP:
                     command = MusicService.CMDSTOP;
                     break;
-//                case KeyEvent.KEYCODE_HEADSETHOOK:
+                case KeyEvent.KEYCODE_HEADSETHOOK:
                 case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
                     command = MusicService.CMDTOGGLEPAUSE;
                     break;
@@ -107,8 +107,8 @@ public class MediaButtonIntentReceiver extends BroadcastReceiver {
             }
 
             if (command != null) {
-                if (action == KeyEvent.ACTION_DOWN) {/*
-                    if (mDown) {
+                if (action == KeyEvent.ACTION_DOWN) {
+                    /*if (mDown) {
                         if ((MusicService.CMDTOGGLEPAUSE.equals(command) ||
                                 MusicService.CMDPLAY.equals(command))
                                 && mLastClickTime != 0
@@ -116,7 +116,8 @@ public class MediaButtonIntentReceiver extends BroadcastReceiver {
                             mHandler.sendMessage(mHandler.obtainMessage(MSG_LONGPRESS_TIMEOUT, context));
                         }
                     }
-                    else */if (event.getRepeatCount() == 0) {
+                    else */
+                    if (event.getRepeatCount() == 0) {
                         // only consider the first event in a sequence, not the repeat events,
                         // so that we don't trigger in cases where the first event went to
                         // a different app (e.g. when the user ends a phone call by
@@ -126,30 +127,28 @@ public class MediaButtonIntentReceiver extends BroadcastReceiver {
                         // a command.
                         Intent i = new Intent(context, MusicService.class);
                         i.setAction(MusicService.SERVICECMD);
-                    /*
-                        if (keycode == KeyEvent.KEYCODE_HEADSETHOOK &&
-                                eventtime - mLastClickTime < 300) {
+
+                        if (keycode == KeyEvent.KEYCODE_HEADSETHOOK && eventtime - mLastClickTime < 300) {
                             i.putExtra(MusicService.CMDNAME, MusicService.CMDNEXT);
                             context.startService(i);
-                            //mLastClickTime = 0;
-                        } else {*/
+                            mLastClickTime = 0;
+                        } else {
                             i.putExtra(MusicService.CMDNAME, command);
                             context.startService(i);
-                            //context.sendBroadcast(i);
-                            //mLastClickTime = eventtime;
-//                        }
+                            mLastClickTime = eventtime;
+                        }
 
                         //mLaunched = false;
                         //mDown = true;
                     }
-                } /*else {
-                    mHandler.removeMessages(MSG_LONGPRESS_TIMEOUT);
+                } /* else {
+                    //mHandler.removeMessages(MSG_LONGPRESS_TIMEOUT);
                     mDown = false;
-                }*/
-                /*
+                }
                 if (isOrderedBroadcast()) {
                     abortBroadcast();
-                }*/
+                }
+                */
             }
         }
     }

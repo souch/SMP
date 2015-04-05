@@ -30,7 +30,8 @@ No eye candy graphics.
 - configurable font size
 - on app startup, scroll to last song played
 - play mp3, ogg, flac, midi, wav, mp4, 3gp... see android mediaplayer supported media formats (depends on android version).
-- bluetooth support
+- bluetooth support (play through bluetooth device)
+- media buttons support (next, prev, play/pause) from external device (bluetooth headphones...)
 
 
 ### Installation
