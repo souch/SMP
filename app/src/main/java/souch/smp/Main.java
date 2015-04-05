@@ -567,8 +567,25 @@ public class Main extends Activity {
             }
     };
 
+    /*
+    // return first song pos found
+    public int unfoldGroupRecursive(int rowNum) {
+        Row row = rows.get(rowNum);
+        if (row.getClass() == RowGroup.class) {
+            rows.unfold(rowNum);
+            return unfoldGroupRecursive(++rowNum);
+        }
+        else {
+            songAdt.notifyDataSetChanged();
+            return rowNum;
+        }
+    }
+    */
+
     public void gotoCurrSong(View view) {
-        scrollToCurrSong();
+        if(rows.unfoldRecursive(rows.getCurrPos()))
+            songAdt.notifyDataSetChanged();
+        scrollToSong(rows.getCurrPos());
     }
 
     public void scrollToCurrSong() {

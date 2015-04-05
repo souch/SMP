@@ -1,6 +1,5 @@
 # todo
 
-scrollto button open group if current song folded
 expend subfolder if only one subfolder
 
 fix curr play icon when on last song row

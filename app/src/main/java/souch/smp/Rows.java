@@ -218,7 +218,24 @@ public class Rows {
         group.setFolded(true);
     }
 
-     // group and pos must correspond in the foldable rows
+
+    // @return true if at least one group has been unfold
+    public boolean unfoldRecursive(int pos) {
+        boolean changed = false;
+        Row row = rows.get(pos);
+        if (row.getClass() == RowGroup.class) {
+            RowGroup group = (RowGroup) row;
+            if (group.isFolded()) {
+                unfold(group, pos);
+                unfoldRecursive(++pos);
+                changed = true;
+            }
+        }
+        return changed;
+    }
+
+    // group and pos must correspond in the foldable rows
+    // group must be folded
     private void unfold(RowGroup group, int pos) {
         // add every missing rows
         Row row;
