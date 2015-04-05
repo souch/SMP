@@ -54,7 +54,7 @@ public class Main extends Activity {
     private boolean finishing;
 
     private Timer timer;
-    private final long updateInterval = 500;
+    private final long updateInterval = 260;
     private SeekBar seekbar;
     // tell whether the seekbar is currently touch by a user
     private boolean touchSeekbar;
@@ -82,6 +82,12 @@ public class Main extends Activity {
         playButton = (ImageButton) findViewById(R.id.play_button);
         // useful only for testing
         playButton.setTag(R.drawable.ic_action_play);
+
+        final int repeatDelta = 260;
+        RepeatingImageButton prevButton = (RepeatingImageButton) findViewById(R.id.prev_button);
+        prevButton.setRepeatListener(rewindListener, repeatDelta);
+        RepeatingImageButton nextButton = (RepeatingImageButton) findViewById(R.id.next_button);
+        nextButton.setRepeatListener(forwardListener, repeatDelta);
 
         playIntent = new Intent(this, MusicService.class);
         startService(playIntent);
@@ -505,6 +511,59 @@ public class Main extends Activity {
             scrollToCurrSong();
     }
 
+    private RepeatingImageButton.RepeatListener rewindListener =
+        new RepeatingImageButton.RepeatListener() {
+            /**
+             * This method will be called repeatedly at roughly the interval
+             * specified in setRepeatListener(), for as long as the button
+             * is pressed.
+             *
+             * @param v           The button as a View.
+             * @param duration    The number of milliseconds the button has been pressed so far.
+             * @param repeatcount The number of previous calls in this sequence.
+             *                    If this is going to be the last call in this sequence (i.e. the user
+             *                    just stopped pressing the button), the value will be -1.
+             */
+            public void onRepeat(View v, long duration, int repeatcount) {
+                Log.d("Main", "-- repeatcount: " + repeatcount + " duration: " + duration);
+                if (repeatcount > 0) {
+                    if (duration < 5000) {
+                        // seek at 10x speed for the first 5 seconds
+                        duration = duration * 10;
+                    } else {
+                        // seek at 40x after that
+                        duration = 50000 + (duration - 5000) * 40;
+                    }
+                    int newPos = musicSrv.getCurrentPosition() - (int) (duration / 1000);
+                    Log.d("Main", "<-- currpos: " + musicSrv.getCurrentPosition() + " seekto: " + newPos);
+                    newPos = newPos < 0 ? 0 : newPos;
+                    musicSrv.seekTo(newPos);
+                }
+            }
+        };
+
+    private RepeatingImageButton.RepeatListener forwardListener =
+        new RepeatingImageButton.RepeatListener() {
+            public void onRepeat(View v, long duration, int repeatcount) {
+                Log.d("Main", "-- repeatcount: " + repeatcount + " duration: " + duration);
+                if (repeatcount > 0) {
+                    if (duration < 5000) {
+                        // seek at 10x speed for the first 5 seconds
+                        duration = duration * 10;
+                    } else {
+                        // seek at 40x after that
+                        duration = 50000 + (duration - 5000) * 40;
+                    }
+
+                    int newPos = musicSrv.getCurrentPosition() + (int) (duration / 1000);
+                    Log.d("Main", "--> currpos: " + musicSrv.getCurrentPosition() + " seekto: " + newPos);
+                    if (newPos >= musicSrv.getDuration())
+                        playNext(null);
+                    else
+                        musicSrv.seekTo(newPos);
+                }
+            }
+    };
 
     public void gotoCurrSong(View view) {
         scrollToCurrSong();

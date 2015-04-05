@@ -112,16 +112,17 @@
             android:id="@+id/play_button"
             android:layout_weight="1" />
 
-        <ImageButton
+        <souch.smp.RepeatingImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/action_prev"
             style="@style/BottomButton"
             android:onClick="playPrev"
+            android:longClickable="true"
             android:id="@+id/prev_button"
             android:layout_weight="1" />
 
-        <ImageButton
+        <souch.smp.RepeatingImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/action_next"

@@ -76,7 +76,7 @@ Use some icons done by Daniele De Santis (Creative Commons Attribution 3.0 Unpor
 
 Seekbar style created by Jérôme Van Der Linden (Creative Commons Attribution 3.0 Unported), found on http://android-holo-colors.com.
 
-MediaButtonIntentReceiver.java file mostly copied from official android music player (Apache License, Version 2.0).
+RepeatingImageButton.java and MediaButtonIntentReceiver.java file mostly copied from official android music player (Apache License, Version 2.0).
 
 
 ### Developer
