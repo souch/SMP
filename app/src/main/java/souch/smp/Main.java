@@ -581,11 +581,11 @@ public class Main extends Activity {
         scrollToSong(rows.getCurrPos());
     }
 
+    // this method could be improved, code is a bit obscure :-)
     public void scrollToSong(int gotoSong) {
         Log.d("Main", "scrollToSong getCurrPos:" + gotoSong);
 
-        // this method could be improved, code is a bit obscure :-)
-        if(rows.size() == 0)
+        if(rows.size() == 0 || gotoSong < 0 || gotoSong >= rows.size())
             return;
 
         int first = songView.getFirstVisiblePosition();

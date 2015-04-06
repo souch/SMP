@@ -223,16 +223,17 @@ public class Rows {
     //
     // @return true if at least one group has been unfold
     public boolean unfoldCurrPos() {
-        return unfoldRecursive(getCurrPos());
-    }
-    private boolean unfoldRecursive(int pos) {
         boolean changed = false;
+        int pos = getCurrPos();
+        if (pos < 0 || pos >= rows.size())
+            return changed;
+
         Row row = rows.get(pos);
-        if (row.getClass() == RowGroup.class) {
+        if (row != null && row.getClass() == RowGroup.class) {
             RowGroup group = (RowGroup) row;
             if (group.isFolded()) {
                 unfold(group, pos);
-                unfoldRecursive(getCurrPos());
+                unfoldCurrPos();
                 changed = true;
             }
         }
