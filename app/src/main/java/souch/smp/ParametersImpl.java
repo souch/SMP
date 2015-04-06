@@ -101,7 +101,7 @@ public class ParametersImpl implements Parameters {
     }
 
     public boolean getUnfoldSubGroup() {
-        return getPref().getBoolean(PrefKeys.UNFOLD_SUBGROUP.name(), true);
+        return getPref().getBoolean(PrefKeys.UNFOLD_SUBGROUP.name(), false);
     }
 
     public int getUnfoldSubGroupThreshold() {

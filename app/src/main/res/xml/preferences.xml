@@ -147,7 +147,7 @@
             android:key="UNFOLD_SUBGROUP"
             android:title="@string/settings_unfold_subgroup"
             android:summary="@string/settings_unfold_subgroup_summary"
-            android:defaultValue="true"
+            android:defaultValue="false"
             />
 
         <EditTextPreference
