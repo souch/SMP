@@ -572,7 +572,7 @@ public class Main extends Activity {
     }
 
     public void unfoldAndscrollToCurrSong() {
-        if(rows.unfoldRecursive(rows.getCurrPos()))
+        if(rows.unfoldCurrPos())
             songAdt.notifyDataSetChanged();
         scrollToSong(rows.getCurrPos());
     }

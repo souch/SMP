@@ -32,6 +32,7 @@ public class Row {
     // position of the row within the unfolded rows array
     protected int genuinePos;
     protected int typeface;
+    // null if no parent
     protected Row parent;
 
     public Row(int position, int theLevel, int theTypeface) {

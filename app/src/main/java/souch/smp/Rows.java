@@ -219,15 +219,20 @@ public class Rows {
     }
 
 
+    // @desc unfold only the group(s) that contains pos.
+    //
     // @return true if at least one group has been unfold
-    public boolean unfoldRecursive(int pos) {
+    public boolean unfoldCurrPos() {
+        return unfoldRecursive(getCurrPos());
+    }
+    private boolean unfoldRecursive(int pos) {
         boolean changed = false;
         Row row = rows.get(pos);
         if (row.getClass() == RowGroup.class) {
             RowGroup group = (RowGroup) row;
             if (group.isFolded()) {
                 unfold(group, pos);
-                unfoldRecursive(++pos);
+                unfoldRecursive(getCurrPos());
                 changed = true;
             }
         }
@@ -254,6 +259,8 @@ public class Rows {
         return true;
     }
 
+    // @desc unfold a group following settings
+    //
     // group and pos must correspond in the foldable rows
     // group must be folded
     private void unfold(RowGroup group, int pos) {
