@@ -2,7 +2,7 @@
 
 Every songs of the phone are put in a unique big song list.
 
-Songs are sorted and grouped by folders, genres, artists, albums and album's track.
+Songs are sorted and grouped by folders, artists, albums and album's track.
 
 Works on old slow small devices (from Android froyo 2.2).
 
