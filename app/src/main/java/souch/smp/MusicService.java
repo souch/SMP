@@ -249,6 +249,9 @@ public class MusicService extends Service implements
     }
 
     private void handleCommand(Intent intent) {
+        if (intent == null)
+            return;
+
         String action = intent.getAction();
         String cmd = intent.getStringExtra("command");
         Log.d("MusicService", "intentReceiver.onReceive" + action + " / " + cmd);

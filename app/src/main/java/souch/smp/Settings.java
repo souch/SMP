@@ -177,7 +177,11 @@ public class Settings extends PreferenceActivity
     private void setFoldSummary() {
         int idx = params.getDefaultFold();
         ListPreference prefFold = (ListPreference) findPreference(PrefKeys.DEFAULT_FOLD.name());
-        prefFold.setSummary((getResources().getStringArray(R.array.settings_fold_entries))[idx]);
+        String[] foldEntries = getResources().getStringArray(R.array.settings_fold_entries);
+        if (idx >= foldEntries.length)
+            idx = foldEntries.length - 1;
+        if (idx >= 0)
+            prefFold.setSummary(foldEntries[idx]);
     }
 
     private void showDonateWebsite() {
