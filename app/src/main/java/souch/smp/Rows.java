@@ -363,11 +363,6 @@ public class Rows {
         // shallow copy
         switch (params.getDefaultFold()) {
             case 0:
-                // fold except curr
-                initRowsFolded();
-                invertFold(getCurrPos());
-                break;
-            case 1:
                 // fold
                 initRowsFolded();
                 break;

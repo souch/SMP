@@ -140,6 +140,7 @@
             android:title="@string/settings_fold_title"
             android:entryValues="@array/settings_fold_values"
             android:entries="@array/settings_fold_entries"
+            android:defaultValue="0"
             />
 
         <CheckBoxPreference
