@@ -88,6 +88,8 @@ Tested on Gingerbread (2.3.6), Nexus 4 JellyBean (4.1.2), Samsung S3 (4.3), Nexu
 Feel free to add GitHub issues (feature request, bugs...).
 If you need a feature that is in the todolist, open a feature request on github to speed up its development.
 
+A UML class diagram describe a bit the architecture for people that would want to develop the software [UmlClass.png](misc/UmlClass.png).
+
 
 ### Donation
 
