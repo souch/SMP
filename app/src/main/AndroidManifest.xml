@@ -33,7 +33,7 @@
 
         <activity
             android:name=".Main"
-            android:label="SicMu Player"
+            android:label="@string/app_name"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" >
             <intent-filter>
