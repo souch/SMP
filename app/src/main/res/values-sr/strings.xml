@@ -21,48 +21,109 @@
     <string name="app_name">ЗикаМу плејер</string>
 
     <string name="action_settings">Поставке</string>
-    <string name="action_shake_disabled">Дрмање иск.</string>
-    <string name="action_shake_enabled">Дрмање укљ.</string>
+    <string name="action_shake_disabled">Протрес. иск.</string>
+    <string name="action_shake_enabled">Протрес. укљ.</string>
 
     <string name="action_sort_folder">Поређај по фасцикли</string>
     <string name="action_sort_artist">Поређај по извођачу</string>
+
+    <string name="app_playing">Пуштање</string>
+
+    <string name="focus_error">Не могу да привилегујем звучни излаз! Поново покрените апликацију!</string>
 
     <string name="settings_title">Поставке</string>
 
     <string name="action_fold">Сажми</string>
     <string name="action_unfold">Рашири</string>
 
+    <string name="settings_song_view">Приказ песама</string>
     <string name="settings_fold_title">Стање фасцикли по покретању</string>
     <string-array name="settings_fold_entries">
-        <item>Сажете осим групе текуће песме</item>
         <item>Сажете</item>
         <item>Раширене</item>
     </string-array>
     <string name="settings_unfold_subgroup">Рашири подгрупе</string>
     <string name="settings_unfold_subgroup_summary">Омогућено: раширивање групе раширује све подгрупе и песме.</string>
     <string name="settings_unfold_subgroup_threshold">Рашири подгрупе ако група</string>
+    <string name="settings_unfold_subgroup_threshold_summary1">има мање од</string>
+    <string name="settings_unfold_subgroup_threshold_summary2">песама</string>
 
+
+    <string name="settings_song_view_font">Фонт приказа песама</string>
     <string name="settings_text_size_choosed">Изаберите величину фонта</string>
     <string name="settings_text_size_regular">Нормални фонт</string>
     <string name="settings_text_size_big">Велики фонт</string>
     <string name="settings_text_size_ratio">Однос величине текста извођач/песма</string>
 
+
     <string name="settings_rescan_title">Поново скенирај</string>
-    <string name="settings_rescan">Поновна претрага медијалних фајлова.</string>
+    <string name="settings_rescan">Поновна претрага медија фајлова.</string>
+    <string name="settings_rescan_disabled">Андроид Киткет онемогућио поновно скенирање.</string>
+    <string name="settings_rescan_triggered">Скенирање медија окинуто...</string>
+
+    <string name="settings_media_button_start_app_title">Медија тастери аутоматски покрећу</string>
+    <string name="settings_media_button_start_app">Медија тастери покрећу апликацију ако већ није покренута.</string>
+
+    <string name="settings_autoscroll">Клизај на нову пуштену песму</string>
+    <string name="settings_autoscroll_summary">Клизај на песму када почне пуштање</string>
 
     <string name="settings_root_folder">Корена фасцикла</string>
+    <string name="settings_root_folder_summary1">Путања</string>
+    <string name="settings_root_folder_summary2">не постоји!</string>
+
+    <string name="settings_accelerometer">Протресање</string>
+    <string name="settings_accelerometer_summary">Протресање пушта следећу песму.</string>
+    <string name="settings_accelerometer_threshold">Праг силе протресања</string>
+    <string name="settings_no_accelerometer">Ваш уређај нема акцелерометар. Ова функција је онемогућена.</string>
+
 
     <string name="settings_help">Помоћ</string>
     <string name="settings_help_summary">Ако сте мало изгубљени.</string>
 
+    <string name="help_start_song">Пуштање песме</string>
+    <string name="help_start_song_summary">Тапните на песму да бисте је пустили.</string>
+    <string name="help_start_group">Пуштање песме из групе</string>
+    <string name="help_start_group_summary">Тапните и држите групу да бисте пустили прву песму.</string>
+    <string name="help_unfold_group">Сажимање/раширивање групе</string>
+    <string name="help_unfold_group_summary">Тапните групу да бисте је сажели/раширили.</string>
+    <string name="help_scroll">Клизање на текућу песму</string>
+    <string name="help_scroll_summary">Притисните дугме десно од дугмета „следећа“ да бисте клизали на песму која се пушта.</string>
+    <string name="help_lock">Онемогућавање закључавања екрана</string>
+    <string name="help_lock_summary">Притисните дугме-катанац да бисте онемогућили екран закључавања (спречава закључавање само кад је апликација у првом плану; не ради на неким уређајима).</string>
+    <string name="help_root_folder">Корена фасцикла</string>
+    <string name="help_root_folder_summary">Можете да прилагодите корену фасциклу: користи се само за скривање првог дела путање фасцикли када су песме поређане по фасцикли.</string>
+    <string name="help_background">Позадина</string>
+    <string name="help_background_summary">У току пуштања музике притисак на почетни тастер или тастер за назад ће да затвори списак песама и настави да пушта музику у позадини.</string>
+    <string name="help_quit">Напуштање</string>
+    <string name="help_quit_summary">Апликација ће да изађе по притиску тастера за назад ако музика није пуштена. Ако не, Андроид ће аутоматски да је затвори ако зафали меморије.</string>
+    <string name="help_stop">Заустављање</string>
+    <string name="help_stop_summary">Апликација ће остати у меморији по притиску на почетни тастер ако музика није пуштена, али Андроид ће аутоматски да је затвори ако зафали меморије.</string>
+    <string name="help_mediabutton">Медија тастери</string>
+    <string name="help_mediabutton_summary">Медија тастери (нпр. на блутут слушалицама) могу да контролишу апликацију (следећа, претходна, пауза/пуштање).</string>
+    <string name="help_mediabutton_autostart">Медија тастери аутоматски покрећу</string>
+    <string name="help_mediabutton_autostart_summary">Ако је апликација затворена, медија тастер ће да је покрене. Да бисте ово онемогућили искључите опцију „Медија тастери аутоматски покрећу“.</string>
+
+
+    <string name="settings_misc">Разно</string>
+
     <string name="settings_about">О програму</string>
     <string name="settings_about_summary">Подаци о апликацији и аутору.</string>
 
+    <string name="settings_version_title">Издање</string>
+    <string name="settings_author_title">Аутор</string>
     <string name="settings_author">Mathieu Souchaud</string>
-    <string name="settings_source">https://github.com/souch/SMP</string>
+    <string name="settings_source_title">Изворни кôд</string>
+    <string name="settings_licence_title">Лиценца</string>
     <string name="settings_opensource">ГПЛв3</string>
-    <string name="settings_donate">ако вам се свиђа апликација.</string>
-    <string name="settings_donate_www">http://rodolphe.souchaud.free.fr/donate</string>
-    <string name="settings_no_accelerometer">Ваш уређај нема акцелерометар. Ова функција је онемогућена.</string>
+    <string name="settings_donate_title">Донација</string>
+    <string name="settings_donate_summary">Кликните овде ако би вам живот био тежак без ове апликације.</string>
+
+    <string name="settings_thanks">Посебне захвале</string>
+    <string name="settings_thanks_icons">Иконе</string>
+    <string name="settings_thanks_icons_summary">Daniele De Santis &amp; WPZOOM (иконе са iconfinder.com)</string>
+    <string name="settings_thanks_doc">Упутства</string>
+    <string name="settings_thanks_doc_summary">Sue Smith (упутства за прављење музичког плејера за Андроид)</string>
+    <string name="settings_thanks_i15n">Превод</string>
+    <string name="settings_thanks_i15n_summary">Младен Пејаковић (српски)</string>
 
 </resources>
