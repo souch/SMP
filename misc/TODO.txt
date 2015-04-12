@@ -8,8 +8,6 @@ volume from app icon
 action bar for settings
 add slash at the end to folder?
 make settings icon fatter
-decrease goto icon size (at least the vertical bar)
-wider open lock icon
 Fix rescan on every android version - on rescan finished, reinitSongs
 make the disc icon turn (when playing?)
 shuffle in sort/shuffle all/no shuffle
