@@ -41,28 +41,21 @@ The SicMu Player is available on [F-Droid](https://f-droid.org/repository/browse
 
 ### Help
 
-- see help section inside settings
+- see help section in app's settings
 
 
 ### Todo (perhaps :-)
 
-- group by genre
-- guess "smart" track number (2 < 11, song file name vs id tag, ...)
-- quick jump with letter in the right (like in contact)
-- speak the title ?
-- cursor for volume ? ( half/full?)
+- folder tree view
+- group by genre?
+- quick jump with letter in the right (like in contact)?
+- search?
+- pinned section (upper group level stay at top until another one appears)?
 - swipe to go to list of song <-> song details
 - mp3 tag editor ?
-- help + infobulle ?
 - playlist?
-- pinned section (upper group level stay at top until another one appears)?
 - shuffle
-- long press on back button kill the app
-- button to go to the last position after automatic scrolling
-- option: relock on pause even if unlocked
-- search?
-- benchmark on big music list (> 10Go)
-- audioeffect/equalizer  
+- audioeffect/equalizer
 
 Detailed todo list available in [TODO.txt](misc/TODO.txt).
 

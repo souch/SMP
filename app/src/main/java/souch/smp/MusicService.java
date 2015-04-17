@@ -143,10 +143,6 @@ public class MusicService extends Service implements
         rows = new Rows(getContentResolver(), params);
         rows.init();
 
-        if(enableShake) {
-            startSensor();
-        }
-
         remoteControlResponder = new ComponentName(getPackageName(), MediaButtonIntentReceiver.class.getName());
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         audioManager.registerMediaButtonEventReceiver(remoteControlResponder);
@@ -176,8 +172,6 @@ public class MusicService extends Service implements
 
         if (!params.getMediaButtonStartAppShake())
             audioManager.unregisterMediaButtonEventReceiver(remoteControlResponder);
-
-        stopSensor();
     }
 
     /*** PLAYER ***/
@@ -233,6 +227,8 @@ public class MusicService extends Service implements
             audioManager.abandonAudioFocus(this);
             hasAudioFocus = false;
         }
+
+        stopSensor();
 
         stopNotification();
     }
@@ -293,8 +289,7 @@ public class MusicService extends Service implements
             case AudioManager.AUDIOFOCUS_GAIN:
                 // resume playback
                 if (wasPlaying) {
-                    getPlayer().start();
-                    state.setState(PlayerState.Started);
+                    start();
                     changed = true;
                 }
                 //player.setVolume(1.0f, 1.0f);
@@ -309,29 +304,19 @@ public class MusicService extends Service implements
                 // Lost focus for a short time, but we have to stop
                 // playback. We don't release the media player because playback
                 // is likely to resume
-                if (getPlayer().isPlaying()) {
-                    getPlayer().pause();
-                    state.setState(PlayerState.Paused);
-                    wasPlaying = true;
-                    changed = true;
-                }
-                else {
-                    wasPlaying = false;
-                }
-                break;
 
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
                 // Lost focus for a short time, but it's ok to keep playing
                 // at an attenuated level
                 if (getPlayer().isPlaying()) {
                     //player.setVolume(0.1f, 0.1f);
-                    getPlayer().pause();
-                    state.setState(PlayerState.Paused);
+                    pause();
                     wasPlaying = true;
                     changed = true;
                 }
                 else {
                     wasPlaying = false;
+                    stopSensor();
                 }
                 break;
         }
@@ -371,6 +356,8 @@ public class MusicService extends Service implements
         if (rowSong == null)
             return;
 
+        startSensor();
+
         getPlayer().reset();
         state.setState(PlayerState.Idle);
 
@@ -398,7 +385,6 @@ public class MusicService extends Service implements
         state.setState(PlayerState.PlaybackCompleted);
         changed = true;
         playNext();
-
     }
 
     @Override
@@ -458,9 +444,12 @@ public class MusicService extends Service implements
     public void start() {
         getPlayer().start();
         state.setState(PlayerState.Started);
+        startSensor();
     }
 
     public void pause() {
+        stopSensor();
+
         if(player == null)
             return;
 
@@ -628,7 +617,7 @@ public class MusicService extends Service implements
 
     // can be called twice
     private void startSensor() {
-        if(sensorManager == null) {
+        if(enableShake && sensorManager == null) {
             accelLast = SensorManager.GRAVITY_EARTH;
             accel = 0.00f;
             accelCurrent = SensorManager.GRAVITY_EARTH;
