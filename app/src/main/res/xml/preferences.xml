@@ -173,6 +173,12 @@
 
 
     <PreferenceCategory android:title="@string/settings_misc">
+        <CheckBoxPreference
+            android:key="VIBRATE"
+            android:title="@string/settings_vibrate_title"
+            android:summary="@string/settings_vibrate"
+            android:defaultValue="true"/>
+
         <Preference
             android:key="@string/settings_rescan_key"
             android:title="@string/settings_rescan_title"

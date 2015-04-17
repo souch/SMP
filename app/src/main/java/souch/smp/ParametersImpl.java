@@ -125,4 +125,8 @@ public class ParametersImpl implements Parameters {
     public boolean getMediaButtonStartAppShake() {
         return getPref().getBoolean(PrefKeys.MEDIA_BUTTON_START_APP.name(), true);
     }
+
+    public boolean getVibrate() {
+        return getPref().getBoolean(PrefKeys.VIBRATE.name(), true);
+    }
 }

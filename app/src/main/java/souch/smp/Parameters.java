@@ -49,4 +49,6 @@ public interface Parameters {
     public float getShakeThreshold();
 
     public boolean getMediaButtonStartAppShake();
+
+    public boolean getVibrate();
 }

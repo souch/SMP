@@ -46,7 +46,6 @@ The SicMu Player is available on [F-Droid](https://f-droid.org/repository/browse
 
 ### Todo (perhaps :-)
 
-- small vibration on action?
 - group by genre
 - guess "smart" track number (2 < 11, song file name vs id tag, ...)
 - quick jump with letter in the right (like in contact)

@@ -81,4 +81,6 @@ public class ParametersMock implements Parameters {
     }
 
     public boolean getMediaButtonStartAppShake() { return true; }
+
+    public boolean getVibrate() { return true; }
 }

@@ -26,6 +26,7 @@ import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Vibrator;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -69,6 +70,8 @@ public class Main extends Activity {
 
     private Parameters params;
 
+    private Vibrator vibrator;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,6 +105,8 @@ public class Main extends Activity {
         followSong = false;
 
         params = new ParametersImpl(this);
+
+        vibrator = (Vibrator) this.getSystemService(VIBRATOR_SERVICE);
     }
 
 
@@ -126,6 +131,8 @@ public class Main extends Activity {
                     if (!serviceBound)
                         return;
 
+                    vibrate();
+
                     Row row = rows.get(position);
                     if (row.getClass() == RowGroup.class) {
                         rows.invertFold(position);
@@ -145,6 +152,8 @@ public class Main extends Activity {
                                                int position, long id) {
                     if (!serviceBound)
                         return false;
+
+                    vibrate();
 
                     rows.selectNearestSong(position);
                     musicSrv.playSong();
@@ -205,6 +214,8 @@ public class Main extends Activity {
                 // valid state : {Prepared, Started, Paused, PlaybackCompleted}
                 musicSrv.seekTo(seekBar.getProgress());
             }
+
+            vibrate();
 
             touchSeekbar = false;
         }
@@ -475,6 +486,8 @@ public class Main extends Activity {
         if(!serviceBound)
             return;
 
+        vibrate();
+
         if (musicSrv.isInState(PlayerState.Started)) {
             // valid state {Started, Paused, PlaybackCompleted}
             // if the player is between idle and prepared state, it will not be paused!
@@ -497,6 +510,8 @@ public class Main extends Activity {
         if(!serviceBound)
             return;
 
+        vibrate();
+
         musicSrv.playNext();
         updatePlayButton();
         if(followSong)
@@ -506,6 +521,8 @@ public class Main extends Activity {
     public void playPrev(View view){
         if(!serviceBound)
             return;
+
+        vibrate();
 
         musicSrv.playPrev();
         updatePlayButton();
@@ -568,6 +585,8 @@ public class Main extends Activity {
     };
 
     public void gotoCurrSong(View view) {
+        vibrate();
+
         unfoldAndscrollToCurrSong();
     }
 
@@ -642,6 +661,8 @@ public class Main extends Activity {
     }
 
     public void lockUnlock(View view) {
+        vibrate();
+
         noLock = !noLock;
         applyLock();
     }
@@ -696,6 +717,11 @@ public class Main extends Activity {
 
     private void save() {
         params.setNoLock(noLock);
+    }
+
+    private void vibrate() {
+        if (params.getVibrate())
+            vibrator.vibrate(20);
     }
 }
 
