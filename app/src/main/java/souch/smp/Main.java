@@ -219,8 +219,6 @@ public class Main extends Activity {
                 musicSrv.seekTo(seekBar.getProgress());
             }
 
-            vibrate();
-
             touchSeekbar = false;
         }
     };
