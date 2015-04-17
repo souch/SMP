@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Vibrator;
@@ -107,6 +108,9 @@ public class Main extends Activity {
         params = new ParametersImpl(this);
 
         vibrator = (Vibrator) this.getSystemService(VIBRATOR_SERVICE);
+
+        // tells the OS that the volume buttons should affect the "media" volume when your application is visible
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
     }
 
 

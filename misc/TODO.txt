@@ -2,7 +2,6 @@
 
 fix curr play icon when on last song row
 disable bluetooth on call?
-control music player volume even if song is not playing
 volume from app icon
 action bar for settings
 add slash at the end to folder?
