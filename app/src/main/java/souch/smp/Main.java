@@ -135,14 +135,14 @@ public class Main extends Activity {
                     if (!serviceBound)
                         return;
 
-                    vibrate();
-
                     Row row = rows.get(position);
                     if (row.getClass() == RowGroup.class) {
                         rows.invertFold(position);
                         songAdt.notifyDataSetChanged();
                     }
                     else {
+                        vibrate();
+
                         rows.selectNearestSong(position);
                         musicSrv.playSong();
                         updatePlayButton();
