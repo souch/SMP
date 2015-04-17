@@ -302,6 +302,7 @@ public class Main extends Activity {
             //Log.d("Main", "updateInfo");
             if (musicSrv.getChanged()) {
                 Log.d("Main", "updateInfo changed");
+                vibrate();
                 updatePlayButton();
                 if(followSong)
                     unfoldAndscrollToCurrSong();
