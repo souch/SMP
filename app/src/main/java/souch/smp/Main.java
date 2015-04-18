@@ -87,6 +87,9 @@ public class Main extends Activity {
         // useful only for testing
         playButton.setTag(R.drawable.ic_action_play);
 
+        //ImageButton gotoButton = (ImageButton) findViewById(R.id.goto_button);
+        //gotoButton.setOnTouchListener(gotoPlayListener);
+
         final int repeatDelta = 260;
         RepeatingImageButton prevButton = (RepeatingImageButton) findViewById(R.id.prev_button);
         prevButton.setRepeatListener(rewindListener, repeatDelta);
@@ -536,6 +539,19 @@ public class Main extends Activity {
         if(followSong)
             unfoldAndscrollToCurrSong();
     }
+
+/*
+    private View.OnTouchListener gotoPlayListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                gotoCurrSong(null);
+                return true;
+            }
+            return false;
+        }
+    };
+*/
 
     private RepeatingImageButton.RepeatListener rewindListener =
         new RepeatingImageButton.RepeatListener() {
