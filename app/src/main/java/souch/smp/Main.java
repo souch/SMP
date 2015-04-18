@@ -137,6 +137,10 @@ public class Main extends Activity {
 
                     Row row = rows.get(position);
                     if (row.getClass() == RowGroup.class) {
+                        // vibrate when big font choosed
+                        if (params.getChoosedTextSize())
+                            vibrate();
+
                         rows.invertFold(position);
                         songAdt.notifyDataSetChanged();
                     }
