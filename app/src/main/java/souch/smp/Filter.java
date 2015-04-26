@@ -19,5 +19,5 @@
 package souch.smp;
 
 public enum Filter {
-    ARTIST, FOLDER, GENRE
+    ARTIST, FOLDER, TREE, GENRE
 }

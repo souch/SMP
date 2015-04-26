@@ -26,6 +26,7 @@
 
     <string name="action_sort_folder">Sort by folder</string>
     <string name="action_sort_artist">Sort by artist</string>
+    <string name="action_sort_tree">Sort by tree</string>
 
     <string name="app_playing">SicMu playing</string>
 

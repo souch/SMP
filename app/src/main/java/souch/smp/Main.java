@@ -436,6 +436,8 @@ public class Main extends Activity {
                 if(musicSrv != null) {
                     if (rows.getFilter() == Filter.FOLDER)
                         rows.setFilter(Filter.ARTIST);
+                    else if (rows.getFilter() == Filter.ARTIST)
+                        rows.setFilter(Filter.TREE);
                     else
                         rows.setFilter(Filter.FOLDER);
                     setFilterItem(item);
@@ -467,6 +469,10 @@ public class Main extends Activity {
             case FOLDER:
                 item.setIcon(R.drawable.ic_menu_folder);
                 item.setTitle(getString(R.string.action_sort_folder));
+                break;
+            case TREE:
+                item.setIcon(R.drawable.ic_menu_tree);
+                item.setTitle(getString(R.string.action_sort_tree));
                 break;
         }
     }

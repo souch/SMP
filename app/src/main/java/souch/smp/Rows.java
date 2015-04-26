@@ -332,9 +332,12 @@ public class Rows {
                         ", " + MediaStore.Audio.Media.TRACK +
                         ", " + MediaStore.Audio.Media.TITLE;
                 break;
+            case TREE:
             case FOLDER:
                 // did not find a way to sort by folder through query
                 break;
+            default:
+                return;
         }
         try {
             musicCursor = musicResolver.query(musicUri, projection, where, null, sortOrder);
@@ -352,6 +355,11 @@ public class Rows {
             case FOLDER:
                 initByPath(musicCursor);
                 break;
+            case TREE:
+                initByTreeFolder(musicCursor);
+                break;
+            default:
+                return;
         }
 
         if(musicCursor != null)
@@ -471,6 +479,93 @@ public class Rows {
 
                 RowSong rowSong = new RowSong(-1, 2, id, title, artist, album, duration / 1000, track, path,
                         rootFolder);
+                rowsUnfolded.add(rowSong);
+                //Log.d("Rows", "song added: " + rowSong.toString());
+            }
+            while (musicCursor.moveToNext());
+        }
+
+        // sort
+        Collections.sort(rowsUnfolded, new Comparator<Row>() {
+            public int compare(Row first, Row second) {
+                // only Song has been added so far, so unchecked cast is ok
+                RowSong a = (RowSong) first;
+                RowSong b = (RowSong) second;
+                int cmp = a.getFolder().compareToIgnoreCase(b.getFolder());
+                if (cmp == 0) {
+                    cmp = a.getArtist().compareToIgnoreCase(b.getArtist());
+                    if (cmp == 0) {
+                        cmp = a.getAlbum().compareToIgnoreCase(b.getAlbum());
+                        if (cmp == 0) {
+                            cmp = a.getTrack() - b.getTrack();
+                        }
+                    }
+                }
+                return cmp;
+            }
+        });
+
+        // add group
+        RowGroup prevFolderGroup = null;
+        RowGroup prevArtistGroup = null;
+
+        for (int idx = 0; idx < rowsUnfolded.size(); idx++) {
+            RowSong rowSong = (RowSong) rowsUnfolded.get(idx);
+
+            String curFolder = rowSong.getFolder();
+            if (prevFolderGroup == null || curFolder.compareToIgnoreCase(prevFolderGroup.getName()) != 0) {
+                RowGroup folderGroup = new RowGroup(idx, 0, curFolder,
+                        Typeface.BOLD, Color.argb(0x88, 0x35, 0x35, 0x35));
+                rowsUnfolded.add(idx, folderGroup);
+                idx++;
+                prevFolderGroup = folderGroup;
+                prevArtistGroup = null;
+            }
+
+            String curArtist = rowSong.getArtist();
+            if (prevArtistGroup == null || curArtist.compareToIgnoreCase(prevArtistGroup.getName()) != 0) {
+                RowGroup artistGroup = new RowGroup(idx, 1, curArtist,
+                        Typeface.BOLD, Color.argb(0x88, 0x0, 0x0, 0x0));
+                artistGroup.setParent(prevFolderGroup);
+                rowsUnfolded.add(idx, artistGroup);
+                idx++;
+                prevArtistGroup = artistGroup;
+            }
+
+            if (rowSong.getID() == savedID)
+                currPos = idx;
+
+            rowSong.setGenuinePos(idx);
+            rowSong.setParent(prevArtistGroup);
+
+            prevFolderGroup.incNbRowSong();
+            prevArtistGroup.incNbRowSong();
+        }
+        setGroupSelectedState(currPos, true);
+    }
+
+    private void initByTreeFolder(Cursor musicCursor) {
+        if (musicCursor != null && musicCursor.moveToFirst()) {
+            int titleCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
+            int idCol = musicCursor.getColumnIndex(MediaStore.Audio.Media._ID);
+            int artistCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
+            int albumCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM);
+            int durationCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
+            int pathCol = musicCursor.getColumnIndex(MediaStore.MediaColumns.DATA);
+            int trackCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.TRACK);
+
+            do {
+                long id = musicCursor.getLong(idCol);
+                String title = getDefaultStrIfNull(musicCursor.getString(titleCol));
+                String artist = getDefaultStrIfNull(musicCursor.getString(artistCol));
+                String album = getDefaultStrIfNull(musicCursor.getString(albumCol));
+                int duration = musicCursor.getInt(durationCol);
+                int track = musicCursor.getInt(trackCol);
+                String path = getDefaultStrIfNull(musicCursor.getString(pathCol));
+
+                final int pos = -1, offset = 2;
+                RowSong rowSong = new RowSong(pos, offset, id, title, artist, album, duration / 1000,
+                        track, path, rootFolder);
                 rowsUnfolded.add(rowSong);
                 //Log.d("Rows", "song added: " + rowSong.toString());
             }
