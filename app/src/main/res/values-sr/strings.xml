@@ -67,6 +67,9 @@
     <string name="settings_autoscroll">Клизај на нову пуштену песму</string>
     <string name="settings_autoscroll_summary">Клизај на песму када почне пуштање</string>
 
+    <string name="settings_vibrate_title">Вибрирај на додир</string>
+    <string name="settings_vibrate">Завибрирај на кратко по додиру на дугмад или списак песама.</string>
+
     <string name="settings_root_folder">Корена фасцикла</string>
     <string name="settings_root_folder_summary1">Путања</string>
     <string name="settings_root_folder_summary2">не постоји!</string>
