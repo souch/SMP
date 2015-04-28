@@ -18,8 +18,8 @@
 
 package souch.smp;
 
-public class ParametersMock implements Parameters {
-    public ParametersMock() {}
+public class ParametersStub implements Parameters {
+    public ParametersStub() {}
 
     public boolean getNoLock() { return true; }
     public void setNoLock(boolean noLock) {}
