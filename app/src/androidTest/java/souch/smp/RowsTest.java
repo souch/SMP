@@ -65,7 +65,7 @@ public class RowsTest extends AndroidTestCase {
         Rows rows;
         rows = initRows(data, Filter.FOLDER);
         checkRowSize(rows, 3);
-        checkRowsText(rows, new String[]{ "/", "Salut", "head"});
+        checkRowsText(rows, new String[]{ ".", "Salut", "head"});
         rows = initRows(data, Filter.ARTIST);
         checkRowsText(rows, new String[]{ "Salut", "Tortoise", "head"});
         checkRowSize(rows, 3);
@@ -179,7 +179,7 @@ public class RowsTest extends AndroidTestCase {
     private void checkRowSize(Rows rows, int size) throws Exception {
         ArrayList<Row> arrayRowUnfold = (ArrayList<Row>) getField(rows, "rowsUnfolded");
         if (arrayRowUnfold.size() != size) {
-            String msg = "assert arrayRowUnfold size failed. wanted: " + size + " actual: " + arrayRowUnfold.size();
+            String msg = "assert arrayRowUnfold size failed. expected: " + size + " actual: " + arrayRowUnfold.size();
             Log.d("RowsTest", msg);
             printRowArray(arrayRowUnfold);
             throw new Exception(msg);
@@ -201,7 +201,7 @@ public class RowsTest extends AndroidTestCase {
     private void checkRow(Rows rows, int idx, String name) throws Exception {
         ArrayList<Row> arrayRowUnfold = (ArrayList<Row>) getField(rows, "rowsUnfolded");
         if (idx >= arrayRowUnfold.size()) {
-            String msg = "assert  idx is greater that arrayRowUnfold size failed. idx: " +
+            String msg = "assert  idx is greater that arrayRowUnfold size failed. expected idx: " +
                     idx + " actual: " + arrayRowUnfold.size();
             Log.d("RowsTest", msg);
             printRowArray(arrayRowUnfold);
@@ -210,14 +210,14 @@ public class RowsTest extends AndroidTestCase {
         Row row = arrayRowUnfold.get(idx);
         if (row.getClass() == RowGroup.class && ! ((RowGroup) row).getName().equals(name)) {
             String msg = "arrayRowUnfold group name check failed. idx: " +
-                    idx + " name: " + name + " actual name: " + ((RowGroup) row).getName();
+                    idx + " expected name: " + name + " actual name: " + ((RowGroup) row).getName();
             Log.d("RowsTest", msg);
             printRowArray(arrayRowUnfold);
             throw new Exception(msg);
         }
         else if (row.getClass() == RowSong.class && ! ((RowSong) row).getTitle().equals(name)) {
             String msg = "arrayRowUnfold song title check failed. idx: " +
-                    idx + " name: " + name + " actual name: " + ((RowSong) row).getTitle();
+                    idx + " expected name: " + name + " actual name: " + ((RowSong) row).getTitle();
             Log.d("RowsTest", msg);
             printRowArray(arrayRowUnfold);
             throw new Exception(msg);

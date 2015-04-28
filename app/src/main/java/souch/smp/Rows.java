@@ -393,7 +393,7 @@ public class Rows {
         for(idx = 0; idx < rowsUnfolded.size(); idx++)
             Log.d("Rows", "songItem " + idx + " added: " + rowsUnfolded.get(idx).toString());
         */
-        Log.d("Rows", "songItems initialized in " + (System.currentTimeMillis() - startTime) + "ms");
+        Log.d("Rows", "======> songItems initialized in " + (System.currentTimeMillis() - startTime) + "ms");
         Log.d("Rows", "songPos: " + currPos);
     }
 
@@ -442,7 +442,7 @@ public class Rows {
                 }
 
                 RowSong rowSong = new RowSong(rowsUnfolded.size(), 2, id, title, artist, album,
-                        duration / 1000, track, null, rootFolder);
+                        duration / 1000, track, null, null);
                 rowSong.setParent(prevAlbumGroup);
 
                 if(id == savedID)
@@ -544,6 +544,36 @@ public class Rows {
         setGroupSelectedState(currPos, true);
     }
 
+    private static final char separatorChar = '/';
+    /**
+     * Returns the pathname of the parent of this file. This is the path up to
+     * but not including the last name. {@code null} is returned if there is no
+     * parent.
+     *
+     * @return this file's parent pathname or {@code null}.
+     */
+    /*
+    private String getParent(String path) {
+        int length = path.length(), firstInPath = 0;
+        if (separatorChar == '\\' && length > 2 && path.charAt(1) == ':') {
+            firstInPath = 2;
+        }
+        int index = path.lastIndexOf(separatorChar);
+        if (index == -1 && firstInPath > 0) {
+            index = 2;
+        }
+        if (index == -1 || path.charAt(length - 1) == separatorChar) {
+            return null;
+        }
+        if (path.indexOf(separatorChar) == index
+                && path.charAt(firstInPath) == separatorChar) {
+            return path.substring(0, index + 1);
+        }
+        return path.substring(0, index);
+    }
+    */
+
+
     private void initByTreeFolder(Cursor musicCursor) {
         if (musicCursor != null && musicCursor.moveToFirst()) {
             int titleCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
@@ -591,6 +621,8 @@ public class Rows {
                 return cmp;
             }
         });
+
+
 
         // add group
         RowGroup prevFolderGroup = null;

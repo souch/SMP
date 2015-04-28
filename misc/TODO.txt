@@ -43,6 +43,9 @@ https://www.iconfinder.com/icons/208018/audio_play_sound_start_video_icon#size=1
 https://www.iconfinder.com/icons/111044/closed_lock_secure_icon#size=64
 https://www.iconfinder.com/icons/344692/arrow_audio_media_music_outline_play_player_right_sound_video_icon#size=128
 
+# perf tips
+https://developer.android.com/training/articles/perf-tips.html
+
 # back key
 http://android-developers.blogspot.fr/2009/12/back-and-other-hard-keys-three-stories.html
 

@@ -24,8 +24,6 @@ import android.util.TypedValue;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.io.File;
-
 public class RowSong extends Row {
     private long id;
     private String title;
@@ -51,10 +49,42 @@ public class RowSong extends Row {
         track = songTrack;
         path = songPath;
         if(path != null) {
-            folder = (new File(path.replaceFirst(rootFolder, ""))).getParent();
-            if (folder == null)
-                folder = ".";
+            folder = getFolder(path, rootFolder);
         }
+    }
+
+    private final static char separatorChar = System.getProperty("file.separator", "/").charAt(0);
+
+    // @param path must not be null
+    private String getFolder(String path, String rootFolder) {
+        String folder;
+
+        // remove rootFolder
+        if (rootFolder != null &&
+                rootFolder.length() <= path.length() &&
+                rootFolder.equals(path.substring(0, rootFolder.length()))) {
+            int rootFolderSize = rootFolder.length();
+            // remove / remaining at the beginning of path
+            if (path.length() > rootFolderSize && path.charAt(rootFolderSize) == separatorChar)
+                rootFolderSize++;
+
+            folder = path.substring(rootFolderSize, path.length());
+        }
+        else {
+            folder = path;
+        }
+
+        // remove filename
+        int index = folder.lastIndexOf(separatorChar);
+        if (index == -1) // no folder: remove everything
+            index = 0;
+        folder = folder.substring(0, index);
+
+        // no folder get the name "."
+        if (folder.equals(""))
+            folder = ".";
+
+        return folder;
     }
 
     public long getID(){return id;}
