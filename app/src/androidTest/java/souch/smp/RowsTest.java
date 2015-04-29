@@ -46,78 +46,93 @@ public class RowsTest extends AndroidTestCase {
         checkRowSize(rows, 0);
     }
 
-    public void testNullCursorGetString() throws Exception {
+    private Rows nullCursorGetString(Filter filter) throws Exception {
         Log.d("RowsTest", "== testNullCursorGetString ==");
         //String[][] data = new String[][]{{"1", "Salut", null, "head", "80000", "2", null, "1"}};
         String[][] data = new String[][]{{null, null, null, null, null, null, null, "1"}};
-        Rows rows;
-        rows = initRows(data, Filter.FOLDER);
+        return initRows(data, filter);
+    }
+
+    public void testFolderNullCursorGetString() throws Exception {
+        Rows rows = nullCursorGetString(Filter.FOLDER);
         checkRowSize(rows, 3);
         checkRowsText(rows, new String[]{ ".", Rows.defaultStr, Rows.defaultStr});
-        rows = initRows(data, Filter.ARTIST);
+    }
+
+    public void testArtistNullCursorGetString() throws Exception {
+        Rows rows = nullCursorGetString(Filter.ARTIST);
         checkRowSize(rows, 3);
         checkRowsText(rows, new String[]{ Rows.defaultStr, Rows.defaultStr, Rows.defaultStr});
     }
 
-    public void testOneSong() throws Exception {
+
+    private Rows oneSong(Filter filter) throws Exception {
         Log.d("RowsTest", "== testOneSong ==");
         String[][] data = new String[][]{{"1", "Salut", "Tortoise", "head", "80000", "2", "/mnt", "1"}};
-        Rows rows;
-        rows = initRows(data, Filter.FOLDER);
+        return initRows(data, filter);
+    }
+
+    public void testFolderOneSong() throws Exception {
+        Rows rows = oneSong(Filter.FOLDER);
         checkRowSize(rows, 3);
-        checkRowsText(rows, new String[]{ ".", "Salut", "head"});
-        rows = initRows(data, Filter.ARTIST);
-        checkRowsText(rows, new String[]{ "Salut", "Tortoise", "head"});
+        checkRowsText(rows, new String[]{".", "Salut", "head"});
+    }
+
+    public void testArtistOneSong() throws Exception {
+        Rows rows = oneSong(Filter.ARTIST);
+        checkRowsText(rows, new String[]{"Salut", "Tortoise", "head"});
         checkRowSize(rows, 3);
     }
 
-    public void test2DifferentSong() throws Exception {
+
+    private Rows TwoDifferentSong(Filter filter) throws Exception {
         Log.d("RowsTest", "== test2DifferentSongs ==");
         String[][] data = new String[][]{
                 {"1", "Artist1", "Album2", "title", "80000", "1", "/mnt/sdcard/yo", "1"},
                 {"2", "Artist2", "album1", "title1", "80000", "2", "/mnt/sdcard/yo", "1"}
         };
-        Rows rows;
-        rows = initRows(data, Filter.FOLDER);
-        checkRowSize(rows, 5);
-        checkRowsText(rows, new String[]{ "/mnt/sdcard", "Artist1", "title", "Artist2", "title1"});
-        rows = initRows(data, Filter.ARTIST);
-        //Settings.getFoldPref(settings)
-        checkRowSize(rows, 6);
-        checkRowsText(rows, new String[]{ "Artist1", "Album2", "title", "Artist2", "album1", "title1"});
+        return initRows(data, filter);
     }
 
-    public void testMergeNameCase() throws Exception {
+    public void testFolder2DifferentSong() throws Exception {
+        Rows rows = TwoDifferentSong(Filter.FOLDER);
+        //Settings.getFoldPref(settings)
+        checkRowSize(rows, 5);
+        checkRowsText(rows, new String[]{"/mnt/sdcard", "Artist1", "title", "Artist2", "title1"});
+    }
+
+    public void testArtist2DifferentSong() throws Exception {
+        Rows rows = TwoDifferentSong(Filter.ARTIST);
+        //Settings.getFoldPref(settings)
+        checkRowSize(rows, 6);
+        checkRowsText(rows, new String[]{"Artist1", "Album2", "title", "Artist2", "album1", "title1"});
+    }
+
+    private Rows mergeNameCase(Filter filter) throws Exception {
         Log.d("RowsTest", "== testMergeNameCase ==");
 
         // same artist except case
         String[][] data = new String[][]{
                 {"1", "Artist1", "Album2", "title1", "80000", "1", "/mnt/sdcard/t1", "1"},
                 {"2", "artist1", "album2", "title2", "80000", "2", "/mnt/sdcard/t2", "1"}};
-        Rows rows;
-        rows = initRows(data, Filter.FOLDER);
+        return initRows(data, filter);
+    }
+
+    public void testFolderMergeNameCase() throws Exception {
+        Rows rows = mergeNameCase(Filter.FOLDER);
         checkRowSize(rows, 4);
         checkRowsText(rows, new String[]{ "/mnt/sdcard", "Artist1", "title1", "title2"});
-        rows = initRows(data, Filter.ARTIST);
+    }
+
+    public void testArtistMergeNameCase() throws Exception {
+        Rows rows = mergeNameCase(Filter.ARTIST);
         checkRowSize(rows, 4);
         checkRowsText(rows, new String[]{ "Artist1", "Album2", "title1", "title2"});
     }
 
-    public void testBiglist() throws Exception {
-        Log.d("RowsTest", "== testMergeNameCase ==");
 
-        // same artist except case
-        String[][] data = new String[][]{
-                {"1", "Artist1", "Album2", "title1", "80000", "1", "/mnt/rock/t1/1", "1"},
-                {"2", "Artist1", "Album2", "title2", "80000", "1", "/mnt/rock/t1/2", "1"},
-                {"3", "Artist1", "Album2", "title1", "80000", "1", "/mnt/rock/tt1/1", "1"},
-                {"4", "Artist2", "Album2", "tit1", "80000", "1", "/mnt/another/t2/1", "1"},
-                {"5", "Artist2", "Album2", "tit2", "80000", "1", "/mnt/another/t2/2", "1"},
-                {"6", "Artist3", "Album2", "tit3", "80000", "1", "/mnt/another/t2/3", "1"},
-                {"7", "artist4", "album2", "title2", "80000", "2", "2", "1"},
-                {"8", "artist5", "album1", "title1", "80000", "2", "/app/rock/super/genial/1", "1"}};
-        Rows rows;
-        rows = initRows(data, Filter.FOLDER);
+    public void testFolderBiglist() throws Exception {
+        Rows rows = biglist(Filter.FOLDER);
         checkRowSize(rows, 19);
         checkRowsText(rows, new String[]{
                 ".",
@@ -140,8 +155,10 @@ public class RowsTest extends AndroidTestCase {
                     "Artist1",
                         "title1",
         });
+    }
 
-        rows = initRows(data, Filter.ARTIST);
+    public void testArtistBiglist() throws Exception {
+        Rows rows = biglist(Filter.ARTIST);
         checkRowSize(rows, 18);
         checkRowsText(rows, new String[]{
                 "Artist1",
@@ -162,8 +179,23 @@ public class RowsTest extends AndroidTestCase {
                 "artist5",
                     "album1",
                         "title1"
-
         });
+    }
+
+    private Rows biglist(Filter filter) throws Exception {
+        Log.d("RowsTest", "== testMergeNameCase ==");
+
+        // same artist except case
+        String[][] data = new String[][]{
+                {"1", "Artist1", "Album2", "title1", "80000", "1", "/mnt/rock/t1/1", "1"},
+                {"2", "Artist1", "Album2", "title2", "80000", "1", "/mnt/rock/t1/2", "1"},
+                {"3", "Artist1", "Album2", "title1", "80000", "1", "/mnt/rock/tt1/1", "1"},
+                {"4", "Artist2", "Album2", "tit1", "80000", "1", "/mnt/another/t2/1", "1"},
+                {"5", "Artist2", "Album2", "tit2", "80000", "1", "/mnt/another/t2/2", "1"},
+                {"6", "Artist3", "Album2", "tit3", "80000", "1", "/mnt/another/t2/3", "1"},
+                {"7", "artist4", "album2", "title2", "80000", "2", "2", "1"},
+                {"8", "artist5", "album1", "title1", "80000", "2", "/app/rock/super/genial/1", "1"}};
+        return initRows(data, filter);
     }
 
     private Rows initRows(String[][] data, Filter filter) {
