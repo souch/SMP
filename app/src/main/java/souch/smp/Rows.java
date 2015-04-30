@@ -36,7 +36,6 @@ public class Rows {
     private Parameters params;
 
     private Filter filter;
-    private String rootFolder;
 
     // id of the song at last exiting
     private long savedID;
@@ -442,7 +441,7 @@ public class Rows {
                 }
 
                 RowSong rowSong = new RowSong(rowsUnfolded.size(), 2, id, title, artist, album,
-                        duration / 1000, track, null, null);
+                        duration / 1000, track, null);
                 rowSong.setParent(prevAlbumGroup);
 
                 if(id == savedID)
@@ -477,8 +476,7 @@ public class Rows {
                 int track = musicCursor.getInt(trackCol);
                 String path = getDefaultStrIfNull(musicCursor.getString(pathCol));
 
-                RowSong rowSong = new RowSong(-1, 2, id, title, artist, album, duration / 1000, track, path,
-                        rootFolder);
+                RowSong rowSong = new RowSong(-1, 2, id, title, artist, album, duration / 1000, track, path);
                 rowsUnfolded.add(rowSong);
                 //Log.d("Rows", "song added: " + rowSong.toString());
             }
@@ -595,7 +593,7 @@ public class Rows {
 
                 final int pos = -1, offset = 2;
                 RowSong rowSong = new RowSong(pos, offset, id, title, artist, album, duration / 1000,
-                        track, path, rootFolder);
+                        track, path);
                 rowsUnfolded.add(rowSong);
                 //Log.d("Rows", "song added: " + rowSong.toString());
             }
@@ -668,7 +666,7 @@ public class Rows {
     private void restore() {
         savedID = params.getSongID();
         filter = params.getFilter();
-        rootFolder = params.getRootFolder();
+        Path.rootFolder = params.getRootFolder();
     }
 
     public void save() {
@@ -694,9 +692,9 @@ public class Rows {
     public boolean setRootFolder(String rootFolder) {
         boolean reinited = false;
 
-        if (!this.rootFolder.equals(rootFolder)) {
-            this.rootFolder = rootFolder;
-            if (filter == Filter.FOLDER) {
+        if (!Path.rootFolder.equals(rootFolder)) {
+            Path.rootFolder = rootFolder;
+            if (filter == Filter.FOLDER || filter == Filter.TREE) {
                 // reinit everything is a bit heavy: nevermind, rootFolder will not be changed often
                 updateSavedId();
                 init();
