@@ -31,8 +31,6 @@ import android.util.Log;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
-// todo refactor Rows in order to mock settings.
-
 public class RowsTest extends AndroidTestCase {
 
     public void setUp() throws Exception {
