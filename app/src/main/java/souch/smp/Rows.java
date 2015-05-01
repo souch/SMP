@@ -542,37 +542,8 @@ public class Rows {
         setGroupSelectedState(currPos, true);
     }
 
-    private static final char separatorChar = '/';
-    /**
-     * Returns the pathname of the parent of this file. This is the path up to
-     * but not including the last name. {@code null} is returned if there is no
-     * parent.
-     *
-     * @return this file's parent pathname or {@code null}.
-     */
-    /*
-    private String getParent(String path) {
-        int length = path.length(), firstInPath = 0;
-        if (separatorChar == '\\' && length > 2 && path.charAt(1) == ':') {
-            firstInPath = 2;
-        }
-        int index = path.lastIndexOf(separatorChar);
-        if (index == -1 && firstInPath > 0) {
-            index = 2;
-        }
-        if (index == -1 || path.charAt(length - 1) == separatorChar) {
-            return null;
-        }
-        if (path.indexOf(separatorChar) == index
-                && path.charAt(firstInPath) == separatorChar) {
-            return path.substring(0, index + 1);
-        }
-        return path.substring(0, index);
-    }
-    */
-
-
     private void initByTreeFolder(Cursor musicCursor) {
+/*
         if (musicCursor != null && musicCursor.moveToFirst()) {
             int titleCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
             int idCol = musicCursor.getColumnIndex(MediaStore.Audio.Media._ID);
@@ -621,44 +592,60 @@ public class Rows {
         });
 
 
-
         // add group
-        RowGroup prevFolderGroup = null;
-        RowGroup prevArtistGroup = null;
+        RowGroup prevGroup = null;
+        ArrayList<RowGroup> prevGroups = new ArrayList<>();
 
         for (int idx = 0; idx < rowsUnfolded.size(); idx++) {
             RowSong rowSong = (RowSong) rowsUnfolded.get(idx);
+            // get folder list of current row
+            ArrayList<String> folders = Path.cutFolder(rowSong.getFolder());
 
-            String curFolder = rowSong.getFolder();
-            if (prevFolderGroup == null || curFolder.compareToIgnoreCase(prevFolderGroup.getName()) != 0) {
-                RowGroup folderGroup = new RowGroup(idx, 0, curFolder,
+            // search from the bottom the first previous group that is different from the current group
+            int firstDiff = 0;
+            while (firstDiff < prevGroups.size() &&
+                    firstDiff < folders.size() &&
+                    prevGroups.get(firstDiff).getName().equals(folders.get(firstDiff)))
+                firstDiff++;
+
+            // get the nearest common group parent
+            RowGroup parentGroup;
+            if (firstDiff == 0)
+                // everything is different: no parent
+                parentGroup = null;
+            else
+                parentGroup = prevGroups.get(firstDiff - 1);
+
+            // add every groups that is missing
+            RowGroup folderGroup;
+            for (int i = firstDiff; i < folders.size(); i++) {
+                folderGroup = new RowGroup(idx, i, folders.get(i),
                         Typeface.BOLD, Color.argb(0x88, 0x35, 0x35, 0x35));
+                folderGroup.setParent(parentGroup);
+                parentGroup = folderGroup;
                 rowsUnfolded.add(idx, folderGroup);
                 idx++;
-                prevFolderGroup = folderGroup;
-                prevArtistGroup = null;
             }
 
-            String curArtist = rowSong.getArtist();
-            if (prevArtistGroup == null || curArtist.compareToIgnoreCase(prevArtistGroup.getName()) != 0) {
-                RowGroup artistGroup = new RowGroup(idx, 1, curArtist,
-                        Typeface.BOLD, Color.argb(0x88, 0x0, 0x0, 0x0));
-                artistGroup.setParent(prevFolderGroup);
-                rowsUnfolded.add(idx, artistGroup);
-                idx++;
-                prevArtistGroup = artistGroup;
+            // compute group list for next row
+            prevGroups.clear();
+            RowGroup groupIdx = folderGroup;
+            while (groupIdx != null) {
+                prevGroups.add(0, groupIdx);
+                groupIdx = (RowGroup) groupIdx.getParent();
             }
 
-            if (rowSong.getID() == savedID)
-                currPos = idx;
-
-            rowSong.setGenuinePos(idx);
-            rowSong.setParent(prevArtistGroup);
-
-            prevFolderGroup.incNbRowSong();
-            prevArtistGroup.incNbRowSong();
-        }
-        setGroupSelectedState(currPos, true);
+//            if (rowSong.getID() == savedID)
+//                currPos = idx;
+//
+//            rowSong.setGenuinePos(idx);
+//            rowSong.setParent(prevArtistGroup);
+//
+//            prevFolderGroup.incNbRowSong();
+//            prevArtistGroup.incNbRowSong();
+//        }
+//        setGroupSelectedState(currPos, true);
+        }*/
     }
 
     private String getDefaultStrIfNull(String str) { return str != null ? str : defaultStr; }
