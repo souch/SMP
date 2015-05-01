@@ -139,7 +139,7 @@ public class RowsTest extends AndroidTestCase {
 
     public void testTreeMergeNameCase() throws Exception {
         Rows rows = mergeNameCase(Filter.TREE);
-        checkRowsText(rows, new String[]{ "Artist1", "Album2", "title1", "title2"});
+        checkRowsText(rows, new String[]{ "/mnt/sdcard", "title1", "title2"});
     }
 
 
@@ -229,6 +229,25 @@ public class RowsTest extends AndroidTestCase {
         });
     }
 
+
+    private Rows normalList(Filter filter) throws Exception {
+        Log.d("RowsTest", "== testMergeNameCase ==");
+
+        // same artist except case
+        String[][] data = new String[][]{
+                {"1", "Artist1", "Album2", "title1", "80000", "1", "rock/1.mp3", "1"},
+                {"2", "Artist1", "Album2", "title2", "80000", "1", "rocky/2.mp3", "1"}};
+        return initRows(data, filter);
+    }
+
+    public void testTreeNormalList() throws Exception {
+        checkRowsText(normalList(Filter.TREE), new String[]{
+                "rock",
+                    "title1",
+                "rocky",
+                    "title2",
+        });
+    }
 
 
     private Rows initRows(String[][] data, Filter filter) {

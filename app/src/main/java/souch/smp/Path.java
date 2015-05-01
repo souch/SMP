@@ -18,6 +18,8 @@
 
 package souch.smp;
 
+import java.util.ArrayList;
+
 public class Path {
     public final static char separatorChar = System.getProperty("file.separator", "/").charAt(0);
     public static String rootFolder = "";
@@ -60,5 +62,28 @@ public class Path {
         return folder;
     }
 
+    static public ArrayList<String> cutFolder(String path) {
+        ArrayList<String> folders = new ArrayList<>();
+        int beg = 0;
+        boolean folderFound = false;
+        for(int i = 0; i < path.length(); i++) {
+            if(path.charAt(i) == separatorChar) {
+                if (folderFound) {
+                    folders.add(path.substring(beg, i));
+                    folderFound = false;
+                }
+                beg = i + 1;
+            }
+            else {
+                folderFound = true;
+            }
+        }
+        // path do not finish by /
+        if (folderFound) {
+            folders.add(path.substring(beg, path.length()));
+        }
+
+        return folders;
+    }
 
 }
