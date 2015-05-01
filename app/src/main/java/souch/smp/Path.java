@@ -62,7 +62,10 @@ public class Path {
         return folder;
     }
 
-    static public ArrayList<String> cutFolder(String path) {
+    /*
+     path = "toto/tata" -> return {"toto", "tata"}
+     */
+    static public ArrayList<String> tokenizeFolder(String path) {
         ArrayList<String> folders = new ArrayList<>();
         int beg = 0;
         boolean folderFound = false;
@@ -85,5 +88,18 @@ public class Path {
 
         return folders;
     }
+
+    /*
+     up "toto/tata" down "toto"  -> tata
+     up "toto/tata" down ""      -> toto/tata
+     up "toto/tata" toto/down "" -> ''
+     */
+    static public String cutFolder(String up, String down) {
+        int i = 0;
+        while(i < down.length() && i < up.length()  &&  up.charAt(i) == down.charAt(i))
+            i++;
+        return up.substring(i, up.length());
+    }
+
 
 }

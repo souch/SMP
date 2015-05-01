@@ -599,7 +599,7 @@ public class Rows {
         for (int idx = 0; idx < rowsUnfolded.size(); idx++) {
             RowSong rowSong = (RowSong) rowsUnfolded.get(idx);
             // get folder list of current row
-            ArrayList<String> folders = Path.cutFolder(rowSong.getFolder());
+            ArrayList<String> folders = Path.tokenizeFolder(rowSong.getFolder());
 
             // search from the bottom the first previous group that is different from the current group
             int firstDiff = 0;

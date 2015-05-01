@@ -95,7 +95,7 @@ public class PathTest extends AndroidTestCase {
     }
 
     private void tryCutFolder(String folder, String[] expectedFolders) throws Exception {
-        ArrayList<String> folders = Path.cutFolder(folder);
+        ArrayList<String> folders = Path.tokenizeFolder(folder);
         if (folders.size() != expectedFolders.length) {
             String msg = "Expected folder length'" + expectedFolders.length + "' got: '" + folders.size() + "'";
             Log.d("PathTest", msg);
