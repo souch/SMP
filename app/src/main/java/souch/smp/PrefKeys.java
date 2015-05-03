@@ -34,5 +34,6 @@ public enum PrefKeys {
     TEXT_SIZE_RATIO,
     TEXT_SIZE_CHOOSED,
     MEDIA_BUTTON_START_APP,
-    VIBRATE
+    VIBRATE,
+    SHUFFLE
 }

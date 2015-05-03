@@ -54,7 +54,6 @@ The SicMu Player is available on [F-Droid](https://f-droid.org/repository/browse
 - swipe to go to list of song <-> song details
 - mp3 tag editor ?
 - playlist?
-- shuffle
 - audioeffect/equalizer
 
 Detailed todo list available in [TODO.txt](misc/TODO.txt).

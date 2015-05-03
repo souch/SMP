@@ -51,4 +51,6 @@ public interface Parameters {
     public boolean getMediaButtonStartAppShake();
 
     public boolean getVibrate();
+
+    public boolean getShuffle();
 }

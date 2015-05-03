@@ -129,4 +129,8 @@ public class ParametersImpl implements Parameters {
     public boolean getVibrate() {
         return getPref().getBoolean(PrefKeys.VIBRATE.name(), true);
     }
+
+    public boolean getShuffle() {
+        return getPref().getBoolean(PrefKeys.SHUFFLE.name(), false);
+    }
 }

@@ -65,7 +65,6 @@
     <string name="settings_text_size_ratio">Group/song ratio text size</string>
     <string name="settings_text_size_ratio_default">1.1</string>
 
-
     <string name="settings_rescan_title">Rescan</string>
     <string name="settings_rescan">Rescan media files.</string>
     <string name="settings_rescan_key">RESCAN</string>
@@ -77,6 +76,9 @@
 
     <string name="settings_autoscroll">Scroll to new song played</string>
     <string name="settings_autoscroll_summary">When song start playing, scroll to it</string>
+
+    <string name="settings_shuffle_title">Shuffle</string>
+    <string name="settings_shuffle">Next song is chosen randomly</string>
 
     <string name="settings_vibrate_title">Vibrate on touch</string>
     <string name="settings_vibrate">Make a small vibration when touching buttons or song list.</string>

@@ -29,8 +29,11 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Random;
 
 public class Rows {
+
+    private Random random;
 
     private ContentResolver musicResolver;
     private Parameters params;
@@ -54,6 +57,7 @@ public class Rows {
         this.params = params;
         musicResolver = resolver;
         currPos = -1;
+        random = new Random();
 
         rowsUnfolded = new ArrayList<>();
         rows = new ArrayList<>();
@@ -136,6 +140,22 @@ public class Rows {
                 group = (RowGroup) group.getParent();
             }
         }
+    }
+
+    public void moveToRandomSong() {
+        if (rowsUnfolded.size() <= 0)
+            return;
+
+        setGroupSelectedState(currPos, false);
+
+        int pos;
+        do {
+            pos = random.nextInt(rowsUnfolded.size());
+        } while(pos == currPos || rowsUnfolded.get(pos).getClass() != RowSong.class);
+
+        currPos = pos;
+
+        setGroupSelectedState(currPos, true);
     }
 
     public void moveToNextSong() {
