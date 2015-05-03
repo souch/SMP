@@ -457,7 +457,10 @@ public class MusicService extends Service implements
     }
 
     public void playPrev() {
-        rows.moveToPrevSong();
+        if (params.getShuffle())
+            rows.moveToRandomSongBack();
+        else
+            rows.moveToPrevSong();
 
         if(foreground)
             startNotification();

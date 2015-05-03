@@ -34,6 +34,7 @@ import java.util.Random;
 public class Rows {
 
     private Random random;
+    private ArrayList<Integer> shuffleSavedPos;
 
     private ContentResolver musicResolver;
     private Parameters params;
@@ -57,7 +58,9 @@ public class Rows {
         this.params = params;
         musicResolver = resolver;
         currPos = -1;
+
         random = new Random();
+        shuffleSavedPos = new ArrayList<>();
 
         rowsUnfolded = new ArrayList<>();
         rows = new ArrayList<>();
@@ -146,16 +149,37 @@ public class Rows {
         if (rowsUnfolded.size() <= 0)
             return;
 
-        setGroupSelectedState(currPos, false);
+        // save the random song chosen
+        shuffleSavedPos.add(currPos);
 
         int pos;
         do {
             pos = random.nextInt(rowsUnfolded.size());
         } while(pos == currPos || rowsUnfolded.get(pos).getClass() != RowSong.class);
 
+        setGroupSelectedState(currPos, false);
+
         currPos = pos;
 
         setGroupSelectedState(currPos, true);
+    }
+
+    // go back to previous random song done
+    public void moveToRandomSongBack() {
+        boolean backOk = false;
+        if (shuffleSavedPos.size() > 0) {
+            int pos = shuffleSavedPos.remove(shuffleSavedPos.size() - 1);
+            // check
+            if (pos < rowsUnfolded.size() && rowsUnfolded.get(pos).getClass() == RowSong.class) {
+                backOk = true;
+                setGroupSelectedState(currPos, false);
+                currPos = pos;
+                setGroupSelectedState(currPos, true);
+            }
+        }
+        // if no saved pos, fallback to prevsong
+        if(!backOk)
+            moveToPrevSong();
     }
 
     public void moveToNextSong() {
