@@ -31,6 +31,7 @@ import android.os.Vibrator;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -86,15 +87,20 @@ public class Main extends Activity {
         playButton = (ImageButton) findViewById(R.id.play_button);
         // useful only for testing
         playButton.setTag(R.drawable.ic_action_play);
+        playButton.setOnTouchListener(touchListener);
 
-        //ImageButton gotoButton = (ImageButton) findViewById(R.id.goto_button);
-        //gotoButton.setOnTouchListener(gotoPlayListener);
+        ImageButton gotoButton = (ImageButton) findViewById(R.id.goto_button);
+        gotoButton.setOnTouchListener(touchListener);
+        ImageButton lockButton = (ImageButton) findViewById(R.id.lock_button);
+        lockButton.setOnTouchListener(touchListener);
 
         final int repeatDelta = 260;
         RepeatingImageButton prevButton = (RepeatingImageButton) findViewById(R.id.prev_button);
         prevButton.setRepeatListener(rewindListener, repeatDelta);
+        prevButton.setOnTouchListener(touchListener);
         RepeatingImageButton nextButton = (RepeatingImageButton) findViewById(R.id.next_button);
         nextButton.setRepeatListener(forwardListener, repeatDelta);
+        nextButton.setOnTouchListener(touchListener);
 
         playIntent = new Intent(this, MusicService.class);
         startService(playIntent);
@@ -502,8 +508,6 @@ public class Main extends Activity {
         if(!serviceBound)
             return;
 
-        vibrate();
-
         if (musicSrv.isInState(PlayerState.Started)) {
             // valid state {Started, Paused, PlaybackCompleted}
             // if the player is between idle and prepared state, it will not be paused!
@@ -526,8 +530,6 @@ public class Main extends Activity {
         if(!serviceBound)
             return;
 
-        vibrate();
-
         musicSrv.playNext();
         updatePlayButton();
         if(followSong)
@@ -538,26 +540,22 @@ public class Main extends Activity {
         if(!serviceBound)
             return;
 
-        vibrate();
-
         musicSrv.playPrev();
         updatePlayButton();
         if(followSong)
             unfoldAndscrollToCurrSong();
     }
 
-/*
-    private View.OnTouchListener gotoPlayListener = new View.OnTouchListener() {
+
+    private View.OnTouchListener touchListener = new View.OnTouchListener() {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                gotoCurrSong(null);
-                return true;
+                vibrate();
             }
             return false;
         }
     };
-*/
 
     private RepeatingImageButton.RepeatListener rewindListener =
         new RepeatingImageButton.RepeatListener() {
@@ -614,8 +612,6 @@ public class Main extends Activity {
     };
 
     public void gotoCurrSong(View view) {
-        vibrate();
-
         unfoldAndscrollToCurrSong();
     }
 
@@ -690,8 +686,6 @@ public class Main extends Activity {
     }
 
     public void lockUnlock(View view) {
-        vibrate();
-
         noLock = !noLock;
         applyLock();
     }
