@@ -645,7 +645,8 @@ public class Rows {
                 // only Song has been added so far, so unchecked cast is ok
                 RowSong a = (RowSong) first;
                 RowSong b = (RowSong) second;
-                int cmp = a.getFolder().compareToIgnoreCase(b.getFolder());
+//                int cmp = a.getFolder().compareToIgnoreCase(b.getFolder());
+                int cmp = Path.compareToIgnoreCaseShorterFolderLast(a.getFolder(), b.getFolder());
                 if (cmp == 0) {
                     cmp = a.getArtist().compareToIgnoreCase(b.getArtist());
                     if (cmp == 0) {
@@ -717,6 +718,7 @@ public class Rows {
 
         setGroupSelectedState(currPos, true);
     }
+
 
     private String getDefaultStrIfNull(String str) { return str != null ? str : defaultStr; }
 

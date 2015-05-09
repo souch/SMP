@@ -54,6 +54,8 @@ public class RowGroup extends Row {
     public void setView(RowViewHolder holder, Main main, int position) {
         super.setView(holder, main, position);
 
+        holder.text.setPadding(convertDpToPixels(level * 10, holder.layout.getResources()), 0, 0, 0);
+
         float factor = 1.5f;
         if (main.getMusicSrv().getRows().isLastRow(position))
             factor = 3f;

@@ -102,4 +102,51 @@ public class Path {
     }
 
 
+    /**
+     * From Android String.java
+     *
+     * modify compareToIgnoreCase in order to put shorter group to the end e.g.
+     * normal compareToIgnoreCase order
+     * /toto
+     * /toto/tata
+     * /toto/titi
+     *
+     * modified order (here)
+     * /toto/tata
+     * /toto/titi
+     * /toto
+     *
+     * Compares this string to the given string, ignoring case differences.
+     *
+     * The drawback of this method being outside of String.java is that it is slower as it does not
+     * play with internal string data (especially charAt calls). Rows initialization lose 15% of speed.
+     */
+    public static int compareToIgnoreCaseShorterFolderLast(String string1, String string2) {
+        int o1 = 0, o2 = 0, result;
+        int end = (string1.length() < string2.length() ? string1.length() : string2.length());
+        char c1, c2;
+        while (o1 < end) {
+            if ((c1 = string1.charAt(o1++)) == (c2 = string2.charAt(o2++))) {
+                continue;
+            }
+            c1 = foldCase(c1);
+            c2 = foldCase(c2);
+            if ((result = c1 - c2) != 0) {
+                return result;
+            }
+        }
+        return string2.length() - string1.length(); // modified here
+    }
+    /**
+     * useful for compareToIgnoreCaseShorterFolderLast
+     */
+    private static char foldCase(char ch) {
+        if (ch < 128) {
+            if ('A' <= ch && ch <= 'Z') {
+                return (char) (ch + ('a' - 'A'));
+            }
+            return ch;
+        }
+        return Character.toLowerCase(Character.toUpperCase(ch));
+    }
 }
