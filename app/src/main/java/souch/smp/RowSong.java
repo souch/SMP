@@ -39,9 +39,9 @@ public class RowSong extends Row {
 
     protected static int textSize = 14;
 
-    public RowSong(int pos, int offset, long songID, String songTitle, String songArtist, String songAlbum,
+    public RowSong(int pos, int level, long songID, String songTitle, String songArtist, String songAlbum,
                    int dur, int songTrack, String songPath) {
-        super(pos, offset, Typeface.NORMAL);
+        super(pos, level, Typeface.NORMAL);
         id = songID;
         title = songTitle;
         artist = songArtist;
@@ -108,7 +108,7 @@ public class RowSong extends Row {
     }
 
     public String toString() {
-        return "Song pos: " + genuinePos + " level: " + level + " ID: " + id + " artist: " + artist +
+        return "Song  pos: " + genuinePos + " level: " + level + " ID: " + id + " artist: " + artist +
                 " album: " + album + " title: " + title + " " +
                 secondsToMinutes(duration) + " track:" + track + " path: " + path;
     }

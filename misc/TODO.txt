@@ -1,5 +1,8 @@
 # todo
 
+put everything related to view into XML
+benchmark on big music list (> 10Go)
+fix lock/unlock not working on some (lots of) devices
 fix curr play icon when on last song row
 disable bluetooth on call?
 volume from app icon
@@ -12,11 +15,9 @@ stop at the end of first stack / go to the next stack (go to beginning if at the
 adjust brightness when on no lock
 show cur song played in total when group folded : i.e. 5/13  (the group has 13 songs and the fifth is selected)
 zoom make letter (and button) bigger or smaller
-
-- guess "smart" track number (2 < 11, song file name vs id tag, ...)
-- long press on back button kill the app
-- option: relock on pause even if unlocked
-- benchmark on big music list (> 10Go)
+guess "smart" track number (2 < 11, song file name vs id tag, ...)
+long press on back button kill the app
+option: relock on pause even if unlocked
 
 
 # misc

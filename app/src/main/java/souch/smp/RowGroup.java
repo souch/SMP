@@ -31,8 +31,8 @@ public class RowGroup extends Row {
     private int nbRowSong;
     protected static int textSize = 18;
 
-    public RowGroup(int pos, int offset, String name, int typeface, int color) {
-        super(pos, offset, typeface);
+    public RowGroup(int pos, int level, String name, int typeface, int color) {
+        super(pos, level, typeface);
         this.name = name;
         folded = false;
         selected = false;
@@ -128,6 +128,6 @@ public class RowGroup extends Row {
     }
 
     public String toString() {
-        return "SongGroup pos: " + genuinePos + " level: " + level + " name: " + name;
+        return "Group pos: " + genuinePos + " level: " + level + " name: " + name;
     }
 }

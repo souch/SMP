@@ -75,26 +75,28 @@ public class PathTest extends AndroidTestCase {
     }
 
 
-    public void testCutFolderUsual() throws Exception {
-        tryCutFolder("/mnt/sdcard/toto", new String[]{"mnt", "sdcard", "toto"});
-        tryCutFolder("/mnt/sdcard/toto/", new String[]{"mnt", "sdcard", "toto"});
-        tryCutFolder("/mnt/sdcard/toto/o", new String[]{"mnt", "sdcard", "toto", "o"});
+    public void testTokenizeFolderUsual() throws Exception {
+        tryTokenizeFolder("/mnt/sdcard/toto", new String[]{"mnt", "sdcard", "toto"});
+        tryTokenizeFolder("/mnt/sdcard/toto/", new String[]{"mnt", "sdcard", "toto"});
+        tryTokenizeFolder("/mnt/sdcard/toto/o", new String[]{"mnt", "sdcard", "toto", "o"});
     }
 
-    public void testCutFolderOne() throws Exception {
-        tryCutFolder("/mnt/", new String[]{"mnt"});
-        tryCutFolder("/mnt", new String[]{"mnt"});
+    public void testTokenizeFolderOne() throws Exception {
+        tryTokenizeFolder("/mnt/", new String[]{"mnt"});
+        tryTokenizeFolder("/mnt", new String[]{"mnt"});
     }
 
-    public void testCutFolderStrange() throws Exception {
-        tryCutFolder("/toot///yo", new String[]{"toot", "yo"});
-        tryCutFolder("/toot///", new String[]{"toot"});
-        tryCutFolder("//", new String[]{});
-        tryCutFolder("/", new String[]{});
-        tryCutFolder("", new String[]{});
+    public void testTokenizeFolderStrange() throws Exception {
+        tryTokenizeFolder("/./", new String[]{"."});
+        tryTokenizeFolder(".", new String[]{"."});
+        tryTokenizeFolder("/toot///yo", new String[]{"toot", "yo"});
+        tryTokenizeFolder("/toot///", new String[]{"toot"});
+        tryTokenizeFolder("//", new String[]{});
+        tryTokenizeFolder("/", new String[]{});
+        tryTokenizeFolder("", new String[]{});
     }
 
-    private void tryCutFolder(String folder, String[] expectedFolders) throws Exception {
+    private void tryTokenizeFolder(String folder, String[] expectedFolders) throws Exception {
         ArrayList<String> folders = Path.tokenizeFolder(folder);
         if (folders.size() != expectedFolders.length) {
             String msg = "Expected folder length'" + expectedFolders.length + "' got: '" + folders.size() + "'";

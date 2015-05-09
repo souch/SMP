@@ -75,6 +75,7 @@ public class Rows {
     }
 
     // the user choose a row
+    /*
     public void select(int pos) {
         if(rows.get(pos).getClass() == RowSong.class) {
             setCurrPos(rows.get(pos).getGenuinePos());
@@ -83,6 +84,7 @@ public class Rows {
             invertFold(pos);
         }
     }
+    */
 
     // select first song encountered from pos
     public void selectNearestSong(int pos) {
@@ -217,6 +219,7 @@ public class Rows {
 
     // fold everything
     public void fold() {
+        // todo: better to recopy first level from unfolded?
         for (int i = 0; i < rows.size(); i++) {
             Row row = rows.get(i);
             if (row.getClass() == RowGroup.class)
@@ -308,6 +311,11 @@ public class Rows {
     // group and pos must correspond in the foldable rows
     // group must be folded
     private void unfold(RowGroup group, int pos) {
+        if (filter == Filter.TREE) {
+            unfoldTree(group, pos);
+            return;
+        }
+
         // add every missing rows
         Row row;
         final int autoUnfoldThreshold = params.getUnfoldSubGroupThreshold();
@@ -329,7 +337,7 @@ public class Rows {
             }
         }
         else {
-            // unfold only subgroup
+            // unfold only first subgroup
             for (int i = 1, j = 1;
                  group.getGenuinePos() + i < rowsUnfolded.size() &&
                          (row = rowsUnfolded.get(group.getGenuinePos() + i)).getLevel() > group.getLevel();
@@ -343,10 +351,27 @@ public class Rows {
         group.setFolded(false);
     }
 
+    private void unfoldTree(RowGroup group, int pos) {
+        Row row;
+        // unfold only next level
+        for (int i = 1, j = 1;
+             group.getGenuinePos() + i < rowsUnfolded.size() &&
+                     (row = rowsUnfolded.get(group.getGenuinePos() + i)).getLevel() > group.getLevel();
+             i++) {
+            if (row.getLevel() == group.getLevel() + 1) {
+                if (row.getClass() == RowGroup.class) {
+                    ((RowGroup) row).setFolded(true);
+                }
+                rows.add(pos + j++, row);
+            }
+        }
+        group.setFolded(false);
+    }
+
+
     public boolean isLastRow(int pos) {
         return pos == rows.size() - 1;
     }
-
 
 
     public void init() {
@@ -399,7 +424,7 @@ public class Rows {
                 initByPath(musicCursor);
                 break;
             case TREE:
-                initByTreeFolder(musicCursor);
+                initByTree(musicCursor);
                 break;
             default:
                 return;
@@ -419,7 +444,6 @@ public class Rows {
             }
         }
 
-        // shallow copy
         switch (params.getDefaultFold()) {
             case 0:
                 // fold
@@ -427,6 +451,7 @@ public class Rows {
                 break;
             default:
                 // unfolded
+                // shallow copy
                 rows = (ArrayList<Row>) rowsUnfolded.clone();
         }
 
@@ -586,8 +611,7 @@ public class Rows {
         setGroupSelectedState(currPos, true);
     }
 
-    private void initByTreeFolder(Cursor musicCursor) {
-/*
+    private void initByTree(Cursor musicCursor) {
         if (musicCursor != null && musicCursor.moveToFirst()) {
             int titleCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
             int idCol = musicCursor.getColumnIndex(MediaStore.Audio.Media._ID);
@@ -606,8 +630,8 @@ public class Rows {
                 int track = musicCursor.getInt(trackCol);
                 String path = getDefaultStrIfNull(musicCursor.getString(pathCol));
 
-                final int pos = -1, offset = 2;
-                RowSong rowSong = new RowSong(pos, offset, id, title, artist, album, duration / 1000,
+                final int pos = -1, level = 2;
+                RowSong rowSong = new RowSong(pos, level, id, title, artist, album, duration / 1000,
                         track, path);
                 rowsUnfolded.add(rowSong);
                 //Log.d("Rows", "song added: " + rowSong.toString());
@@ -636,60 +660,62 @@ public class Rows {
         });
 
 
-        // add group
-        RowGroup prevGroup = null;
+        // add groups
         ArrayList<RowGroup> prevGroups = new ArrayList<>();
-
         for (int idx = 0; idx < rowsUnfolded.size(); idx++) {
             RowSong rowSong = (RowSong) rowsUnfolded.get(idx);
             // get folder list of current row
             ArrayList<String> folders = Path.tokenizeFolder(rowSong.getFolder());
 
-            // search from the bottom the first previous group that is different from the current group
-            int firstDiff = 0;
-            while (firstDiff < prevGroups.size() &&
-                    firstDiff < folders.size() &&
-                    prevGroups.get(firstDiff).getName().equals(folders.get(firstDiff)))
-                firstDiff++;
-
-            // get the nearest common group parent
-            RowGroup parentGroup;
-            if (firstDiff == 0)
+            //// get the nearest common group parent
+            // search from the bottom the last previous group that is the same with the current group
+            // /toto/tata/youp, /to/tata/gruick -> firstDiff = 0
+            // /toto/tata/youp, /toto/titi/gruick -> firstDiff = 1
+            // /toto/tata/youp, /toto/tata/gruick -> firstDiff = 2
+            int commonLevel = 0;
+            while (commonLevel < prevGroups.size() &&
+                    commonLevel < folders.size() &&
+                    prevGroups.get(commonLevel).getName().equals(folders.get(commonLevel)))
+                commonLevel++;
+            // get corresponding RowGroup
+            RowGroup commonGroup;
+            if (commonLevel == 0)
                 // everything is different: no parent
-                parentGroup = null;
+                commonGroup = null;
             else
-                parentGroup = prevGroups.get(firstDiff - 1);
+                commonGroup = prevGroups.get(commonLevel - 1);
 
-            // add every groups that is missing
-            RowGroup folderGroup;
-            for (int i = firstDiff; i < folders.size(); i++) {
-                folderGroup = new RowGroup(idx, i, folders.get(i),
+            //// add every groups that are missing
+            RowGroup parentGroup = commonGroup;
+            for (int level = commonLevel; level < folders.size(); level++) {
+                RowGroup aGroup = new RowGroup(idx, level, folders.get(level),
                         Typeface.BOLD, Color.argb(0x88, 0x35, 0x35, 0x35));
-                folderGroup.setParent(parentGroup);
-                parentGroup = folderGroup;
-                rowsUnfolded.add(idx, folderGroup);
+                aGroup.setParent(parentGroup);
+                parentGroup = aGroup;
+                rowsUnfolded.add(idx, aGroup);
                 idx++;
             }
 
-            // compute group list for next row
+            //// recompute group list for next row
             prevGroups.clear();
-            RowGroup groupIdx = folderGroup;
+            RowGroup groupIdx = parentGroup;
             while (groupIdx != null) {
+                // update group
+                groupIdx.incNbRowSong();
+
                 prevGroups.add(0, groupIdx);
                 groupIdx = (RowGroup) groupIdx.getParent();
             }
 
-//            if (rowSong.getID() == savedID)
-//                currPos = idx;
-//
-//            rowSong.setGenuinePos(idx);
-//            rowSong.setParent(prevArtistGroup);
-//
-//            prevFolderGroup.incNbRowSong();
-//            prevArtistGroup.incNbRowSong();
-//        }
-//        setGroupSelectedState(currPos, true);
-        }*/
+            //// update RowSong
+            rowSong.setLevel(folders.size());
+            rowSong.setGenuinePos(idx);
+            rowSong.setParent(parentGroup);
+            if (rowSong.getID() == savedID)
+                currPos = idx;
+        }
+
+        setGroupSelectedState(currPos, true);
     }
 
     private String getDefaultStrIfNull(String str) { return str != null ? str : defaultStr; }
