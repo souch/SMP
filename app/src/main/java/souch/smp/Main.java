@@ -120,6 +120,17 @@ public class Main extends Activity {
 
         // tells the OS that the volume buttons should affect the "media" volume when your application is visible
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
+
+
+        // set the color statically for speed (don't know another prettier method)
+        Row.backgroundColor = getResources().getColor(R.color.RowBackground);
+        Row.levelOffset = 15; // todo
+
+        RowSong.normalSongTextColor = getResources().getColor(R.color.RowSongTextNormal);
+        RowSong.normalSongDurationTextColor = getResources().getColor(R.color.RowSongTextDuration);
+
+        RowGroup.normalTextColor = getResources().getColor(R.color.RowGroupTextNormal);
+        RowGroup.playingTextColor = getResources().getColor(R.color.RowGroupTextPlaying);
     }
 
 

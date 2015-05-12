@@ -34,6 +34,23 @@
     </style>
 
     <color name="apptheme_color">#f30000</color>
+
+    <color name="RowGroupTextNormal">#fff0f0f0</color>
+    <color name="RowGroupTextPlaying">#ffff0000</color>
+    <color name="RowSongTextNormal">#ffffffff</color>
+    <color name="RowSongTextDuration">#ffffffff</color>
+    <color name="RowBackground">#88000000</color>
+    <color name="RowGroupFolderBackground">#88353535</color>
+    <color name="RowGroupFolderArtistBackground">#88000000</color>
+    <color name="RowGroupArtistBackground">#88353535</color>
+    <color name="RowGroupArtistAlbumBackground">#88000000</color>
+    <color name="RowGroupTreeBackground">#88353535</color>
+    <!-- todo
+    <item "levelOffset"">15</item>
+    fonttype: bold, italic, regular...
+    rightoffset
+    -->
+
     <style name="SeekBarAppTheme" parent="android:Widget.SeekBar">
         <item name="android:progressDrawable">@drawable/seekbar_horizontal_holo_light</item>
         <item name="android:indeterminateDrawable">@drawable/seekbar_horizontal_holo_light</item>

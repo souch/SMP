@@ -20,7 +20,8 @@ No eye candy graphics.
 ### detailed features
 
 - sorted by artists, albums and track number
-- or sorted by folders, artists, albums and track number
+- or sorted by folders, artists, albums and track number, flattening folder hierarchy
+- or sorted by folders following the tree hierarchy, useful for big music list
 - groups can be folded / unfolded
 - shake the phone to go to next song
 - show current playing song in the list
@@ -32,6 +33,7 @@ No eye candy graphics.
 - play mp3, ogg, flac, midi, wav, mp4, 3gp... see android mediaplayer supported media formats (depends on android version).
 - bluetooth support (play through bluetooth device)
 - media buttons support (next, prev, play/pause) from external device (bluetooth headphones...)
+- light and fast: starts in 0.5s and uses 10Mo of RAM with 5Go of music (1000 files, 100 folders) on a 700MHz ARM processor.
 
 
 ### Installation
@@ -46,7 +48,6 @@ The SicMu Player is available on [F-Droid](https://f-droid.org/repository/browse
 
 ### Todo (perhaps :-)
 
-- folder tree view
 - group by genre?
 - quick jump with letter in the right (like in contact)?
 - search?

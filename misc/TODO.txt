@@ -1,7 +1,8 @@
 # todo
 
+
+improve tree view (I don't know how)
 put everything related to view into XML
-benchmark on big music list (> 10Go)
 fix lock/unlock not working on some (lots of) devices
 fix curr play icon when on last song row
 disable bluetooth on call?

@@ -18,7 +18,6 @@
 
 package souch.smp;
 
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.util.TypedValue;
 import android.widget.ImageView;
@@ -38,6 +37,10 @@ public class RowSong extends Row {
     private String folder;
 
     protected static int textSize = 14;
+
+    // must be set outside before calling setText
+    public static int normalSongTextColor;
+    public static int normalSongDurationTextColor;
 
     public RowSong(int pos, int level, long songID, String songTitle, String songArtist, String songAlbum,
                    int dur, int songTrack, String songPath) {
@@ -66,8 +69,6 @@ public class RowSong extends Row {
     public void setView(RowViewHolder holder, Main main, int position) {
         super.setView(holder, main, position);
 
-        holder.text.setPadding(convertDpToPixels((level < 2 ? 2 : level) * 10, holder.layout.getResources()), 0, 0, 0);
-
         float factor = 1.5f;
         if (main.getMusicSrv().getRows().isLastRow(position))
             factor = 3f;
@@ -81,13 +82,13 @@ public class RowSong extends Row {
 
     private void setText(TextView text) {
         text.setText(title);
-        text.setTextColor(Color.WHITE);
+        text.setTextColor(normalSongTextColor);
         text.setTextSize(TypedValue.COMPLEX_UNIT_DIP, textSize);
     }
 
     private void setDuration(TextView duration) {
         duration.setText(secondsToMinutes(getDuration()) + " ");
-        duration.setTextColor(Color.WHITE);
+        duration.setTextColor(normalSongDurationTextColor);
         duration.setTextSize(TypedValue.COMPLEX_UNIT_DIP, textSize);
         duration.setTypeface(null, typeface);
         /*

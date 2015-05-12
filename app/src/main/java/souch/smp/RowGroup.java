@@ -18,7 +18,6 @@
 
 package souch.smp;
 
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.util.TypedValue;
 import android.widget.TextView;
@@ -30,6 +29,10 @@ public class RowGroup extends Row {
     private int color;
     private int nbRowSong;
     protected static int textSize = 18;
+
+    // must be set outside before calling setText
+    public static int normalTextColor;
+    public static int playingTextColor;
 
     public RowGroup(int pos, int level, String name, int typeface, int color) {
         super(pos, level, typeface);
@@ -54,8 +57,6 @@ public class RowGroup extends Row {
     public void setView(RowViewHolder holder, Main main, int position) {
         super.setView(holder, main, position);
 
-        holder.text.setPadding(convertDpToPixels(level * 10, holder.layout.getResources()), 0, 0, 0);
-
         float factor = 1.5f;
         if (main.getMusicSrv().getRows().isLastRow(position))
             factor = 3f;
@@ -69,11 +70,10 @@ public class RowGroup extends Row {
         holder.layout.setBackgroundColor(color);
     }
 
-    static int normalTextColor = Color.argb(0xFF, 0xf0, 0xf0, 0xf0);
     private void setText(TextView text) {
         text.setText(name);
         if (isFolded() && isSelected())
-            text.setTextColor(Color.RED);
+            text.setTextColor(playingTextColor);
         else
             text.setTextColor(normalTextColor);
 
@@ -87,7 +87,7 @@ public class RowGroup extends Row {
         //super.setText(text);
         if (isFolded()) {
             if (isSelected())
-                duration.setTextColor(Color.RED);
+                duration.setTextColor(playingTextColor);
             else
                 duration.setTextColor(normalTextColor);
             duration.setText(nbRowSong + " |" + rightSpace);

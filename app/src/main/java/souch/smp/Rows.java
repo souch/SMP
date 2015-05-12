@@ -19,8 +19,8 @@
 package souch.smp;
 
 import android.content.ContentResolver;
+import android.content.res.Resources;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -51,10 +51,12 @@ public class Rows {
     // never assign this directly, instead use setCurrPos
     private int currPos;
 
+    private Resources resources;
 
     static final public String defaultStr = "<null>";
 
-    public Rows(ContentResolver resolver, Parameters params) {
+    public Rows(ContentResolver resolver, Parameters params, Resources resources) {
+        this.resources = resources;
         this.params = params;
         musicResolver = resolver;
         currPos = -1;
@@ -483,6 +485,13 @@ public class Rows {
             int durationCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
             int trackCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.TRACK);
 
+            int RowGroupArtistBackground = 0;
+            int RowGroupArtistAlbumBackground = 0;
+            if (resources != null) {
+                RowGroupArtistBackground = resources.getColor(R.color.RowGroupArtistBackground);
+                RowGroupArtistAlbumBackground = resources.getColor(R.color.RowGroupArtistAlbumBackground);
+            }
+
             RowGroup prevArtistGroup = null;
             RowGroup prevAlbumGroup = null;
             do {
@@ -495,7 +504,7 @@ public class Rows {
 
                 if (prevArtistGroup == null || artist.compareToIgnoreCase(prevArtistGroup.getName()) != 0) {
                     RowGroup artistGroup = new RowGroup(rowsUnfolded.size(), 0, artist,
-                            Typeface.BOLD, Color.argb(0x88, 0x35, 0x35, 0x35));
+                            Typeface.BOLD, RowGroupArtistBackground);
                     rowsUnfolded.add(artistGroup);
                     prevArtistGroup = artistGroup;
                     prevAlbumGroup = null;
@@ -503,7 +512,7 @@ public class Rows {
 
                 if (prevAlbumGroup == null || album.compareToIgnoreCase(prevAlbumGroup.getName()) != 0) {
                     RowGroup albumGroup = new RowGroup(rowsUnfolded.size(), 1, album,
-                            Typeface.ITALIC, Color.argb(0x88, 0x0, 0x0, 0x0));
+                            Typeface.ITALIC, RowGroupArtistAlbumBackground);
                     albumGroup.setParent(prevArtistGroup);
                     rowsUnfolded.add(albumGroup);
                     prevAlbumGroup = albumGroup;
@@ -572,6 +581,13 @@ public class Rows {
             }
         });
 
+        int RowGroupFolderBackground = 0;
+        int RowGroupArtistBackground = 0;
+        if (resources != null) {
+            RowGroupFolderBackground = resources.getColor(R.color.RowGroupFolderBackground);
+            RowGroupArtistBackground = resources.getColor(R.color.RowGroupFolderArtistBackground);
+        }
+
         // add group
         RowGroup prevFolderGroup = null;
         RowGroup prevArtistGroup = null;
@@ -582,7 +598,7 @@ public class Rows {
             String curFolder = rowSong.getFolder();
             if (prevFolderGroup == null || curFolder.compareToIgnoreCase(prevFolderGroup.getName()) != 0) {
                 RowGroup folderGroup = new RowGroup(idx, 0, curFolder,
-                        Typeface.BOLD, Color.argb(0x88, 0x35, 0x35, 0x35));
+                        Typeface.BOLD, RowGroupFolderBackground);
                 rowsUnfolded.add(idx, folderGroup);
                 idx++;
                 prevFolderGroup = folderGroup;
@@ -592,7 +608,7 @@ public class Rows {
             String curArtist = rowSong.getArtist();
             if (prevArtistGroup == null || curArtist.compareToIgnoreCase(prevArtistGroup.getName()) != 0) {
                 RowGroup artistGroup = new RowGroup(idx, 1, curArtist,
-                        Typeface.BOLD, Color.argb(0x88, 0x0, 0x0, 0x0));
+                        Typeface.BOLD, RowGroupArtistBackground);
                 artistGroup.setParent(prevFolderGroup);
                 rowsUnfolded.add(idx, artistGroup);
                 idx++;
@@ -660,6 +676,9 @@ public class Rows {
             }
         });
 
+        int RowGroupFolderBackground = 0;
+        if (resources != null)
+            RowGroupFolderBackground = resources.getColor(R.color.RowGroupTreeBackground);
 
         // add groups
         ArrayList<RowGroup> prevGroups = new ArrayList<>();
@@ -690,7 +709,7 @@ public class Rows {
             RowGroup parentGroup = commonGroup;
             for (int level = commonLevel; level < folders.size(); level++) {
                 RowGroup aGroup = new RowGroup(idx, level, folders.get(level),
-                        Typeface.BOLD, Color.argb(0x88, 0x35, 0x35, 0x35));
+                        Typeface.BOLD, RowGroupFolderBackground);
                 aGroup.setParent(parentGroup);
                 parentGroup = aGroup;
                 rowsUnfolded.add(idx, aGroup);

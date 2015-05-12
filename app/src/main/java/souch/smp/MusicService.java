@@ -140,7 +140,7 @@ public class MusicService extends Service implements
 
         restore();
 
-        rows = new Rows(getContentResolver(), params);
+        rows = new Rows(getContentResolver(), params, getResources());
 
         remoteControlResponder = new ComponentName(getPackageName(), MediaButtonIntentReceiver.class.getName());
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);

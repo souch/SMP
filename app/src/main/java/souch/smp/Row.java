@@ -19,12 +19,10 @@
 package souch.smp;
 
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.util.TypedValue;
 
 import java.util.HashMap;
 import java.util.Map;
-
 
 public class Row {
     // level from the left
@@ -34,6 +32,10 @@ public class Row {
     protected int typeface;
     // null if no parent
     protected Row parent;
+
+    // must be set outside before calling setText
+    public static int backgroundColor;
+    public static int levelOffset;
 
     public Row(int position, int theLevel, int theTypeface) {
         genuinePos = position;
@@ -57,8 +59,9 @@ public class Row {
     }
 
     public void setView(RowViewHolder holder, Main main, int position) {
-        holder.layout.setBackgroundColor(Color.argb(0x88, 0x0, 0x0, 0x0));
+        holder.layout.setBackgroundColor(backgroundColor);
         holder.text.setTypeface(null, typeface);
+        holder.text.setPadding(convertDpToPixels(level * levelOffset, holder.layout.getResources()), 0, 0, 0);
     }
 
     // cache result
