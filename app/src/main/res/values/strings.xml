@@ -127,7 +127,7 @@
     <string name="settings_about_summary">Some info on app and author.</string>
 
     <string name="settings_version_title">Version number</string>
-    <string name="settings_version">0.6</string>
+    <string name="settings_version">0.7</string>
     <string name="settings_author_title">Author</string>
     <string name="settings_author">Mathieu Souchaud</string>
     <string name="settings_source_title">Sources</string>
