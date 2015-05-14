@@ -16,7 +16,6 @@ No eye candy graphics.
 
 [More Screenshots](Screenshots.md)
 
-
 ### detailed features
 
 - sorted by artists, albums and track number
@@ -48,6 +47,7 @@ The SicMu Player is available on [F-Droid](https://f-droid.org/repository/browse
 
 ### Todo (perhaps :-)
 
+- last.fm scrobbler
 - group by genre?
 - quick jump with letter in the right (like in contact)?
 - search?
