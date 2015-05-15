@@ -14,6 +14,8 @@ No eye candy graphics.
 ![Artist list](misc/screenshots/screen3.5_artist.png)
 ![Menu option](misc/screenshots/screen3.5_menu_options_small.png)
 
+[Video](http://youtu.be/LGyjDfwimzA)
+
 [More Screenshots](Screenshots.md)
 
 ### detailed features
