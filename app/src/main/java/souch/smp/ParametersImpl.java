@@ -133,4 +133,8 @@ public class ParametersImpl implements Parameters {
     public boolean getShuffle() {
         return getPref().getBoolean(PrefKeys.SHUFFLE.name(), false);
     }
+
+    public boolean getScrobble() {
+        return getPref().getBoolean(PrefKeys.SCROBBLE.name(), false);
+    }
 }

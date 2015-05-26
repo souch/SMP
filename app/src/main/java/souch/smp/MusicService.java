@@ -105,6 +105,18 @@ public class MusicService extends Service implements
     private double accelCurrent;
     private double accel;
 
+    // from API spcecification
+    public static final int SCROBBLE_START = 0;
+    public static final int SCROBBLE_RESUME = 1;
+    public static final int SCROBBLE_PAUSE = 2;
+    public static final int SCROBBLE_COMPLETE = 3;
+
+    private boolean scrobbleStarted;
+    private String scrobbleArtist;
+    private String scrobbleAlbum;
+    private String scrobbleTrack;
+    private int scrobbleDuration;
+
     public Rows getRows() { return rows; }
 
     public boolean getChanged() {
@@ -147,6 +159,8 @@ public class MusicService extends Service implements
         audioManager.registerMediaButtonEventReceiver(remoteControlResponder);
         foreground = false;
         mainIsVisible = false;
+
+        scrobbleStarted = false;
     }
 
 
@@ -213,6 +227,8 @@ public class MusicService extends Service implements
         seekFinished = true;
         changed = true;
         wasPlaying = false;
+
+        scrobbleSend(SCROBBLE_COMPLETE);
 
         if (player != null) {
             if (player.isPlaying()) {
@@ -401,6 +417,9 @@ public class MusicService extends Service implements
         // start playback
         mp.start();
         state.setState(PlayerState.Started);
+
+        scrobbleSend(SCROBBLE_COMPLETE);
+        scrobbleSend(SCROBBLE_START);
     }
 
 
@@ -444,16 +463,17 @@ public class MusicService extends Service implements
         getPlayer().start();
         state.setState(PlayerState.Started);
         startSensor();
+        scrobbleSend(SCROBBLE_RESUME);
     }
 
     public void pause() {
-        stopSensor();
-
         if(player == null)
             return;
 
         player.pause();
         state.setState(PlayerState.Paused);
+        stopSensor();
+        scrobbleSend(SCROBBLE_PAUSE);
     }
 
     public void playPrev() {
@@ -545,6 +565,49 @@ public class MusicService extends Service implements
         foreground = false;
     }
 
+
+    // can be called with SCROBBLE_COMPLETE state twice or more
+    private void scrobbleSend(int scrobbleState) {
+        if (!params.getScrobble())
+            return;
+
+        RowSong rowSong = rows.getCurrSong();
+        if (rowSong == null) {
+            Log.w("MusicService", "scrobbleSend exit as rowSong is null!");
+            return;
+        }
+
+        if (scrobbleState == SCROBBLE_START) {
+            scrobbleStarted = true;
+            // save scrobble info for next state
+            scrobbleArtist = rowSong.getArtist();
+            scrobbleAlbum = rowSong.getAlbum();
+            scrobbleTrack = rowSong.getTitle();
+            scrobbleDuration = rowSong.getDuration();
+        }
+        else if (scrobbleState == SCROBBLE_COMPLETE) {
+            // send complete only if SCROBBLE_START was send before
+            if (!scrobbleStarted)
+                return;
+
+            scrobbleStarted = false;
+        }
+
+        Intent bCast = new Intent("com.adam.aslfms.notify.playstatechanged");
+        bCast.putExtra("state", scrobbleState);
+        bCast.putExtra("app-name", getResources().getString(R.string.app_name));
+        bCast.putExtra("app-package", getApplicationContext().getPackageName());
+        bCast.putExtra("artist", scrobbleArtist);
+        bCast.putExtra("album", scrobbleAlbum);
+        bCast.putExtra("track", scrobbleTrack);
+        bCast.putExtra("duration", scrobbleDuration);
+        // useful?
+        //bCast.putExtra("playing", scrobbleState == SCROBBLE_START || scrobbleState == SCROBBLE_RESUME);
+        bCast.putExtra("source", "P");
+        sendBroadcast(bCast);
+
+        Log.d("MusicService", "scrobbleSend " + scrobbleState + " : " + scrobbleArtist + " - " + scrobbleTrack);
+    }
 
 
     /*** PREFERENCES ***/

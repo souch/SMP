@@ -35,6 +35,7 @@ No eye candy graphics.
 - bluetooth support (play through bluetooth device)
 - media buttons support (next, prev, play/pause) from external device (bluetooth headphones...)
 - light and fast: starts in 0.5s and uses 10Mo of RAM with 5Go of music (1000 files, 100 folders) on a 700MHz ARM processor.
+- support Simple Last.fm Scrobbler (disabled by default in settings)
 
 
 ### Installation
@@ -49,7 +50,6 @@ The SicMu Player is available on [F-Droid](https://f-droid.org/repository/browse
 
 ### Todo (perhaps :-)
 
-- last.fm scrobbler
 - group by genre?
 - quick jump with letter in the right (like in contact)?
 - search?

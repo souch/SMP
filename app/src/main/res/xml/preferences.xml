@@ -185,6 +185,12 @@
             android:summary="@string/settings_vibrate"
             android:defaultValue="true"/>
 
+        <CheckBoxPreference
+            android:key="SCROBBLE"
+            android:title="@string/settings_scrobble_title"
+            android:summary="@string/settings_scrobble"
+            android:defaultValue="false"/>
+
         <Preference
             android:key="@string/settings_rescan_key"
             android:title="@string/settings_rescan_title"

@@ -85,4 +85,6 @@ public class ParametersStub implements Parameters {
     public boolean getVibrate() { return true; }
 
     public boolean getShuffle() { return false; }
+
+    public boolean getScrobble() { return false; }
 }
