@@ -34,7 +34,7 @@ Works on old slow small devices (from Android froyo 2.2).
 - bluetooth support (play through bluetooth device)
 - media buttons support (next, prev, play/pause) from external device (bluetooth headphones...)
 - light and fast: starts in 0.5s and uses 10Mo of RAM with 5Go of music (1000 files, 100 folders) on a 700MHz ARM processor.
-- support Simple Last.fm Scrobbler or Scrobble Droid (disabled by default in settings)
+- support [Simple Last.fm Scrobbler](https://github.com/tgwizard/sls) or [Scrobble Droid](https://code.google.com/p/scrobbledroid) (disabled by default in settings)
 
 
 ### Installation
