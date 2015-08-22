@@ -54,6 +54,8 @@ public class Rows {
     private Resources resources;
 
     static final public String defaultStr = "<null>";
+    static final public String blankPad = "  ";
+    static final public String dashPad = "- ";
 
     public Rows(ContentResolver resolver, Parameters params, Resources resources) {
         this.resources = resources;
@@ -504,7 +506,7 @@ public class Rows {
 
                 if (prevArtistGroup == null || artist.compareToIgnoreCase(prevArtistGroup.getName()) != 0) {
                     RowGroup artistGroup = new RowGroup(rowsUnfolded.size(), 0, artist,
-                            Typeface.BOLD, RowGroupArtistBackground);
+                            Typeface.BOLD, RowGroupArtistBackground, blankPad);
                     rowsUnfolded.add(artistGroup);
                     prevArtistGroup = artistGroup;
                     prevAlbumGroup = null;
@@ -512,7 +514,7 @@ public class Rows {
 
                 if (prevAlbumGroup == null || album.compareToIgnoreCase(prevAlbumGroup.getName()) != 0) {
                     RowGroup albumGroup = new RowGroup(rowsUnfolded.size(), 1, album,
-                            Typeface.ITALIC, RowGroupArtistAlbumBackground);
+                            Typeface.ITALIC, RowGroupArtistAlbumBackground, blankPad);
                     albumGroup.setParent(prevArtistGroup);
                     rowsUnfolded.add(albumGroup);
                     prevAlbumGroup = albumGroup;
@@ -598,7 +600,7 @@ public class Rows {
             String curFolder = rowSong.getFolder();
             if (prevFolderGroup == null || curFolder.compareToIgnoreCase(prevFolderGroup.getName()) != 0) {
                 RowGroup folderGroup = new RowGroup(idx, 0, curFolder,
-                        Typeface.BOLD, RowGroupFolderBackground);
+                        Typeface.BOLD, RowGroupFolderBackground, blankPad);
                 rowsUnfolded.add(idx, folderGroup);
                 idx++;
                 prevFolderGroup = folderGroup;
@@ -608,7 +610,7 @@ public class Rows {
             String curArtist = rowSong.getArtist();
             if (prevArtistGroup == null || curArtist.compareToIgnoreCase(prevArtistGroup.getName()) != 0) {
                 RowGroup artistGroup = new RowGroup(idx, 1, curArtist,
-                        Typeface.BOLD, RowGroupArtistBackground);
+                        Typeface.BOLD, RowGroupArtistBackground, blankPad);
                 artistGroup.setParent(prevFolderGroup);
                 rowsUnfolded.add(idx, artistGroup);
                 idx++;
@@ -709,7 +711,7 @@ public class Rows {
             RowGroup parentGroup = commonGroup;
             for (int level = commonLevel; level < folders.size(); level++) {
                 RowGroup aGroup = new RowGroup(idx, level, folders.get(level),
-                        Typeface.BOLD, RowGroupFolderBackground);
+                        Typeface.BOLD, RowGroupFolderBackground, dashPad);
                 aGroup.setParent(parentGroup);
                 parentGroup = aGroup;
                 rowsUnfolded.add(idx, aGroup);

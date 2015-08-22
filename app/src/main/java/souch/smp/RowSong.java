@@ -81,7 +81,7 @@ public class RowSong extends Row {
     }
 
     private void setText(TextView text) {
-        text.setText(title);
+        text.setText(getPad(Rows.blankPad) + " " + title);
         text.setTextColor(normalSongTextColor);
         text.setTextSize(TypedValue.COMPLEX_UNIT_DIP, textSize);
     }

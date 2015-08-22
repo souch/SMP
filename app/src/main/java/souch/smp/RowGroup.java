@@ -29,17 +29,19 @@ public class RowGroup extends Row {
     private int color;
     private int nbRowSong;
     protected static int textSize = 18;
+    private String strLevel;
 
     // must be set outside before calling setText
     public static int normalTextColor;
     public static int playingTextColor;
 
-    public RowGroup(int pos, int level, String name, int typeface, int color) {
+    public RowGroup(int pos, int level, String name, int typeface, int color, String strLevel) {
         super(pos, level, typeface);
         this.name = name;
         folded = false;
         selected = false;
         this.color = color;
+        this.strLevel = strLevel;
     }
 
     public String getName() { return name; }
@@ -62,7 +64,6 @@ public class RowGroup extends Row {
             factor = 3f;
         holder.layout.getLayoutParams().height = convertDpToPixels((int) (textSize * factor),
                 holder.layout.getResources());
-
         setText(holder.text);
         setDuration(holder.duration);
         holder.image.setImageResource(android.R.color.transparent);
@@ -71,7 +72,8 @@ public class RowGroup extends Row {
     }
 
     private void setText(TextView text) {
-        text.setText(name);
+        text.setText(getPad(strLevel) + name);
+
         if (isFolded() && isSelected())
             text.setTextColor(playingTextColor);
         else
