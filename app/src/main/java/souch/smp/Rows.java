@@ -477,6 +477,7 @@ public class Rows {
     }
 
     private void initByArtist(Cursor musicCursor) {
+        RowGroup.rowType = Filter.ARTIST;
         if (musicCursor != null && musicCursor.moveToFirst()) {
             int titleCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
             int idCol = musicCursor.getColumnIndex(MediaStore.Audio.Media._ID);
@@ -536,6 +537,7 @@ public class Rows {
 
 
     private void initByPath(Cursor musicCursor) {
+        RowGroup.rowType = Filter.FOLDER;
         if (musicCursor != null && musicCursor.moveToFirst()) {
             int titleCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
             int idCol = musicCursor.getColumnIndex(MediaStore.Audio.Media._ID);
@@ -628,6 +630,7 @@ public class Rows {
     }
 
     private void initByTree(Cursor musicCursor) {
+        RowGroup.rowType = Filter.TREE;
         if (musicCursor != null && musicCursor.moveToFirst()) {
             int titleCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
             int idCol = musicCursor.getColumnIndex(MediaStore.Audio.Media._ID);

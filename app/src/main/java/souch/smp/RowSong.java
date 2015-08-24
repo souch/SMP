@@ -87,7 +87,7 @@ public class RowSong extends Row {
     }
 
     private void setDuration(TextView duration) {
-        duration.setText(secondsToMinutes(getDuration()) + " ");
+        duration.setText(secondsToMinutes(getDuration()) + getStringOffset());
         duration.setTextColor(normalSongDurationTextColor);
         duration.setTextSize(TypedValue.COMPLEX_UNIT_DIP, textSize);
         duration.setTypeface(null, typeface);

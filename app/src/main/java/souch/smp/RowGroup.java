@@ -28,6 +28,7 @@ public class RowGroup extends Row {
     protected boolean selected;
     private int color;
     private int nbRowSong;
+    public static Filter rowType;
     protected static int textSize = 18;
 
     // must be set outside before calling setText
@@ -71,7 +72,16 @@ public class RowGroup extends Row {
     }
 
     private void setText(TextView text) {
-        text.setText(name);
+        String prefix = "";
+        if (rowType == Filter.TREE) {
+            if (isFolded())
+                prefix = "| ";
+            else
+                prefix = "\\ ";
+
+        }
+        text.setText(prefix + name);
+
         if (isFolded() && isSelected())
             text.setTextColor(playingTextColor);
         else
@@ -121,13 +131,6 @@ public class RowGroup extends Row {
         */
     }
 
-    private String getStringOffset() {
-        String offset = "", s = " ";
-        for(int i = level ; i > 0 ; i--) {
-            offset += s;
-        }
-        return offset;
-    }
 
     public String toString() {
         return "Group pos: " + genuinePos + " level: " + level + " name: " + name;

@@ -64,6 +64,14 @@ public class Row {
         holder.text.setPadding(convertDpToPixels(level * levelOffset, holder.layout.getResources()), 0, 0, 0);
     }
 
+    protected String getStringOffset() {
+        String offset = "", s = " ";
+        for(int i = level ; i > 0 ; i--) {
+            offset += s;
+        }
+        return offset;
+    }
+
     // cache result
     private static Map<Integer, Integer> converted = new HashMap<>();
     public static int convertDpToPixels(int dp, Resources resources) {
