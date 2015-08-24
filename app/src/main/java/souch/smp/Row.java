@@ -44,21 +44,11 @@ public class Row {
         parent = null;
     }
 
-    public void setGenuinePos(int position) {
-        genuinePos = position;
-    }
+    public void setGenuinePos(int position) { genuinePos = position; }
+    public int getGenuinePos() { return genuinePos; }
 
-    public int getGenuinePos() {
-        return genuinePos;
-    }
-
-    public Row getParent() {
-        return parent;
-    }
-
-    public void setParent(Row parent) {
-        this.parent = parent;
-    }
+    public Row getParent() { return parent; }
+    public void setParent(Row parent) { this.parent = parent; }
 
     public int getLevel() {
         return level;
@@ -71,17 +61,7 @@ public class Row {
     public void setView(RowViewHolder holder, Main main, int position) {
         holder.layout.setBackgroundColor(backgroundColor);
         holder.text.setTypeface(null, typeface);
-        //holder.text.setPadding(convertDpToPixels(5+ level * levelOffset, holder.layout.getResources()), 0, 0, 0);
-    }
-
-    public String getPad(final String strPad) {
-        String pad = " ";
-        if(level > 0)
-            pad = " ";
-        for(int i = 0; i < level; i++) {
-            pad += strPad;
-        }
-        return pad;
+        holder.text.setPadding(convertDpToPixels(level * levelOffset, holder.layout.getResources()), 0, 0, 0);
     }
 
     // cache result
