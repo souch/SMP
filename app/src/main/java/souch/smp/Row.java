@@ -74,15 +74,24 @@ public class Row {
         //holder.text.setPadding(convertDpToPixels(5+ level * levelOffset, holder.layout.getResources()), 0, 0, 0);
     }
 
-    public String getPad(final String strPad) {
-        String pad = " ";
-        if(level > 0)
-            pad = " ";
-        for(int i = 0; i < level; i++) {
-            pad += strPad;
+    protected String getLeftStringOffset() {
+        String offset = "";
+        final String s = "   ";
+        for(int i = level ; i > 0 ; i--) {
+            offset += s;
         }
-        return pad;
+        return offset;
     }
+
+//    public String getPad(final String strPad) {
+//        String pad = "|";
+//        if(level > 0)
+//            pad = " ";
+//        for(int i = 0; i < level; i++) {
+//            pad += strPad;
+//        }
+//        return pad;
+//    }
 
     // cache result
     private static Map<Integer, Integer> converted = new HashMap<>();

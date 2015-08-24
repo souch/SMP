@@ -72,7 +72,14 @@ public class RowGroup extends Row {
     }
 
     private void setText(TextView text) {
-        text.setText(getPad(strLevel) + name);
+        String leftSpace = getLeftStringOffset();
+        //super.setText(text);
+        if (isFolded()) {
+            text.setText(leftSpace + "| " + name);
+        } else {
+            text.setText(leftSpace + "\\ " + name);
+        }
+
 
         if (isFolded() && isSelected())
             text.setTextColor(playingTextColor);
@@ -85,7 +92,7 @@ public class RowGroup extends Row {
     }
 
     private void setDuration(TextView duration) {
-        String rightSpace = getStringOffset();
+        String rightSpace = getRightStringOffset();
         //super.setText(text);
         if (isFolded()) {
             if (isSelected())
@@ -123,8 +130,9 @@ public class RowGroup extends Row {
         */
     }
 
-    private String getStringOffset() {
-        String offset = "", s = " ";
+    protected String getRightStringOffset() {
+        String offset = "";
+        final String s = " ";
         for(int i = level ; i > 0 ; i--) {
             offset += s;
         }
