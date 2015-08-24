@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.AnimationDrawable;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -36,6 +37,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -74,6 +76,7 @@ public class Main extends Activity {
 
     private Vibrator vibrator;
 
+    private AnimationDrawable appAnimation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,6 +134,11 @@ public class Main extends Activity {
 
         RowGroup.normalTextColor = getResources().getColor(R.color.RowGroupTextNormal);
         RowGroup.playingTextColor = getResources().getColor(R.color.RowGroupTextPlaying);
+
+        ImageView appButton = (ImageView) findViewById(R.id.app_button);
+        appButton.setBackgroundResource(R.drawable.ic_actionbar_launcher_anim);
+        appAnimation = (AnimationDrawable) appButton.getBackground();
+
     }
 
 
@@ -360,9 +368,11 @@ public class Main extends Activity {
             if (!musicSrv.playingPaused()) {
                 playButton.setImageResource(R.drawable.ic_action_pause);
                 playButton.setTag(R.drawable.ic_action_pause);
+                appAnimation.start();
             } else {
                 playButton.setImageResource(R.drawable.ic_action_play);
                 playButton.setTag(R.drawable.ic_action_play);
+                appAnimation.stop();
             }
 
             RowSong rowSong = rows.getCurrSong();
