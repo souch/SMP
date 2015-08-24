@@ -17,7 +17,7 @@ Works on old slow small devices (from Android froyo 2.2).
 
 [More Screenshots](Screenshots.md)
 
-### detailed features
+### Detailed features
 
 - sorted by artists, albums and track number
 - or sorted by folder tree, useful for big music list
