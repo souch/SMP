@@ -54,7 +54,7 @@ public class Rows {
     private Resources resources;
 
     static final public String defaultStr = "<null>";
-    static final public String blankPad = "   ";
+    static final public String blankPad = "  ";
     static final public String dashPad = "- ";
 
     public Rows(ContentResolver resolver, Parameters params, Resources resources) {
