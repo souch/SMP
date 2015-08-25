@@ -9,7 +9,7 @@ Works on old slow small devices (from Android froyo 2.2).
 
 3.5" screen:
 
-![Folder list](misc/screenshots/screen3.5_folder.png)&nbsp;
+![Tree folder list](misc/screenshots/screen3.5_treefolder.png)&nbsp;
 ![Artist list](misc/screenshots/screen3.5_artist.png)
 ![Menu option](misc/screenshots/screen3.5_menu_options_small.png)
 

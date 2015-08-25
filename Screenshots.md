@@ -1,6 +1,6 @@
-Tree folder view 
+3.5" screen folder view 
 
-![Tree folder 3.5](misc/screenshots/screen3.5_treefolder.png)
+![Folder 3.5](misc/screenshots/screen3.5_folder.png)
 
 4.7" screen
 
