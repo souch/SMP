@@ -33,6 +33,11 @@ public interface Parameters {
     long getSongID();
     void setSongID(long songID);
 
+    boolean getSaveSongPos();
+
+    int getSongPos();
+    void setSongPos(int songPos);
+
     Filter getFilter();
     void setFilter(Filter filter);
 

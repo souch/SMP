@@ -48,6 +48,15 @@ public class ParametersStub implements Parameters {
     }
     public void setSongID(long songID) {}
 
+    public boolean getSaveSongPos() {
+        return false;
+    }
+
+    public int getSongPos() {
+        return -1;
+    }
+    public void setSongPos(int songPos) {}
+
     public Filter getFilter() {
         return Filter.FOLDER;
     }

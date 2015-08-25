@@ -68,6 +68,10 @@ public class MusicService extends Service implements
     private MediaPlayer player;
     private Rows rows;
 
+    // seek to last song pos on startup in millisec
+    // if -1: disabled (do not seek to on startup)
+    private int savedSongPos;
+
     // need for focus
     private boolean wasPlaying;
     // sthg happened and the Main do not know it: a song has finish to play, another app gain focus, ...
@@ -213,6 +217,15 @@ public class MusicService extends Service implements
     }
 
     private void releaseAudio() {
+        if (params.getSaveSongPos() &&
+                player != null &&
+                state.getState() != PlayerState.Nope &&
+                state.getState() != PlayerState.Idle &&
+                state.getState() != PlayerState.Error)
+        {
+            params.setSongPos(player.getCurrentPosition());
+        }
+
         state.setState(PlayerState.Nope);
         seekFinished = true;
         changed = true;
@@ -404,6 +417,16 @@ public class MusicService extends Service implements
 
     @Override
     public void onPrepared(MediaPlayer mp) {
+        // if a songPos has been stored
+        if (savedSongPos > 0) {
+            // seek to it
+            if (savedSongPos < mp.getDuration())
+                mp.seekTo(savedSongPos);
+            // reset songPos
+            params.setSongPos(0);
+            savedSongPos = 0;
+        }
+
         // start playback
         mp.start();
         state.setState(PlayerState.Started);
@@ -560,6 +583,10 @@ public class MusicService extends Service implements
     private void restore() {
         enableShake = params.getEnableShake();
         shakeThreshold = params.getShakeThreshold() / 10;
+        if (params.getSaveSongPos())
+            savedSongPos = params.getSongPos();
+        else
+            savedSongPos = -1;
     }
 
     private void save() {

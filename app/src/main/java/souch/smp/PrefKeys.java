@@ -36,5 +36,7 @@ public enum PrefKeys {
     MEDIA_BUTTON_START_APP,
     VIBRATE,
     SHUFFLE,
-    SCROBBLE
+    SCROBBLE,
+    SONG_POS,
+    SAVE_SONG_POS
 }
