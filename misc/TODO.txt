@@ -79,4 +79,7 @@ https://gitlab.com/fdroid/fdroiddata/blob/master/metadata/org.adaway.txt
 setprop persist.sys.language sr;setprop persist.sys.country SR;stop;sleep 5;start
 setprop persist.sys.language fr;setprop persist.sys.country FR;stop;sleep 5;start
 
+# beat detection
+https://github.com/ddf/Minim/blob/master/src/ddf/minim/analysis/BeatDetect.java
+
 

@@ -57,6 +57,7 @@ The SicMu Player is available on [F-Droid](https://f-droid.org/repository/browse
 - mp3 tag editor ?
 - playlist?
 - audioeffect/equalizer
+- turning disc speed follow musics beat
 
 Detailed todo list available in [TODO.txt](misc/TODO.txt).
 
