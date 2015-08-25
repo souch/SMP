@@ -127,7 +127,7 @@ public class Main extends Activity {
 
         // set the color statically for speed (don't know another prettier method)
         Row.backgroundColor = getResources().getColor(R.color.RowBackground);
-        Row.levelOffset = 15; // todo
+        Row.levelOffset = 14; // todo what?
 
         RowSong.normalSongTextColor = getResources().getColor(R.color.RowSongTextNormal);
         RowSong.normalSongDurationTextColor = getResources().getColor(R.color.RowSongTextDuration);
