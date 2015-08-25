@@ -4,6 +4,6 @@
 
 4.7" screen
 
-![Folder 4.7](misc/screenshots/screen4.7_folder.png)&nbsp;
+![Folder 4.7](misc/screenshots/screen4.7_treefolder.png)&nbsp;
 ![Menu settings](misc/screenshots/screen4.7_menu_settings.png)
 

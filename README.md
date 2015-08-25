@@ -15,7 +15,7 @@ Works on old slow small devices (from Android froyo 2.2).
 
 [Video](http://youtu.be/LGyjDfwimzA)
 
-[More Screenshots](Screenshots.md)
+[More screenshots](Screenshots.md)
 
 ### Detailed features
 
