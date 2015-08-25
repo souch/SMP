@@ -171,8 +171,7 @@ public class Main extends Activity {
 
                         rows.invertFold(position);
                         songAdt.notifyDataSetChanged();
-                    }
-                    else {
+                    } else {
                         vibrate();
 
                         rows.selectNearestSong(position);
@@ -203,8 +202,6 @@ public class Main extends Activity {
 
             musicSrv.stopNotification();
             musicSrv.setMainIsVisible(true);
-
-            updatePlayButton();
 
             // listView.getVisiblePosition() is wrong while the listview is not shown.
             // wait a bit that it is visible (should be replace by sthg like onXXX)
@@ -355,6 +352,7 @@ public class Main extends Activity {
 
     final Runnable firstScroll = new Runnable() {
         public void run() {
+            updatePlayButton();
             unfoldAndscrollToCurrSong();
         }
     };

@@ -140,9 +140,9 @@ public class MusicService extends Service implements
 
         params = new ParametersImpl(this);
 
-        restore();
-
         rows = new Rows(getContentResolver(), params, getResources());
+
+        restore();
 
         remoteControlResponder = new ComponentName(getPackageName(), MediaButtonIntentReceiver.class.getName());
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
@@ -539,7 +539,7 @@ public class MusicService extends Service implements
         PendingIntent pendInt = PendingIntent.getActivity(this, 0,
                 notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        Notification notification = new Notification(R.drawable.ic_launcher,
+        Notification notification = new Notification(R.drawable.ic_actionbar_launcher_anim,
                 rowSong.getTitle(),
                 System.currentTimeMillis());
         notification.setLatestEventInfo(this, getResources().getString(R.string.app_playing),
