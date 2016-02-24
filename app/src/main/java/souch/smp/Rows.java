@@ -698,7 +698,7 @@ public class Rows {
             int commonLevel = 0;
             while (commonLevel < prevGroups.size() &&
                     commonLevel < folders.size() &&
-                    prevGroups.get(commonLevel).getName().equals(folders.get(commonLevel)))
+                    prevGroups.get(commonLevel).getName().equalsIgnoreCase(folders.get(commonLevel)))
                 commonLevel++;
             // get corresponding RowGroup
             RowGroup commonGroup;
