@@ -97,7 +97,7 @@ public class ParametersImpl implements Parameters {
 
 
     public Filter getFilter() {
-        return Filter.valueOf(getPref().getString(PrefKeys.FILTER.name(), Filter.FOLDER.name()));
+        return Filter.valueOf(getPref().getString(PrefKeys.FILTER.name(), Filter.TREE.name()));
     }
     public void setFilter(Filter filter) {
         getEditor().putString(PrefKeys.FILTER.name(), filter.name()).commit();

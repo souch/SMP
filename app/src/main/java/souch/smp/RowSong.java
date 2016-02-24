@@ -36,7 +36,7 @@ public class RowSong extends Row {
     // folder of the path
     private String folder;
 
-    protected static int textSize = 14;
+    protected static int textSize = 15;
 
     // must be set outside before calling setText
     public static int normalSongTextColor;
