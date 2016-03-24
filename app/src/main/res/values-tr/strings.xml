@@ -51,8 +51,7 @@
     <string name="settings_unfold_subgroup_summary">Seçiliyse: gruba dokunmak bütün alt grupları ve şarkıları genişletir.</string>
     <string name="settings_unfold_subgroup_threshold">Eğer</string>
     <string name="settings_unfold_subgroup_threshold_default">18</string>
-    <string name="settings_unfold_subgroup_threshold_summary1">altgruplar</string>
-    <string name="settings_unfold_subgroup_threshold_summary2">şarkıdan daha azını içeriyorsa genişlet</string>
+    <string name="settings_unfold_subgroup_threshold_summary">altgruplar %d şarkıdan daha azını içeriyorsa genişlet</string>
 
 
     <string name="settings_song_view_font">Şarkı görünümü yazıtipi</string>
@@ -90,8 +89,7 @@
     <string name="settings_vibrate">Şarkı listesine ya da butonlara tıklayınca telefon titresin.</string>
 
     <string name="settings_root_folder">Kök dizin</string>
-    <string name="settings_root_folder_summary1">Belirtilen yol</string>
-    <string name="settings_root_folder_summary2">>telefonunuzda bulunmuyor!</string>
+    <string name="settings_root_folder_summary">Belirtilen yol %s telefonunuzda bulunmuyor!</string>
 
     <string name="settings_accelerometer">Salla ve hızlandır</string>
     <string name="settings_accelerometer_summary">Telefonu sallayınca sonraki şrkıya geç.</string>

@@ -45,8 +45,7 @@
     <string name="settings_unfold_subgroup">Рашири подгрупе</string>
     <string name="settings_unfold_subgroup_summary">Омогућено: раширивање групе раширује све подгрупе и песме.</string>
     <string name="settings_unfold_subgroup_threshold">Рашири подгрупе ако група</string>
-    <string name="settings_unfold_subgroup_threshold_summary1">има мање од</string>
-    <string name="settings_unfold_subgroup_threshold_summary2">песама</string>
+    <string name="settings_unfold_subgroup_threshold_summary">има мање од %d песама</string>
 
 
     <string name="settings_song_view_font">Фонт приказа песама</string>
@@ -71,8 +70,7 @@
     <string name="settings_vibrate">Завибрирај на кратко по додиру на дугмад или списак песама.</string>
 
     <string name="settings_root_folder">Корена фасцикла</string>
-    <string name="settings_root_folder_summary1">Путања</string>
-    <string name="settings_root_folder_summary2">не постоји!</string>
+    <string name="settings_root_folder_summary">Путања %s не постоји!</string>
 
     <string name="settings_accelerometer">Протресање</string>
     <string name="settings_accelerometer_summary">Протресање пушта следећу песму.</string>

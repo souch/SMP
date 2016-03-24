@@ -38,6 +38,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import java.io.File;
+import java.util.Formatter;
 
 public class Settings extends PreferenceActivity
         implements SharedPreferences.OnSharedPreferenceChangeListener,
@@ -151,12 +152,14 @@ public class Settings extends PreferenceActivity
         else if(key.equals(PrefKeys.ROOT_FOLDER.name())) {
             final String rootFolder = params.getRootFolder();
             findPreference(key).setSummary(rootFolder);
-            if(!(new File(rootFolder)).exists())
+            if(!(new File(rootFolder)).exists()) {
+                Formatter formatter = new Formatter();
+                formatter.format(getResources().getString(R.string.settings_root_folder_summary),
+                        rootFolder);
                 Toast.makeText(getApplicationContext(),
-                        getResources().getString(R.string.settings_root_folder_summary1) +
-                                " '" + rootFolder + "' " +
-                                getResources().getString(R.string.settings_root_folder_summary2),
-                        Toast.LENGTH_LONG).show();
+                                formatter.toString(),
+                                Toast.LENGTH_LONG).show();
+            }
             boolean reinited = musicSrv.getRows().setRootFolder(rootFolder);
             if(reinited)
                 musicSrv.setChanged();
@@ -168,10 +171,10 @@ public class Settings extends PreferenceActivity
     }
 
     private void setUnfoldThresholdSummary() {
-        final String s = getResources().getString(R.string.settings_unfold_subgroup_threshold_summary1) +
-                " " + String.valueOf(params.getUnfoldSubGroupThreshold()) + " " +
-                getResources().getString(R.string.settings_unfold_subgroup_threshold_summary2);
-        findPreference(PrefKeys.UNFOLD_SUBGROUP_THRESHOLD.name()).setSummary(s);
+        Formatter formatter = new Formatter();
+        formatter.format(getResources().getString(R.string.settings_unfold_subgroup_threshold_summary),
+                params.getUnfoldSubGroupThreshold());
+        findPreference(PrefKeys.UNFOLD_SUBGROUP_THRESHOLD.name()).setSummary(formatter.toString());
     }
 
     private void setFoldSummary() {
