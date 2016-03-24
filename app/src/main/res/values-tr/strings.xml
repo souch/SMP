@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  SicMu Player - Lightweight music player for Android
+  Copyright (C) 2015  Mathieu Souchaud
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<resources>
+
+    <string name="app_name">SicMu Player</string>
+
+    <string name="action_settings">Ayarlar</string>
+    <string name="action_shake_disabled">Titreşim etkin</string>
+    <string name="action_shake_enabled">Titreşim yok</string>
+
+    <string name="action_sort_folder">Dizine göre sırala</string>
+    <string name="action_sort_artist">Sanatçıya göre sırala</string>
+    <string name="action_sort_tree">Dizin ağacına göre sırala</string>
+
+    <string name="app_playing">SicMu çalıyor</string>
+
+    <string name="focus_error">Ses odağı alınamadı! Uygulamayı tekrar başlat!</string>
+
+    <string name="settings_title">Ayarlar</string>
+
+    <string name="action_fold">Daralt</string>
+    <string name="action_unfold">Genişlet</string>
+
+    <string name="settings_song_view">Şarkı görünümü</string>
+    <string name="settings_fold_title">Başlangıçta dizinleri genişlet ya da daralt</string>
+    <string-array name="settings_fold_entries">
+        <item>Daraltılmış</item>
+        <item>Genişletilmiş</item>
+    </string-array>
+    <string-array name="settings_fold_values">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+    <string name="settings_unfold_subgroup">Alt grupları genişlet</string>
+    <string name="settings_unfold_subgroup_summary">Seçiliyse: gruba dokunmak bütün alt grupları ve şarkıları genişletir.</string>
+    <string name="settings_unfold_subgroup_threshold">Eğer</string>
+    <string name="settings_unfold_subgroup_threshold_default">18</string>
+    <string name="settings_unfold_subgroup_threshold_summary1">altgruplar</string>
+    <string name="settings_unfold_subgroup_threshold_summary2">şarkıdan daha azını içeriyorsa genişlet</string>
+
+
+    <string name="settings_song_view_font">Şarkı görünümü yazıtipi</string>
+    <string name="settings_text_size_choosed">Punto seçin</string>
+    <string name="settings_text_size_choosed_default">yanlış</string>
+    <string name="settings_text_size_regular">Normal yazıtipi</string>
+    <string name="settings_text_size_regular_default">14</string>
+    <string name="settings_text_size_big">Büyük yazıtipi</string>
+    <string name="settings_text_size_big_default">17</string>
+    <string name="settings_text_size_ratio">Grup/şarkı punto oranı</string>
+    <string name="settings_text_size_ratio_default">1.1</string>
+
+    <string name="settings_rescan_title">Tara</string>
+    <string name="settings_rescan">Ortam dosyalarını tekrar tara.</string>
+    <string name="settings_rescan_key">TARA</string>
+    <string name="settings_rescan_disabled">Android KitKat\'ta devredışı bırakılan yayınları tara.</string>
+    <string name="settings_rescan_triggered">Ortam Tarayıcısı Başlatıldı...</string>
+
+    <string name="settings_media_button_start_app_title">Ortam düğmeleri otomatik başlatsın</string>
+    <string name="settings_media_button_start_app">Eğer zaten açık değilse, ortam düğmeleri uygulamayı açar.</string>
+
+    <string name="settings_autoscroll">Çalınan şarkıya kaydır</string>
+    <string name="settings_autoscroll_summary">Şarkı çalmaya başlayınca üzerine gel.</string>
+
+    <string name="settings_songpos_title">Kaldığım yeri hatırla</string>
+    <string name="settings_songpos">Şarkı tekrar çalındığında son kaldığı yerden devam edecek.</string>
+
+    <string name="settings_shuffle_title">Rasgele</string>
+    <string name="settings_shuffle">Sonraki şarkı rasgele seçilir</string>
+
+    <string name="settings_scrobble_title">Scrobble</string>
+    <string name="settings_scrobble">Çalınan şarkıların ayrıntılarını Last.FM veya Libre.FM\'e yolla (Scrobble Droid veya Simple Last.fm Scrobbler kurulmuş olmalı)</string>
+
+    <string name="settings_vibrate_title">Dokununca titreş</string>
+    <string name="settings_vibrate">Şarkı listesine ya da butonlara tıklayınca telefon titresin.</string>
+
+    <string name="settings_root_folder">Kök dizin</string>
+    <string name="settings_root_folder_summary1">Belirtilen yol</string>
+    <string name="settings_root_folder_summary2">>telefonunuzda bulunmuyor!</string>
+
+    <string name="settings_accelerometer">Salla ve hızlandır</string>
+    <string name="settings_accelerometer_summary">Telefonu sallayınca sonraki şrkıya geç.</string>
+    <string name="settings_accelerometer_threshold">Sallama kuvveti eşiği</string>
+    <string name="settings_default_shake_threshold">100</string>
+    <string name="settings_no_accelerometer">Cihazınızda ivmeölçer bulunmuyor. Sallama özelliği devredışı bırakıldı.</string>
+
+
+    <string name="settings_help">Yardım</string>
+    <string name="settings_help_summary">Eğer yolunuzu kaybettiyseniz.</string>
+
+    <string name="help_start_song">Şarkıyı çalmaya başla</string>
+    <string name="help_start_song_summary">Şarkıyı çalmak için dokun.</string>
+    <string name="help_start_group">Bir gruptan çalmaya başla</string>
+    <string name="help_start_group_summary">İçerdiği ilk şarkından çalmaya başlamak için gruba uzun dokunun.</string>
+    <string name="help_unfold_group">Grubu daralt / genişlet</string>
+    <string name="help_unfold_group_summary">Daraltmak veya genişletmek için gruba dokunun.</string>
+    <string name="help_scroll">Şimdi çalan şarkıya kaydır</string>
+    <string name="help_scroll_summary">Listeyi şimdi çalan şarkıya kaydırmak için \'ileri\' düğmesinin sağındaki düğmeye dokunun.</string>
+    <string name="help_lock">Ekran kilidini devre dışı bırak</string>
+    <string name="help_lock_summary">Ekran kilidini devredışı bırakmak için kilit düğmesini açın (sadece eğer uygulama ekranda ise kilitlemeyi önler; bazı cihazlarda çalışmaz).</string>
+    <string name="help_root_folder">Kök dizin</string>
+    <string name="help_root_folder_summary">Kök dizin değiştirilebilir: bu seçenek dizine göre sıralama etkin olduğunda daha üstteki dizinlerin gizlenmesi içindir.</string>
+    <string name="help_background">Arkaplanda çalış</string>
+    <string name="help_background_summary">Müzik çalarken başlangıç veya geri düğmesine basın, müzik arkaplanda çalmaya devam edecek.</string>
+    <string name="help_quit">Kapat</string>
+    <string name="help_quit_summary">Eğer çalınan bir şarkı yoksa ve geri düğmesine basıldıysa uygulama tamamen kapatılır. Eğer kapatılmazsa Android bu uygulmayı bellek yetersiz kaldığı zaman otomatik olarak kapatır.</string>
+    <string name="help_stop">Dur</string>
+    <string name="help_stop_summary">Eğer çalınan bir şarkı yoksa ve başlangıç düğmesine basıldıysa uygulama bellekte kalmaya devam eder ancak Android bu uygulmayı bellek yetersiz kaldığı zaman otomatik olarak kapatır. </string>
+    <string name="help_mediabutton">Ortam düğmeleri</string>
+    <string name="help_mediabutton_summary">Ortam düğmeleri (bluetooth kulaklıklar gibi) uygulamayı kontrol edebilir (sonraki, önceki, duraklat / oynat).</string>
+    <string name="help_mediabutton_autostart">Ortam düğmeleri otomatik başlatsın</string>
+    <string name="help_mediabutton_autostart_summary">Eğer uygulama kapalıysa ortam düğmeleri uygulamayı başlatsın. Bu özelliği devredışı  bırakmak için ayarlar->Ortam düğmeleri otomatik başlatsın kutucuğundaki işareti kaldırın.</string>
+
+    <string name="settings_misc">Çeşitli</string>
+
+    <string name="settings_about">Hakkında</string>
+    <string name="settings_about_summary">Uygulama ve hazırlayan hakkında biraz bilgi</string>
+
+    <string name="settings_version_title">Sürüm numarası</string>
+    <string name="settings_version">1.0</string>
+    <string name="settings_author_title">Hazırlayan</string>
+    <string name="settings_author">Mathieu Souchaud</string>
+    <string name="settings_source_title">Kaynak</string>
+    <string name="settings_source">https://github.com/souch/SMP</string>
+    <string name="settings_licence_title">Lisans</string>
+    <string name="settings_licence">GPLv3</string>
+    <string name="settings_donate_key">bağış yap</string>
+    <string name="settings_donate_title">Bağış Yap</string>
+    <string name="settings_donate_summary">Eğer bu uygulama olmadan hayat size zorsa tıklayın.</string>
+    <string name="settings_donate_www">http://rodolphe.souchaud.free.fr/donate</string>
+
+    <string name="settings_thanks">Teşekkürler</string>
+    <string name="settings_thanks_icons">İkonlar</string>
+    <string name="settings_thanks_icons_summary">Daniele De Santis &amp; WPZOOM (iconfinder.com\'dan)</string>
+    <string name="settings_thanks_doc">Başvuru</string>
+    <string name="settings_thanks_doc_summary">Sue Smith (Android için müzikçalar hazırlama üzerine dersler)</string>
+    <string name="settings_thanks_i15n">Çeviri</string>
+    <string name="settings_thanks_i15n_summary1">Mladen Pejaković (Sırpça)</string>
+	<string name="settings_thanks_i15n_summary2">Mehmet Gülmen (Türkçe)</string>
+
+</resources>
