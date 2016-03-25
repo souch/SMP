@@ -49,9 +49,9 @@
     </string-array>
     <string name="settings_unfold_subgroup">Alt grupları genişlet</string>
     <string name="settings_unfold_subgroup_summary">Seçiliyse: gruba dokunmak bütün alt grupları ve şarkıları genişletir.</string>
-    <string name="settings_unfold_subgroup_threshold">Eğer</string>
+    <string name="settings_unfold_subgroup_threshold">Eğer altgruplar</string>
     <string name="settings_unfold_subgroup_threshold_default">18</string>
-    <string name="settings_unfold_subgroup_threshold_summary">altgruplar %d şarkıdan daha azını içeriyorsa genişlet</string>
+    <string name="settings_unfold_subgroup_threshold_summary">%d şarkıdan daha azını içeriyorsa genişlet</string>
 
 
     <string name="settings_song_view_font">Şarkı görünümü yazıtipi</string>
@@ -67,7 +67,7 @@
     <string name="settings_rescan_title">Tara</string>
     <string name="settings_rescan">Ortam dosyalarını tekrar tara.</string>
     <string name="settings_rescan_key">TARA</string>
-    <string name="settings_rescan_disabled">Android KitKat\'ta devredışı bırakılan yayınları tara.</string>
+    <string name="settings_rescan_disabled">Android KitKat\'ta devre dışı bırakılan yayınları tara.</string>
     <string name="settings_rescan_triggered">Ortam Tarayıcısı Başlatıldı...</string>
 
     <string name="settings_media_button_start_app_title">Ortam düğmeleri otomatik başlatsın</string>
@@ -89,13 +89,13 @@
     <string name="settings_vibrate">Şarkı listesine ya da butonlara tıklayınca telefon titresin.</string>
 
     <string name="settings_root_folder">Kök dizin</string>
-    <string name="settings_root_folder_summary">Belirtilen yol %s telefonunuzda bulunmuyor!</string>
+    <string name="settings_root_folder_summary">Belirtilen %s yolu telefonunuzda bulunmuyor!</string>
 
     <string name="settings_accelerometer">Salla ve hızlandır</string>
-    <string name="settings_accelerometer_summary">Telefonu sallayınca sonraki şrkıya geç.</string>
+    <string name="settings_accelerometer_summary">Telefonu sallayınca sonraki şarkıya geç.</string>
     <string name="settings_accelerometer_threshold">Sallama kuvveti eşiği</string>
     <string name="settings_default_shake_threshold">100</string>
-    <string name="settings_no_accelerometer">Cihazınızda ivmeölçer bulunmuyor. Sallama özelliği devredışı bırakıldı.</string>
+    <string name="settings_no_accelerometer">Cihazınızda ivmeölçer bulunmuyor. Sallama özelliği devre dışı bırakıldı.</string>
 
 
     <string name="settings_help">Yardım</string>
@@ -110,7 +110,7 @@
     <string name="help_scroll">Şimdi çalan şarkıya kaydır</string>
     <string name="help_scroll_summary">Listeyi şimdi çalan şarkıya kaydırmak için \'ileri\' düğmesinin sağındaki düğmeye dokunun.</string>
     <string name="help_lock">Ekran kilidini devre dışı bırak</string>
-    <string name="help_lock_summary">Ekran kilidini devredışı bırakmak için kilit düğmesini açın (sadece eğer uygulama ekranda ise kilitlemeyi önler; bazı cihazlarda çalışmaz).</string>
+    <string name="help_lock_summary">Ekran kilidini devre dışı bırakmak için kilit düğmesini açın (sadece eğer uygulama ekranda ise kilitlemeyi önler; bazı cihazlarda çalışmaz).</string>
     <string name="help_root_folder">Kök dizin</string>
     <string name="help_root_folder_summary">Kök dizin değiştirilebilir: bu seçenek dizine göre sıralama etkin olduğunda daha üstteki dizinlerin gizlenmesi içindir.</string>
     <string name="help_background">Arkaplanda çalış</string>
@@ -122,7 +122,7 @@
     <string name="help_mediabutton">Ortam düğmeleri</string>
     <string name="help_mediabutton_summary">Ortam düğmeleri (bluetooth kulaklıklar gibi) uygulamayı kontrol edebilir (sonraki, önceki, duraklat / oynat).</string>
     <string name="help_mediabutton_autostart">Ortam düğmeleri otomatik başlatsın</string>
-    <string name="help_mediabutton_autostart_summary">Eğer uygulama kapalıysa ortam düğmeleri uygulamayı başlatsın. Bu özelliği devredışı  bırakmak için ayarlar->Ortam düğmeleri otomatik başlatsın kutucuğundaki işareti kaldırın.</string>
+    <string name="help_mediabutton_autostart_summary">Eğer uygulama kapalıysa ortam düğmeleri uygulamayı başlatsın. Bu özelliği devre dışı bırakmak için ayarlar->Ortam düğmeleri otomatik başlatsın kutucuğundaki işareti kaldırın.</string>
 
     <string name="settings_misc">Çeşitli</string>
 
