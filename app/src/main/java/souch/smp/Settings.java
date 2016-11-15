@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -38,7 +39,10 @@ import android.util.Log;
 import android.widget.Toast;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Formatter;
+
+import static android.os.Environment.DIRECTORY_MUSIC;
 
 public class Settings extends PreferenceActivity
         implements SharedPreferences.OnSharedPreferenceChangeListener,
@@ -258,22 +262,48 @@ public class Settings extends PreferenceActivity
 
     public void rescan() {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+             //scanMediaFiles();
+            File path = Environment.getDataDirectory();
+            Log.e("datadir", "datadir" + path);
+            Log.e("datadir", "Environment.getExternalStorageDirectory()" + Environment.getExternalStorageDirectory());
+            Log.e("datadir", "Environment.getExternalStorageDirectory()" + Environment.getExternalFilesDirs(DIRECTORY_MUSIC));
+            //Context.getExternalFilesDirs()
+
+        }
+        else {
+            if (android.os.Environment.getExternalStorageState().equals(
+                    android.os.Environment.MEDIA_MOUNTED))
+                // Broadcast the Media Scanner Intent to trigger it
+                sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED,
+                        Uri.parse("file://" + Environment.getExternalStorageDirectory())));
+
             Toast.makeText(getApplicationContext(),
-                    getResources().getString(R.string.settings_rescan_disabled),
-                    Toast.LENGTH_LONG).show();
-            return;
+                    getResources().getString(R.string.settings_rescan_triggered), Toast.LENGTH_SHORT).show();
         }
 
-        // Broadcast the Media Scanner Intent to trigger it
-        sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri
-                .parse("file://" + Environment.getExternalStorageDirectory())));
-        Toast toast = Toast.makeText(getApplicationContext(),
-                getResources().getString(R.string.settings_rescan_triggered), Toast.LENGTH_SHORT);
-        toast.show();
-
         // todo: should be improved with this?
-        // http://stackoverflow.com/questions/13270789/how-to-run-media-scanner-in-android
         // careful from hitkat 4.4+ :
         // http://stackoverflow.com/questions/24072489/java-lang-securityexception-permission-denial-not-allowed-to-send-broadcast-an
+    }
+
+    private void scanMediaFiles() {
+        // http://stackoverflow.com/questions/13270789/how-to-run-media-scanner-in-android
+        String[] filesToScan = new String[3];
+        if (filesToScan.length != 0) {
+            Toast.makeText(getApplicationContext(),
+                    getResources().getString(R.string.settings_rescan_triggered),
+                    Toast.LENGTH_LONG).show();
+            MediaScannerConnection.scanFile(this, filesToScan, null, null);
+        } else {
+            Log.e("Settings", "Media scan requested when nothing to scan");
+        }
+    }
+
+    private void scanMedia(String path) {
+        File file = new File(path);
+        Uri uri = Uri.fromFile(file);
+        Intent scanFileIntent = new Intent(
+                Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri);
+        sendBroadcast(scanFileIntent);
     }
 }
