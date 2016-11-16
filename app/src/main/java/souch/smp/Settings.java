@@ -292,18 +292,33 @@ public class Settings extends PreferenceActivity
         }
 
         ArrayList<File> filesToScan = new ArrayList<>();
-        for (File f: dirsToScan) {
-            listFiles(f, filesToScan);
-        }
 
+        // add Music folder in first to speedup music folder discovery
+        for (File dir: dirsToScan) {
+            listFiles(new File(dir, "Music"), filesToScan);
+            Log.d("Settings", "fileToScan: " + (new File(dir, "Music")).getAbsolutePath());
+        }
+        scanMediaFiles(filesToScan);
+
+        // add whole storage at the end
+        filesToScan.clear();
+        for (File dir: dirsToScan) {
+            listFiles(dir, filesToScan);
+        }
+        scanMediaFiles(filesToScan);
+
+        Toast.makeText(getApplicationContext(),
+                getResources().getString(R.string.settings_rescan_finished),
+                Toast.LENGTH_SHORT).show();
+    }
+
+    private void scanMediaFiles(Collection<File> filesToScan) {
         String[] filesToScanArray = new String[filesToScan.size()];
         int i = 0;
-        for (File f: filesToScan) {
-            filesToScanArray[i] = f.getAbsolutePath();
-
-            if (filesToScanArray[i].contains("emulated/0"))
-                Log.d("Settings", "fileToScan: " + filesToScanArray[i]);
-
+        for (File file : filesToScan) {
+            filesToScanArray[i] = file.getAbsolutePath();
+            //if (filesToScanArray[i].contains("emulated/0"))
+            //    Log.d("Settings", "fileToScan: " + filesToScanArray[i]);
             i++;
         }
 
@@ -312,10 +327,6 @@ public class Settings extends PreferenceActivity
         } else {
             Log.e("Settings", "Media scan requested when nothing to scan");
         }
-
-        Toast.makeText(getApplicationContext(),
-                getResources().getString(R.string.settings_rescan_finished),
-                Toast.LENGTH_SHORT).show();
     }
 
 
