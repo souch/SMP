@@ -69,6 +69,9 @@
     <string name="settings_rescan_key">RESCAN</string>
     <string name="settings_rescan_disabled">Rescan broadcast disabled from Android KitKat.</string>
     <string name="settings_rescan_triggered">Media Scanner Triggered...</string>
+    <string name="settings_rescan_storage">Scan storage %s</string>
+    <string name="settings_rescan_finished">Media Scanner finished. It can takes a while before the new files appears.</string>
+
 
     <string name="settings_media_button_start_app_title">Media buttons auto start</string>
     <string name="settings_media_button_start_app">Media buttons launch the app if not already started.</string>

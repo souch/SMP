@@ -40,9 +40,9 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Formatter;
-
-import static android.os.Environment.DIRECTORY_MUSIC;
+import java.util.HashSet;
 
 public class Settings extends PreferenceActivity
         implements SharedPreferences.OnSharedPreferenceChangeListener,
@@ -259,16 +259,9 @@ public class Settings extends PreferenceActivity
         return false;
     }
 
-
     public void rescan() {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-             //scanMediaFiles();
-            File path = Environment.getDataDirectory();
-            Log.e("datadir", "datadir" + path);
-            Log.e("datadir", "Environment.getExternalStorageDirectory()" + Environment.getExternalStorageDirectory());
-            Log.e("datadir", "Environment.getExternalStorageDirectory()" + Environment.getExternalFilesDirs(DIRECTORY_MUSIC));
-            //Context.getExternalFilesDirs()
-
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            scanMediaFiles();
         }
         else {
             if (android.os.Environment.getExternalStorageState().equals(
@@ -280,30 +273,81 @@ public class Settings extends PreferenceActivity
             Toast.makeText(getApplicationContext(),
                     getResources().getString(R.string.settings_rescan_triggered), Toast.LENGTH_SHORT).show();
         }
-
-        // todo: should be improved with this?
-        // careful from hitkat 4.4+ :
-        // http://stackoverflow.com/questions/24072489/java-lang-securityexception-permission-denial-not-allowed-to-send-broadcast-an
     }
 
     private void scanMediaFiles() {
         // http://stackoverflow.com/questions/13270789/how-to-run-media-scanner-in-android
-        String[] filesToScan = new String[3];
-        if (filesToScan.length != 0) {
+        Toast.makeText(getApplicationContext(),
+                getResources().getString(R.string.settings_rescan_triggered),
+                Toast.LENGTH_LONG).show();
+
+        Collection<File> dirsToScan = getStorages();
+
+        for (File dir: dirsToScan) {
             Toast.makeText(getApplicationContext(),
-                    getResources().getString(R.string.settings_rescan_triggered),
+                    (new Formatter()).format(getResources()
+                            .getString(R.string.settings_rescan_storage), dir)
+                            .toString(),
                     Toast.LENGTH_LONG).show();
-            MediaScannerConnection.scanFile(this, filesToScan, null, null);
+        }
+
+        ArrayList<File> filesToScan = new ArrayList<>();
+        for (File f: dirsToScan) {
+            listFiles(f, filesToScan);
+        }
+
+        String[] filesToScanArray = new String[filesToScan.size()];
+        int i = 0;
+        for (File f: filesToScan) {
+            filesToScanArray[i] = f.getAbsolutePath();
+
+            if (filesToScanArray[i].contains("emulated/0"))
+                Log.d("Settings", "fileToScan: " + filesToScanArray[i]);
+
+            i++;
+        }
+
+        if (filesToScanArray.length != 0) {
+            MediaScannerConnection.scanFile(this, filesToScanArray, null, null);
         } else {
             Log.e("Settings", "Media scan requested when nothing to scan");
         }
+
+        Toast.makeText(getApplicationContext(),
+                getResources().getString(R.string.settings_rescan_finished),
+                Toast.LENGTH_SHORT).show();
     }
 
-    private void scanMedia(String path) {
-        File file = new File(path);
-        Uri uri = Uri.fromFile(file);
-        Intent scanFileIntent = new Intent(
-                Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri);
-        sendBroadcast(scanFileIntent);
+
+    public Collection<File> getStorages() {
+        HashSet<File> dirsToScan = new HashSet<>();
+
+        dirsToScan.add(Environment.getExternalStorageDirectory());
+
+        // hack. Don't know if it work well on other devices!
+        String userPathToRemove = "Android/data/souch.smp/files";
+        for (File dir: getBaseContext().getExternalFilesDirs(null)) {
+            if (dir.getAbsolutePath().endsWith(userPathToRemove)) {
+                dirsToScan.add(dir.getParentFile().getParentFile().getParentFile().getParentFile());
+            }
+        }
+
+        for (File dir: dirsToScan) {
+            Log.d("Settings", "userDir: " + dir.getAbsolutePath());
+        }
+        return dirsToScan;
     }
+
+    public void listFiles(File directory, ArrayList<File> files) {
+        // get all the files from a directory
+        File[] fList = directory.listFiles();
+        for (File file : fList) {
+            if (file.isFile()) {
+                files.add(file);
+            } else if (file.isDirectory()) {
+                listFiles(file, files);
+            }
+        }
+    }
+
 }
