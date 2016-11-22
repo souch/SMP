@@ -111,8 +111,8 @@
     <string name="help_scroll_summary">Listeyi şimdi çalan şarkıya kaydırmak için \'ileri\' düğmesinin sağındaki düğmeye dokunun.</string>
     <string name="help_lock">Ekran kilidini devre dışı bırak</string>
     <string name="help_lock_summary">Ekran kilidini devre dışı bırakmak için kilit düğmesini açın (sadece eğer uygulama ekranda ise kilitlemeyi önler; bazı cihazlarda çalışmaz).</string>
-    <string name="help_root_folder">Kök dizin</string>
-    <string name="help_root_folder_summary">Kök dizin değiştirilebilir: bu seçenek dizine göre sıralama etkin olduğunda daha üstteki dizinlerin gizlenmesi içindir.</string>
+    <string name="help_root_folders">Kök dizin</string>
+    <string name="help_root_folders_summary">Kök dizin değiştirilebilir: bu seçenek dizine göre sıralama etkin olduğunda daha üstteki dizinlerin gizlenmesi içindir.</string>
     <string name="help_background">Arkaplanda çalış</string>
     <string name="help_background_summary">Müzik çalarken başlangıç veya geri düğmesine basın, müzik arkaplanda çalmaya devam edecek.</string>
     <string name="help_quit">Kapat</string>

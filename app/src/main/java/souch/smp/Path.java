@@ -18,34 +18,45 @@
 
 package souch.smp;
 
+import android.content.Context;
+import android.os.Environment;
+import android.util.Log;
+
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 
 public class Path {
     public final static char separatorChar = System.getProperty("file.separator", "/").charAt(0);
-    public static String rootFolder = "";
+    public static String rootFolders = "";
 
     /*
      @param path must not be null
-     rootFolder is removed from the beginning of the path
-     if rootFolder = "" and path = /mnt/sdcard/toto/tata.mp3 -> return /mnt/sdcard/toto
-     if rootFolder = "/mnt/sdcard" and path = /mnt/sdcard/toto/tata.mp3 -> return toto
-     if rootFolder = "/mnt/sdcard/" and path = /mnt/sdcard/toto/tata.mp3 -> return toto
+     rootFolders is removed from the beginning of the path
+     if rootFolders = "" and path = /mnt/sdcard/toto/tata.mp3 -> return /mnt/sdcard/toto
+     if rootFolders = "/mnt/sdcard" and path = /mnt/sdcard/toto/tata.mp3 -> return toto
+     if rootFolders = "/mnt/sdcard/" and path = /mnt/sdcard/toto/tata.mp3 -> return toto
     */
     static public String getFolder(String path) {
-        String folder;
+        String folder = null;
 
-        // remove rootFolder
-        if (rootFolder != null &&
-                rootFolder.length() <= path.length() &&
-                rootFolder.equals(path.substring(0, rootFolder.length()))) {
-            int rootFolderSize = rootFolder.length();
-            // remove / remaining at the beginning of path
-            if (path.length() > rootFolderSize && path.charAt(rootFolderSize) == separatorChar)
-                rootFolderSize++;
+        // remove rootFolders
+        if (rootFolders != null) {
+            String[] rootFoldersArray = rootFolders.split(";");
+            for (String rootFolder : rootFoldersArray) {
+                if (rootFolder.length() <= path.length() &&
+                        rootFolder.equals(path.substring(0, rootFolder.length()))) {
+                    int rootFolderSize = rootFolder.length();
+                    // remove / remaining at the beginning of path
+                    if (path.length() > rootFolderSize && path.charAt(rootFolderSize) == separatorChar)
+                        rootFolderSize++;
 
-            folder = path.substring(rootFolderSize, path.length());
+                    folder = path.substring(rootFolderSize, path.length());
+                }
+            }
         }
-        else {
+        if (folder == null) {
             folder = path;
         }
 
@@ -148,5 +159,58 @@ public class Path {
             return ch;
         }
         return Character.toLowerCase(Character.toUpperCase(ch));
+    }
+
+
+    public static String getMusicStoragesStr(Context context) {
+        Collection<File> dirs = getMusicStorages(context);
+        String dirsStr = new String();
+        for (File dir: dirs) {
+            dirsStr += dir.getAbsolutePath() + ";";
+        }
+        if (dirsStr.endsWith(";"))
+            dirsStr = dirsStr.substring(0, dirsStr.length() - 1);
+        return dirsStr;
+    }
+
+    public static Collection<File> getMusicStorages(Context context) {
+
+        Collection<File> dirs = getStorages(context);
+        ArrayList<File> musicDirs = new ArrayList<>();
+        for (File dir: dirs) {
+            musicDirs.add(new File(dir, "Music/"));
+        }
+        return musicDirs;
+    }
+
+    public static Collection<File> getStorages(Context context) {
+        HashSet<File> dirsToScan = new HashSet<>();
+
+        dirsToScan.add(Environment.getExternalStorageDirectory());
+
+        // hack. Don't know if it work well on other devices!
+        String userPathToRemove = "Android/data/souch.smp/files";
+        for (File dir: context.getExternalFilesDirs(null)) {
+            if (dir.getAbsolutePath().endsWith(userPathToRemove)) {
+                dirsToScan.add(dir.getParentFile().getParentFile().getParentFile().getParentFile());
+            }
+        }
+
+        for (File dir: dirsToScan) {
+            Log.d("Settings", "userDir: " + dir.getAbsolutePath());
+        }
+        return dirsToScan;
+    }
+
+    public static void listFiles(File directory, ArrayList<File> files) {
+        // get all the files from a directory
+        File[] fList = directory.listFiles();
+        for (File file : fList) {
+            if (file.isFile()) {
+                files.add(file);
+            } else if (file.isDirectory()) {
+                listFiles(file, files);
+            }
+        }
     }
 }

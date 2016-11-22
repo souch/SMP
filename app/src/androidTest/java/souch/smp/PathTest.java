@@ -35,33 +35,33 @@ public class PathTest extends AndroidTestCase {
     }
 
     public void testGetFolderUsual() throws Exception {
-        Path.rootFolder = "/mnt/sdcard";
+        Path.rootFolders = "/mnt/sdcard";
         tryGetFolder("/mnt/sdcard/toto/tata.mp3", "toto");
     }
 
     public void testGetFolderUsual2() throws Exception {
-        Path.rootFolder = "/mnt/sdcard";
+        Path.rootFolders = "/mnt/sdcard";
         tryGetFolder("/mnt/sdcard/toto/titi/tata.mp3", "toto/titi");
     }
 
     public void testGetFolderUsualSlashRootFolder() throws Exception {
-        Path.rootFolder = "/mnt/sdcard/";
+        Path.rootFolders = "/mnt/sdcard/";
         tryGetFolder("/mnt/sdcard/toto/titi/tata.mp3", "toto/titi");
     }
 
     public void testGetFolderAllRootFolder() throws Exception {
-        Path.rootFolder = "/mnt/sdcard";
+        Path.rootFolders = "/mnt/sdcard";
         tryGetFolder("/mnt/sdcard/tata.mp3", ".");
 
-        Path.rootFolder = "/mnt/sdcard/";
+        Path.rootFolders = "/mnt/sdcard/";
         tryGetFolder("/mnt/sdcard/tata.mp3", ".");
     }
 
     public void testGetFolderMangleRootFolder() throws Exception {
-        Path.rootFolder = "/mnt/sdcard";
+        Path.rootFolders = "/mnt/sdcard";
         tryGetFolder("/mnt/sdcard.mp3", ".");
 
-        Path.rootFolder = "/mnt/sdcard/";
+        Path.rootFolders = "/mnt/sdcard/";
         tryGetFolder("/mnt/sdcard.mp3", "/mnt");
     }
 

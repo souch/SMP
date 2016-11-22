@@ -41,7 +41,7 @@ public interface Parameters {
     Filter getFilter();
     void setFilter(Filter filter);
 
-    String getRootFolder();
+    String getRootFolders();
 
     int getDefaultFold();
 

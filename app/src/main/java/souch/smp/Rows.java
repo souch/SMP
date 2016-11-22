@@ -747,7 +747,7 @@ public class Rows {
     private void restore() {
         savedID = params.getSongID();
         filter = params.getFilter();
-        Path.rootFolder = params.getRootFolder();
+        Path.rootFolders = params.getRootFolders();
     }
 
     public void save() {
@@ -770,13 +770,13 @@ public class Rows {
         }
     }
 
-    public boolean setRootFolder(String rootFolder) {
+    public boolean setRootFolders(String rootFolders) {
         boolean reinited = false;
 
-        if (!Path.rootFolder.equals(rootFolder)) {
-            Path.rootFolder = rootFolder;
+        if (!Path.rootFolders.equals(rootFolders)) {
+            Path.rootFolders = rootFolders;
             if (filter == Filter.FOLDER || filter == Filter.TREE) {
-                // reinit everything is a bit heavy: nevermind, rootFolder will not be changed often
+                // reinit everything is a bit heavy: nevermind, rootFolders will not be changed often
                 updateSavedId();
                 init();
                 reinited = true;

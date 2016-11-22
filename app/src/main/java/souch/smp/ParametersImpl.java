@@ -20,22 +20,12 @@ package souch.smp;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Environment;
 import android.preference.PreferenceManager;
-
-import java.io.File;
 
 public class ParametersImpl implements Parameters {
     private Context context;
     public ParametersImpl(Context context) {
         this.context = context;
-    }
-
-    static public String getDefaultMusicDir() {
-        String musicDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getPath();
-        if (!musicDir.endsWith(File.separator))
-            musicDir += File.separator;
-        return musicDir;
     }
 
     private SharedPreferences getPref() {
@@ -103,8 +93,8 @@ public class ParametersImpl implements Parameters {
         getEditor().putString(PrefKeys.FILTER.name(), filter.name()).commit();
     }
 
-    public String getRootFolder() {
-        return getPref().getString(PrefKeys.ROOT_FOLDER.name(), getDefaultMusicDir());
+    public String getRootFolders() {
+        return getPref().getString(PrefKeys.ROOT_FOLDERS.name(), Path.getMusicStoragesStr(context));
     }
 
 

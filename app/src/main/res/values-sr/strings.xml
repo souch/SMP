@@ -91,8 +91,8 @@
     <string name="help_scroll_summary">Притисните дугме десно од дугмета „следећа“ да бисте клизали на песму која се пушта.</string>
     <string name="help_lock">Онемогућавање закључавања екрана</string>
     <string name="help_lock_summary">Притисните дугме-катанац да бисте онемогућили екран закључавања (спречава закључавање само кад је апликација у првом плану; не ради на неким уређајима).</string>
-    <string name="help_root_folder">Корена фасцикла</string>
-    <string name="help_root_folder_summary">Можете да прилагодите корену фасциклу: користи се само за скривање првог дела путање фасцикли када су песме поређане по фасцикли.</string>
+    <string name="help_root_folders">Корена фасцикла</string>
+    <string name="help_root_folders_summary">Можете да прилагодите корену фасциклу: користи се само за скривање првог дела путање фасцикли када су песме поређане по фасцикли.</string>
     <string name="help_background">Позадина</string>
     <string name="help_background_summary">У току пуштања музике притисак на почетни тастер или тастер за назад ће да затвори списак песама и настави да пушта музику у позадини.</string>
     <string name="help_quit">Напуштање</string>

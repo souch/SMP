@@ -48,8 +48,8 @@
             android:icon="@drawable/ic_action_unlocked"/>
 
         <Preference
-            android:title="@string/help_root_folder"
-            android:summary="@string/help_root_folder_summary"
+            android:title="@string/help_root_folders"
+            android:summary="@string/help_root_folders_summary"
             android:icon="@drawable/ic_menu_folder"/>
 
         <Preference

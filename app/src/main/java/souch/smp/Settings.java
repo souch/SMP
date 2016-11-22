@@ -42,7 +42,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Formatter;
-import java.util.HashSet;
 
 public class Settings extends PreferenceActivity
         implements SharedPreferences.OnSharedPreferenceChangeListener,
@@ -96,11 +95,11 @@ public class Settings extends PreferenceActivity
         setUnfoldSubgroup();
         setUnfoldThresholdSummary();
 
-        String rootFolderKey = PrefKeys.ROOT_FOLDER.name();
-        EditTextPreference prefRootFolder = (EditTextPreference) findPreference(rootFolderKey);
-        prefRootFolder.setSummary(params.getRootFolder());
-        if(!sharedPreferences.contains(rootFolderKey))
-            prefRootFolder.setText(ParametersImpl.getDefaultMusicDir());
+        String rootFoldersKey = PrefKeys.ROOT_FOLDERS.name();
+        EditTextPreference prefRootFolders = (EditTextPreference) findPreference(rootFoldersKey);
+        prefRootFolders.setSummary(params.getRootFolders());
+        if(!sharedPreferences.contains(rootFoldersKey))
+            prefRootFolders.setText(Path.getMusicStoragesStr(getBaseContext()));
 
         setFoldSummary();
 
@@ -153,8 +152,8 @@ public class Settings extends PreferenceActivity
         else if(key.equals(PrefKeys.UNFOLD_SUBGROUP_THRESHOLD.name())) {
             setUnfoldThresholdSummary();
         }
-        else if(key.equals(PrefKeys.ROOT_FOLDER.name())) {
-            final String rootFolder = params.getRootFolder();
+        else if(key.equals(PrefKeys.ROOT_FOLDERS.name())) {
+            final String rootFolder = params.getRootFolders();
             findPreference(key).setSummary(rootFolder);
             if(!(new File(rootFolder)).exists()) {
                 Formatter formatter = new Formatter();
@@ -164,7 +163,7 @@ public class Settings extends PreferenceActivity
                                 formatter.toString(),
                                 Toast.LENGTH_LONG).show();
             }
-            boolean reinited = musicSrv.getRows().setRootFolder(rootFolder);
+            boolean reinited = musicSrv.getRows().setRootFolders(rootFolder);
             if(reinited)
                 musicSrv.setChanged();
         }
@@ -281,7 +280,7 @@ public class Settings extends PreferenceActivity
                 getResources().getString(R.string.settings_rescan_triggered),
                 Toast.LENGTH_LONG).show();
 
-        Collection<File> dirsToScan = getStorages();
+        Collection<File> dirsToScan = Path.getStorages(getBaseContext());
 
         for (File dir: dirsToScan) {
             Toast.makeText(getApplicationContext(),
@@ -295,7 +294,7 @@ public class Settings extends PreferenceActivity
 
         // add Music folder in first to speedup music folder discovery
         for (File dir: dirsToScan) {
-            listFiles(new File(dir, "Music"), filesToScan);
+            Path.listFiles(new File(dir, "Music"), filesToScan);
             Log.d("Settings", "fileToScan: " + (new File(dir, "Music")).getAbsolutePath());
         }
         scanMediaFiles(filesToScan);
@@ -303,7 +302,7 @@ public class Settings extends PreferenceActivity
         // add whole storage at the end
         filesToScan.clear();
         for (File dir: dirsToScan) {
-            listFiles(dir, filesToScan);
+            Path.listFiles(dir, filesToScan);
         }
         scanMediaFiles(filesToScan);
 
@@ -330,35 +329,6 @@ public class Settings extends PreferenceActivity
     }
 
 
-    public Collection<File> getStorages() {
-        HashSet<File> dirsToScan = new HashSet<>();
 
-        dirsToScan.add(Environment.getExternalStorageDirectory());
-
-        // hack. Don't know if it work well on other devices!
-        String userPathToRemove = "Android/data/souch.smp/files";
-        for (File dir: getBaseContext().getExternalFilesDirs(null)) {
-            if (dir.getAbsolutePath().endsWith(userPathToRemove)) {
-                dirsToScan.add(dir.getParentFile().getParentFile().getParentFile().getParentFile());
-            }
-        }
-
-        for (File dir: dirsToScan) {
-            Log.d("Settings", "userDir: " + dir.getAbsolutePath());
-        }
-        return dirsToScan;
-    }
-
-    public void listFiles(File directory, ArrayList<File> files) {
-        // get all the files from a directory
-        File[] fList = directory.listFiles();
-        for (File file : fList) {
-            if (file.isFile()) {
-                files.add(file);
-            } else if (file.isDirectory()) {
-                listFiles(file, files);
-            }
-        }
-    }
 
 }

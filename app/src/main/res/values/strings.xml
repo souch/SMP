@@ -114,8 +114,8 @@
     <string name="help_scroll_summary">Press the button to the right of \'next button\' to scroll the list to current playing song.</string>
     <string name="help_lock">Disable lock screen</string>
     <string name="help_lock_summary">Open the padlock button to disable the lock screen (it prevents locking only when the app is on foreground; do not work on some device).</string>
-    <string name="help_root_folder">Root folder</string>
-    <string name="help_root_folder_summary">Root folder can be customized: it is used only for hiding the first portion of folders path when songs are sorted by folder.</string>
+    <string name="help_root_folders">Root folders</string>
+    <string name="help_root_folders_summary">Root folders can be customized: it is used only for hiding the first portion of folders path when songs are sorted by folder. To put several root folders, separate path using a semi-colon.</string>
     <string name="help_background">Background</string>
     <string name="help_background_summary">While playing music, press on home button or back button to close the song list and keep the music playing in background.</string>
     <string name="help_quit">Quit</string>

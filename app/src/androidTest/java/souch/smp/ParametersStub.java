@@ -62,8 +62,8 @@ public class ParametersStub implements Parameters {
     }
     public void setFilter(Filter filter) {}
 
-    public String getRootFolder() {
-        return ParametersImpl.getDefaultMusicDir();
+    public String getRootFolders() {
+        return "";
     }
 
 
