@@ -404,6 +404,12 @@ public class Rows {
                 break;
             case TREE:
             case FOLDER:
+                // presort it even if it will be restorted by tree and folder, in order to have a
+                // title sort if there is no ID3 track
+                sortOrder = MediaStore.Audio.Media.ARTIST +
+                        ", " + MediaStore.Audio.Media.ALBUM +
+                        ", " + MediaStore.Audio.Media.TRACK +
+                        ", " + MediaStore.Audio.Media.TITLE;
                 // did not find a way to sort by folder through query
                 break;
             default:
