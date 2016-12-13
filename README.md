@@ -39,7 +39,7 @@ Works on old slow small devices (from Android froyo 2.2).
 
 ### Installation
 
-The SicMu Player is available on [F-Droid](https://f-droid.org/repository/browse/?fdid=souch.smp)
+The SicMu Player is available on [F-Droid](https://f-droid.org/repository/browse/?fdid=souch.smp) and [Google Play](https://play.google.com/store/apps/details?id=souch.smp).
 
 
 ### Help
