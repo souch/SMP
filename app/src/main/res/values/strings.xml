@@ -91,7 +91,7 @@
     <string name="settings_vibrate_title">Vibrate on touch</string>
     <string name="settings_vibrate">Make a small vibration when touching buttons or song list.</string>
 
-    <string name="settings_root_folder">Root folder</string>
+    <string name="settings_root_folder">Root folders</string>
     <string name="settings_root_folder_summary">The path %s does not exists on the phone !</string>
 
     <string name="settings_accelerometer">Accelerometer shake</string>

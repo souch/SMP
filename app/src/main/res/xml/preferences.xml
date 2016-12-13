@@ -165,7 +165,7 @@
             />
 
         <EditTextPreference
-            android:key="ROOT_FOLDER"
+            android:key="ROOT_FOLDERS"
             android:title="@string/settings_root_folder"
             />
 
