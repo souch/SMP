@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  SicMu Player - Lightweight music player for Android
+  Copyright (C) 2017  Mathieu Souchaud
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="@string/settings_song_view_font">
+
+        <SwitchPreference
+            android:key="TEXT_SIZE_CHOOSED"
+            android:title="@string/settings_text_size_choosed"
+            android:defaultValue="false"
+            android:icon="@drawable/ic_menu_text_regular"
+            />
+
+    </PreferenceCategory>
+
+
+    <PreferenceCategory android:title="@string/settings_accelerometer">
+
+        <CheckBoxPreference
+            android:key="ENABLE_SHAKE"
+            android:title="@string/settings_accelerometer"
+            android:summary="@string/settings_accelerometer_summary"
+            android:icon="@drawable/ic_menu_shake_checked"
+            android:defaultValue="false"/>
+
+    </PreferenceCategory>
+
+
+    <PreferenceCategory android:title="@string/settings_song_view">
+
+        <ListPreference
+            android:key="DEFAULT_FOLD"
+            android:title="@string/settings_fold_title"
+            android:entryValues="@array/settings_fold_values"
+            android:entries="@array/settings_fold_entries"
+            android:defaultValue="0"
+            />
+
+        <CheckBoxPreference
+            android:key="UNFOLD_SUBGROUP"
+            android:title="@string/settings_unfold_subgroup"
+            android:summary="@string/settings_unfold_subgroup_summary"
+            android:defaultValue="false"
+            />
+
+        <EditTextPreference
+            android:key="UNFOLD_SUBGROUP_THRESHOLD"
+            android:title="@string/settings_unfold_subgroup_threshold"
+            android:numeric="integer"
+            android:defaultValue="@string/settings_unfold_subgroup_threshold_default"
+            />
+
+        <CheckBoxPreference
+            android:key="FOLLOW_SONG"
+            android:title="@string/settings_autoscroll"
+            android:summary="@string/settings_autoscroll_summary"
+            android:defaultValue="true"
+            />
+
+        <EditTextPreference
+            android:key="ROOT_FOLDERS"
+            android:title="@string/settings_root_folder"
+            />
+
+    </PreferenceCategory>
+
+
+    <PreferenceCategory android:title="@string/settings_misc">
+        <CheckBoxPreference
+            android:key="SAVE_SONG_POS"
+            android:title="@string/settings_songpos_title"
+            android:summary="@string/settings_songpos"
+            android:defaultValue="false"/>
+
+        <CheckBoxPreference
+            android:key="SHUFFLE"
+            android:title="@string/settings_shuffle_title"
+            android:summary="@string/settings_shuffle"
+            android:defaultValue="false"/>
+
+        <CheckBoxPreference
+            android:key="VIBRATE"
+            android:title="@string/settings_vibrate_title"
+            android:summary="@string/settings_vibrate"
+            android:defaultValue="true"/>
+
+        <CheckBoxPreference
+            android:key="SCROBBLE"
+            android:title="@string/settings_scrobble_title"
+            android:summary="@string/settings_scrobble"
+            android:defaultValue="false"/>
+
+        <Preference
+            android:key="@string/settings_rescan_key"
+            android:title="@string/settings_rescan_title"
+            android:summary="@string/settings_rescan"/>
+
+        <CheckBoxPreference
+            android:key="MEDIA_BUTTON_START_APP"
+            android:title="@string/settings_media_button_start_app_title"
+            android:summary="@string/settings_media_button_start_app"
+            android:defaultValue="true"/>
+
+        <PreferenceScreen
+            android:key="button_about"
+            android:title="@string/settings_about"
+            android:summary="@string/settings_about_summary"
+            android:persistent="false">
+
+            <PreferenceCategory android:title="@string/settings_about">
+
+                <Preference
+                    android:title="@string/settings_author_title"
+                    android:summary="@string/settings_author"/>
+
+                <Preference
+                    android:title="@string/settings_version_title"
+                    android:summary="@string/settings_version"/>
+
+                <Preference
+                    android:title="@string/settings_source_title"
+                    android:summary="@string/settings_source"/>
+
+                <Preference
+                    android:title="@string/settings_licence_title"
+                    android:summary="@string/settings_licence"/>
+
+                <Preference
+                    android:key="@string/settings_donate_key"
+                    android:title="@string/settings_donate_title"
+                    android:summary="@string/settings_donate_summary"/>
+
+            </PreferenceCategory>
+
+            <PreferenceCategory android:title="@string/settings_thanks">
+
+                <Preference
+                    android:title="@string/settings_thanks_icons"
+                    android:summary="@string/settings_thanks_icons_summary">
+                </Preference>
+
+                <Preference
+                    android:title="@string/settings_thanks_doc"
+                    android:summary="@string/settings_thanks_doc_summary">
+                </Preference>
+
+                <Preference
+                    android:title="@string/settings_thanks_i15n"
+                    android:summary="@string/settings_thanks_i15n_summary">
+                </Preference>
+
+            </PreferenceCategory>
+
+        </PreferenceScreen>
+
+    </PreferenceCategory>
+
+
+</PreferenceScreen>

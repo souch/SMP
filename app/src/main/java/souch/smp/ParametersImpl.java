@@ -93,6 +93,13 @@ public class ParametersImpl implements Parameters {
         getEditor().putString(PrefKeys.FILTER.name(), filter.name()).commit();
     }
 
+    public RepeatMode getRepeatMode() {
+        return RepeatMode.valueOf(getPref().getString(PrefKeys.REPEAT_MODE.name(), RepeatMode.REPEAT_ALL.name()));
+    }
+    public void setRepeatMode(RepeatMode repeatMode) {
+        getEditor().putString(PrefKeys.REPEAT_MODE.name(), repeatMode.name()).commit();
+    }
+
     public String getRootFolders() {
         return getPref().getString(PrefKeys.ROOT_FOLDERS.name(), Path.getMusicStoragesStr(context));
     }

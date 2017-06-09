@@ -19,18 +19,21 @@
 package souch.smp;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.pm.PackageManager;
 import android.graphics.drawable.AnimationDrawable;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Vibrator;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -39,6 +42,7 @@ import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -72,6 +76,8 @@ public class Main extends Activity {
     // true if you want to keep the current song played visible
     private boolean followSong;
 
+    private int menuToOpen;
+
     private Parameters params;
 
     private Vibrator vibrator;
@@ -94,6 +100,7 @@ public class Main extends Activity {
 
         ImageButton gotoButton = (ImageButton) findViewById(R.id.goto_button);
         gotoButton.setOnTouchListener(touchListener);
+        gotoButton.setOnLongClickListener(gotoSongLongListener);
         ImageButton lockButton = (ImageButton) findViewById(R.id.lock_button);
         lockButton.setOnTouchListener(touchListener);
 
@@ -312,7 +319,7 @@ public class Main extends Activity {
 
         if (serviceBound) {
             // stop the service if not playing music
-            if(!musicSrv.playingLaunched()) {
+            if (!musicSrv.playingLaunched()) {
                 musicSrv.stopService(playIntent);
                 Toast.makeText(getApplicationContext(),
                         getResources().getString(R.string.app_name) + " destroyed.",
@@ -335,13 +342,12 @@ public class Main extends Activity {
                 Log.d("Main", "updateInfo changed");
                 vibrate();
                 updatePlayButton();
-                if(followSong)
+                if (followSong)
                     unfoldAndscrollToCurrSong();
             } else {
-                if(musicSrv.playingStopped()) {
+                if (musicSrv.playingStopped()) {
                     stopPlayButton();
-                }
-                else if(!touchSeekbar && musicSrv.getSeekFinished()) {
+                } else if (!touchSeekbar && musicSrv.getSeekFinished()) {
                     Log.v("Main", "updateInfo setProgress" + RowSong.secondsToMinutes(musicSrv.getCurrentPosition()));
                     // getCurrentPosition {Idle, Initialized, Prepared, Started, Paused, Stopped, PlaybackCompleted}
                     seekbar.setProgress(musicSrv.getCurrentPosition());
@@ -374,7 +380,7 @@ public class Main extends Activity {
             }
 
             RowSong rowSong = rows.getCurrSong();
-            if(rowSong != null) {
+            if (rowSong != null) {
                 duration.setText(RowSong.secondsToMinutes(rowSong.getDuration()));
                 duration.setVisibility(TextView.VISIBLE);
                 seekbar.setMax(rowSong.getDuration());
@@ -409,17 +415,242 @@ public class Main extends Activity {
         return true;
     }
 
+
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        if(musicSrv != null) {
+        if (musicSrv != null) {
             setFilterItem(menu.findItem(R.id.action_sort));
-            setShakeItem(menu.findItem(R.id.action_shake));
+//            setShakeItem(menu.findItem(R.id.action_shake));
             setChoosedTextSizeItem(menu.findItem(R.id.action_text_size));
+            setLockItem(menu.findItem(R.id.action_lock_unlock));
+            setRepeatItem(menu.findItem(R.id.action_repeat));
         }
 
         return true;
     }
 
+
+    public void onSortClick(View view) {
+        if (musicSrv != null) {
+            Filter oldFilter = rows.getFilter();
+            switch (((RadioGroup) view).getCheckedRadioButtonId()) {
+                case R.id.tree:
+                    rows.setFilter(Filter.TREE);
+                    break;
+                case R.id.artist:
+                    rows.setFilter(Filter.ARTIST);
+                    break;
+                case R.id.folder:
+                    rows.setFilter(Filter.FOLDER);
+                    break;
+            }
+
+//            setFilterItem(item);
+//            Toast.makeText(getApplicationContext(), item.getTitle(), Toast.LENGTH_LONG).show();
+            if (oldFilter != rows.getFilter()) {
+                songAdt.notifyDataSetChanged();
+                unfoldAndscrollToCurrSong();
+            }
+        }
+    }
+
+//    @Override
+//    public boolean onMenuItemClick(MenuItem item) {
+//        if (musicSrv != null) {
+//            Filter oldFilter = rows.getFilter();
+//            switch (item.getItemId()) {
+//                case R.id.tree:
+//                    rows.setFilter(Filter.TREE);
+//                    break;
+//                case R.id.artist:
+//                    rows.setFilter(Filter.ARTIST);
+//                    break;
+//                case R.id.folder:
+//                    rows.setFilter(Filter.FOLDER);
+//                    break;
+//                default:
+//                    return false;
+//            }
+//
+////            setFilterItem(item);
+////            Toast.makeText(getApplicationContext(), item.getTitle(), Toast.LENGTH_LONG).show();
+//            if (oldFilter != rows.getFilter()) {
+//                songAdt.notifyDataSetChanged();
+//                unfoldAndscrollToCurrSong();
+//            }
+//        }
+//        return true;
+//    }
+
+    // context sub menu
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v,
+                                    ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater inflater = getMenuInflater();
+        switch (menuToOpen) {
+            case R.id.action_sort:
+                inflater.inflate(R.menu.menu_sort, menu);
+                menu.setHeaderTitle(getResources().getString(R.string.action_sort));
+                if (rows.getFilter() == Filter.FOLDER)
+                    menu.findItem(R.id.folder).setChecked(true);
+                else if (rows.getFilter() == Filter.ARTIST)
+                    menu.findItem(R.id.artist).setChecked(true);
+                else
+                    menu.findItem(R.id.tree).setChecked(true);
+                break;
+            case R.id.action_repeat:
+                inflater.inflate(R.menu.menu_repeat, menu);
+                menu.setHeaderTitle(getResources().getString(R.string.action_repeat_title));
+                if (rows.getRepeatMode() == RepeatMode.REPEAT_ALL)
+                    menu.findItem(R.id.repeat_all).setChecked(true);
+                else if (rows.getRepeatMode() == RepeatMode.REPEAT_GROUP)
+                    menu.findItem(R.id.repeat_group).setChecked(true);
+                else
+                    menu.findItem(R.id.repeat_one).setChecked(true);
+                break;
+        }
+    }
+
+    // sub menu selected
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        if (musicSrv != null) {
+            Filter oldFilter = rows.getFilter();
+            switch (item.getItemId()) {
+                case R.id.tree:
+                    rows.setFilter(Filter.TREE);
+                    break;
+                case R.id.artist:
+                    rows.setFilter(Filter.ARTIST);
+                    break;
+                case R.id.folder:
+                    rows.setFilter(Filter.FOLDER);
+                    break;
+                case R.id.repeat_all:
+                    rows.setRepeatMode(RepeatMode.REPEAT_ALL);
+                    break;
+                case R.id.repeat_group:
+                    rows.setRepeatMode(RepeatMode.REPEAT_GROUP);
+                    break;
+                case R.id.repeat_one:
+                    rows.setRepeatMode(RepeatMode.REPEAT_ONE);
+                    break;
+                default:
+                    return super.onContextItemSelected(item);
+            }
+
+//            setFilterItem(item);
+//            Toast.makeText(getApplicationContext(), item.getTitle(), Toast.LENGTH_LONG).show();
+            if (oldFilter != rows.getFilter()) {
+                songAdt.notifyDataSetChanged();
+                unfoldAndscrollToCurrSong();
+            }
+        }
+        return true;
+    }
+
+    private void openMenu(int menuToOpen) {
+        this.menuToOpen = menuToOpen;
+        View view = findViewById(R.id.song_list);
+        registerForContextMenu(view);
+        openContextMenu(view);
+        unregisterForContextMenu(view);
+    }
+
+    private void openSortMenu() {
+        AlertDialog.Builder altBld = new AlertDialog.Builder(this);
+        //altBld.setIcon(R.drawable.ic_menu_tree);
+        altBld.setTitle(getString(R.string.action_sort));
+        final CharSequence[] items = {
+                getString(R.string.action_sort_tree),
+                getString(R.string.action_sort_folder),
+                getString(R.string.action_sort_artist)
+        };
+
+        int checkedItem;
+        if (rows.getFilter() == Filter.TREE)
+            checkedItem = 0;
+        else if (rows.getFilter() == Filter.FOLDER)
+            checkedItem = 1;
+        else
+            checkedItem = 2;
+
+        altBld.setSingleChoiceItems(items, checkedItem, new DialogInterface.OnClickListener()
+        {
+            public void onClick(DialogInterface dialog, int item) {
+                Toast.makeText(getApplicationContext(),
+                        getString(R.string.action_sort) + " " + items[item], Toast.LENGTH_SHORT).show();
+                if (musicSrv != null) {
+                    Filter oldFilter = rows.getFilter();
+                    switch (item) {
+                        case 0:
+                            rows.setFilter(Filter.TREE);
+                            break;
+                        case 1:
+                            rows.setFilter(Filter.FOLDER);
+                            break;
+                        case 2:
+                            rows.setFilter(Filter.ARTIST);
+                            break;
+                    }
+                    if (oldFilter != rows.getFilter()) {
+                        songAdt.notifyDataSetChanged();
+                        unfoldAndscrollToCurrSong();
+                    }
+                    dialog.dismiss(); // dismiss the alertbox after chose option
+                }
+            }
+        });
+        AlertDialog alert = altBld.create();
+        alert.show();
+    }
+
+
+    private void openRepeatMenu() {
+        AlertDialog.Builder altBld = new AlertDialog.Builder(this);
+        //altBld.setIcon(R.drawable.ic_menu_tree);
+        altBld.setTitle(getString(R.string.action_repeat_title));
+        final CharSequence[] items = {
+                getString(R.string.action_repeat_all),
+                getString(R.string.action_repeat_group),
+                getString(R.string.action_repeat_one)
+        };
+
+        int checkedItem;
+        if (rows.getRepeatMode() == RepeatMode.REPEAT_ALL)
+            checkedItem = 0;
+        else if (rows.getRepeatMode() == RepeatMode.REPEAT_GROUP)
+            checkedItem = 1;
+        else
+            checkedItem = 2;
+
+        altBld.setSingleChoiceItems(items, checkedItem, new DialogInterface.OnClickListener()
+        {
+            public void onClick(DialogInterface dialog, int item) {
+                Toast.makeText(getApplicationContext(),
+                        getString(R.string.action_repeat_title) + " " + items[item], Toast.LENGTH_SHORT).show();
+                if (musicSrv != null) {
+                    switch (item) {
+                        case 0:
+                            rows.setRepeatMode(RepeatMode.REPEAT_ALL);
+                            break;
+                        case 1:
+                            rows.setRepeatMode(RepeatMode.REPEAT_GROUP);
+                            break;
+                        case 2:
+                            rows.setRepeatMode(RepeatMode.REPEAT_ONE);
+                            break;
+                    }
+                    dialog.dismiss(); // dismiss the alertbox after chose option
+                }
+            }
+        });
+        AlertDialog alert = altBld.create();
+        alert.show();
+    }
+
+    // main menu selected
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
@@ -427,50 +658,62 @@ public class Main extends Activity {
                 Intent intent = new Intent(this, Settings.class);
                 startActivity(intent);
                 return true;
-            case R.id.action_fold:
-                if(musicSrv != null) {
-                    rows.fold();
-                    songAdt.notifyDataSetChanged();
-                    scrollToCurrSong();
-                }
+
+//            case R.id.action_fold:
+//                if(musicSrv != null) {
+//                    rows.fold();
+//                    songAdt.notifyDataSetChanged();
+//                    scrollToCurrSong();
+//                }
+//                return true;
+//            case R.id.action_unfold:
+//                if(musicSrv != null) {
+//                    rows.unfold();
+//                    songAdt.notifyDataSetChanged();
+//                    scrollToCurrSong();
+//                }
+//                return true;
+//            case R.id.action_shake:
+//                if(musicSrv != null) {
+//                    if(getPackageManager().hasSystemFeature(PackageManager.FEATURE_SENSOR_ACCELEROMETER)) {
+//                        musicSrv.setEnableShake(!musicSrv.getEnableShake());
+//                        // todo: only useful for item.getTitle() as the item is not changed, it just disapear
+//                        setShakeItem(item);
+//                        Toast.makeText(getApplicationContext(), item.getTitle(),
+//                                Toast.LENGTH_LONG).show();
+//                    }
+//                    else {
+//                        Toast.makeText(getApplicationContext(),
+//                                getResources().getString(R.string.settings_no_accelerometer),
+//                                Toast.LENGTH_LONG).show();
+//                    }
+//                }
+//                return false;
+
+            case R.id.action_repeat:
+//                openMenu(R.id.action_repeat);
+                openRepeatMenu();
                 return true;
-            case R.id.action_unfold:
-                if(musicSrv != null) {
-                    rows.unfold();
-                    songAdt.notifyDataSetChanged();
-                    scrollToCurrSong();
-                }
-                return true;
-            case R.id.action_shake:
-                if(musicSrv != null) {
-                    if(getPackageManager().hasSystemFeature(PackageManager.FEATURE_SENSOR_ACCELEROMETER)) {
-                        musicSrv.setEnableShake(!musicSrv.getEnableShake());
-                        // todo: only useful for item.getTitle() as the item is not changed, it just disapear
-                        setShakeItem(item);
-                        Toast.makeText(getApplicationContext(), item.getTitle(),
-                                Toast.LENGTH_LONG).show();
-                    }
-                    else {
-                        Toast.makeText(getApplicationContext(),
-                                getResources().getString(R.string.settings_no_accelerometer),
-                                Toast.LENGTH_LONG).show();
-                    }
-                }
-                return true;
+
             case R.id.action_sort:
-                if(musicSrv != null) {
-                    if (rows.getFilter() == Filter.FOLDER)
-                        rows.setFilter(Filter.ARTIST);
-                    else if (rows.getFilter() == Filter.ARTIST)
-                        rows.setFilter(Filter.TREE);
-                    else
-                        rows.setFilter(Filter.FOLDER);
-                    setFilterItem(item);
-                    Toast.makeText(getApplicationContext(), item.getTitle(), Toast.LENGTH_LONG).show();
-                    songAdt.notifyDataSetChanged();
-                    unfoldAndscrollToCurrSong();
-                }
+                openSortMenu();
+//                Dialog dialog = new Dialog(this);
+//                dialog.setContentView(R.layout.dialog_sort);
+//                dialog.setTitle(getString(R.string.action_sort));
+//                dialog.setCancelable(true);
+//                RadioButton rd;
+//                if (rows.getFilter() == Filter.FOLDER)
+//                    rd = (RadioButton) dialog.findViewById(R.id.folder);
+//                else if (rows.getFilter() == Filter.ARTIST)
+//                    rd = (RadioButton) dialog.findViewById(R.id.artist);
+//                else
+//                    rd = (RadioButton) dialog.findViewById(R.id.tree);
+//                rd.setChecked(true);
+//                dialog.show();
+
+//                openMenu(R.id.action_sort);
                 return true;
+
             case R.id.action_text_size:
                 if(musicSrv != null) {
                     params.setChooseTextSize(!params.getChoosedTextSize());
@@ -480,29 +723,68 @@ public class Main extends Activity {
                     songAdt.notifyDataSetChanged();
                 }
                 return true;
+
+            case R.id.action_edit:
+                if(musicSrv != null) {
+                    Toast.makeText(getApplicationContext(), "not implemented", Toast.LENGTH_LONG).show();
+                }
+                return true;
+
+            case R.id.action_lock_unlock:
+                noLock = !noLock;
+                applyLock();
+                setLockItem(item);
+                return true;
         }
+
+        openOptionsMenu();
 
         return super.onOptionsItemSelected(item);
     }
 
     private void setFilterItem(MenuItem item) {
+        if (item == null)
+            return;
+        String sortBy = getString(R.string.action_sort_by) + " ";
         switch (rows.getFilter()) {
             case ARTIST:
                 item.setIcon(R.drawable.ic_menu_artist);
-                item.setTitle(getString(R.string.action_sort_artist));
+                item.setTitle(sortBy + getString(R.string.action_sort_artist));
                 break;
             case FOLDER:
                 item.setIcon(R.drawable.ic_menu_folder);
-                item.setTitle(getString(R.string.action_sort_folder));
+                item.setTitle(sortBy + getString(R.string.action_sort_folder));
                 break;
             case TREE:
                 item.setIcon(R.drawable.ic_menu_tree);
-                item.setTitle(getString(R.string.action_sort_tree));
+                item.setTitle(sortBy + getString(R.string.action_sort_tree));
+                break;
+        }
+    }
+
+    private void setRepeatItem(MenuItem item) {
+        if (item == null)
+            return;
+        switch (rows.getRepeatMode()) {
+            case REPEAT_ALL:
+                item.setIcon(R.drawable.ic_menu_repeat_all);
+                item.setTitle(getString(R.string.state_repeat_all));
+                break;
+            case REPEAT_ONE:
+                item.setIcon(R.drawable.ic_menu_repeat_one);
+                item.setTitle(getString(R.string.state_repeat_one));
+                break;
+            case REPEAT_GROUP:
+                item.setIcon(R.drawable.ic_menu_repeat_group);
+                item.setTitle(getString(R.string.state_repeat_group));
                 break;
         }
     }
 
     private void setShakeItem(MenuItem item) {
+        if (item == null)
+            return;
+
         if (musicSrv.getEnableShake()) {
             item.setIcon(R.drawable.ic_menu_shake_checked);
             item.setTitle(R.string.action_shake_enabled);
@@ -513,6 +795,9 @@ public class Main extends Activity {
     }
 
     private void setChoosedTextSizeItem(MenuItem item) {
+        if (item == null)
+            return;
+
         if (params.getChoosedTextSize()) {
             item.setIcon(R.drawable.ic_menu_text_big);
             item.setTitle(getString(R.string.settings_text_size_big));
@@ -520,6 +805,53 @@ public class Main extends Activity {
         else {
             item.setIcon(R.drawable.ic_menu_text_regular);
             item.setTitle(getString(R.string.settings_text_size_regular));
+        }
+    }
+
+
+    private void setLockItem(MenuItem item) {
+        if (item == null)
+            return;
+
+        noLock = !noLock;
+        if(noLock) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
+            item.setIcon(R.drawable.ic_action_unlocked);
+            item.setTitle(getString(R.string.settings_unlocked));
+        }
+        else {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
+            item.setIcon(R.drawable.ic_action_locked);
+            item.setTitle(getString(R.string.settings_locked));
+        }
+    }
+
+
+    public void applyLock() {
+//        ImageButton lockButton = (ImageButton) findViewById(R.id.lock_button);
+        if(noLock) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
+//            lockButton.setImageResource(R.drawable.ic_action_unlocked);
+        }
+        else {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
+//            lockButton.setImageResource(R.drawable.ic_action_locked);
+        }
+    }
+
+    public void fold() {
+        if(musicSrv != null) {
+            rows.fold();
+            songAdt.notifyDataSetChanged();
+            unfoldAndscrollToCurrSong();
+        }
+    }
+
+    public void unfold() {
+        if(musicSrv != null) {
+            rows.unfold();
+            songAdt.notifyDataSetChanged();
+            scrollToCurrSong();
         }
     }
 
@@ -573,6 +905,14 @@ public class Main extends Activity {
                 vibrate();
             }
             return false;
+        }
+    };
+
+    private View.OnLongClickListener gotoSongLongListener = new View.OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View v) {
+            fold();
+            return true;
         }
     };
 
@@ -704,22 +1044,6 @@ public class Main extends Activity {
         Log.d("Main", "scrollToSong position:" + gotoSong);
     }
 
-    public void lockUnlock(View view) {
-        noLock = !noLock;
-        applyLock();
-    }
-
-    public void applyLock() {
-        ImageButton lockButton = (ImageButton) findViewById(R.id.lock_button);
-        if(noLock) {
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
-            lockButton.setImageResource(R.drawable.ic_action_unlocked);
-        }
-        else {
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
-            lockButton.setImageResource(R.drawable.ic_action_locked);
-        }
-    }
 
 
     public MusicService getMusicSrv() {

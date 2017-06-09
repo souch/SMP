@@ -1,6 +1,6 @@
 /*
  * SicMu Player - Lightweight music player for Android
- * Copyright (C) 2015  Mathieu Souchaud
+ * Copyright (C) 2017  Mathieu Souchaud
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,26 +18,6 @@
 
 package souch.smp;
 
-public enum PrefKeys {
-    SONG_ID,
-    NO_LOCK,
-    FOLLOW_SONG,
-    ENABLE_SHAKE,
-    SHAKE_THRESHOLD,
-    FILTER,
-    ROOT_FOLDERS,
-    DEFAULT_FOLD,
-    UNFOLD_SUBGROUP,
-    UNFOLD_SUBGROUP_THRESHOLD,
-    TEXT_SIZE_NORMAL,
-    TEXT_SIZE_BIG,
-    TEXT_SIZE_RATIO,
-    TEXT_SIZE_CHOOSED,
-    MEDIA_BUTTON_START_APP,
-    VIBRATE,
-    SHUFFLE,
-    SCROBBLE,
-    SONG_POS,
-    SAVE_SONG_POS,
-    REPEAT_MODE
+public enum RepeatMode {
+    REPEAT_ALL, REPEAT_ONE, REPEAT_GROUP
 }

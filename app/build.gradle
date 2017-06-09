@@ -1,18 +1,23 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        release {
+        }
+    }
     compileSdkVersion 21
-    buildToolsVersion "21.1.2"
+    buildToolsVersion '25.0.2'
     defaultConfig {
         applicationId "souch.smp"
-        minSdkVersion 8
-        targetSdkVersion 10
+        minSdkVersion 9
+        targetSdkVersion 11
         versionCode 11
         versionName '1.1'
     }
     buildTypes {
         release {
             minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
@@ -26,4 +31,5 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile 'com.jayway.android.robotium:robotium-solo:5.2.1'
+    compile 'com.android.support:support-v4:25.1.1'
 }

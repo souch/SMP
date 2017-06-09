@@ -54,6 +54,7 @@ public class Rows {
     private Resources resources;
 
     static final public String defaultStr = "<null>";
+    private RepeatMode repeatMode;
 
     public Rows(ContentResolver resolver, Parameters params, Resources resources) {
         this.resources = resources;
@@ -153,23 +154,68 @@ public class Rows {
         if (rowsUnfolded.size() <= 0)
             return;
 
-        // save the random song chosen
-        shuffleSavedPos.add(currPos);
+        if (repeatMode == RepeatMode.REPEAT_GROUP) {
+            int firstSongPos = getFirstSongPosInGroup(currPos);
+            int lastSongPos = getLastSongPosInGroup(currPos);
+            if (lastSongPos <= firstSongPos)
+                return;
+            // save the random song chosen
+            shuffleSavedPos.add(currPos);
 
-        int pos;
-        do {
-            pos = random.nextInt(rowsUnfolded.size());
-        } while(pos == currPos || rowsUnfolded.get(pos).getClass() != RowSong.class);
+            // pick a new pos
+            int oldPos = currPos;
+            while (oldPos == currPos) {
+                // +1 -> next int n is exclusive
+                currPos = firstSongPos + random.nextInt((lastSongPos - firstSongPos) + 1);
+            }
+        }
+        else {
+            // save the random song chosen
+            shuffleSavedPos.add(currPos);
 
-        setGroupSelectedState(currPos, false);
+            int pos;
+            do {
+                pos = random.nextInt(rowsUnfolded.size());
+            } while (pos == currPos || rowsUnfolded.get(pos).getClass() != RowSong.class);
 
-        currPos = pos;
+            setGroupSelectedState(currPos, false);
 
-        setGroupSelectedState(currPos, true);
+            currPos = pos;
+
+            setGroupSelectedState(currPos, true);
+        }
+    }
+
+    // return the pos of the last song belonging to the given songPos group
+    int getLastSongPosInGroup(int songPos) {
+        Row currParent = rowsUnfolded.get(songPos).parent;
+        songPos++;
+        // if next row is the end of the list or a group or a different group, we reached another group
+        while (songPos < rowsUnfolded.size() &&
+                rowsUnfolded.get(songPos).getClass() == RowSong.class &&
+                rowsUnfolded.get(songPos).parent == currParent) {
+            songPos++;
+        }
+        return songPos - 1;
+    }
+
+    // return the pos of the first song belonging to the given songPos group
+    int getFirstSongPosInGroup(int songPos) {
+        Row currParent = rowsUnfolded.get(songPos).parent;
+        songPos--;
+        while (songPos > 0 &&
+                rowsUnfolded.get(songPos).getClass() == RowSong.class &&
+                rowsUnfolded.get(songPos).parent == currParent) {
+            songPos--;
+        }
+        return songPos + 1;
     }
 
     // go back to previous random song done
     public void moveToRandomSongBack() {
+        if (rowsUnfolded.size() <= 0)
+            return;
+
         boolean backOk = false;
         if (shuffleSavedPos.size() > 0) {
             int pos = shuffleSavedPos.remove(shuffleSavedPos.size() - 1);
@@ -182,41 +228,59 @@ public class Rows {
             }
         }
         // if no saved pos, fallback to prevsong
-        if(!backOk)
+        if (!backOk)
             moveToPrevSong();
     }
 
     public void moveToNextSong() {
-        setGroupSelectedState(currPos, false);
+        if (repeatMode == RepeatMode.REPEAT_GROUP) {
+            int lastSongPos = getLastSongPosInGroup(currPos);
+            if (currPos == lastSongPos)
+                currPos = getFirstSongPosInGroup(currPos);
+            else
+                currPos++;
+        }
+        else {
+            setGroupSelectedState(currPos, false);
 
-        currPos++;
-        if (currPos >= rowsUnfolded.size())
-            currPos = 0;
-
-        while (currPos < rowsUnfolded.size() &&
-                rowsUnfolded.get(currPos).getClass() != RowSong.class)
             currPos++;
+            if (currPos >= rowsUnfolded.size())
+                currPos = 0;
 
-        if (currPos == rowsUnfolded.size())
-            currPos = -1;
+            while (currPos < rowsUnfolded.size() &&
+                    rowsUnfolded.get(currPos).getClass() != RowSong.class)
+                currPos++;
 
-        setGroupSelectedState(currPos, true);
+            if (currPos == rowsUnfolded.size())
+                currPos = -1;
+
+            setGroupSelectedState(currPos, true);
+        }
     }
 
     public void moveToPrevSong() {
-        setGroupSelectedState(currPos, false);
+        if (repeatMode == RepeatMode.REPEAT_GROUP) {
+            int firstSongPos = getFirstSongPosInGroup(currPos);
+            if (currPos == firstSongPos)
+                currPos = getLastSongPosInGroup(currPos);
+            else
+                currPos--;
+        }
+        else {
+            setGroupSelectedState(currPos, false);
 
-        currPos--;
-        if (currPos < 0)
-            currPos = rowsUnfolded.size() - 1;
-
-        while (currPos >= 0 && rowsUnfolded.get(currPos).getClass() != RowSong.class) {
             currPos--;
             if (currPos < 0)
                 currPos = rowsUnfolded.size() - 1;
-        }
 
-        setGroupSelectedState(currPos, true);
+            while (currPos >= 0 && rowsUnfolded.get(currPos).getClass() != RowSong.class) {
+                currPos--;
+                if (currPos < 0)
+                    currPos = rowsUnfolded.size() - 1;
+            }
+
+            setGroupSelectedState(currPos, true);
+        }
     }
 
     // fold everything
@@ -753,6 +817,7 @@ public class Rows {
     private void restore() {
         savedID = params.getSongID();
         filter = params.getFilter();
+        repeatMode = params.getRepeatMode();
         Path.rootFolders = params.getRootFolders();
     }
 
@@ -760,6 +825,7 @@ public class Rows {
         updateSavedId();
         params.setSongID(savedID);
         params.setFilter(filter);
+        params.setRepeatMode(repeatMode);
     }
 
     
@@ -774,6 +840,14 @@ public class Rows {
             updateSavedId();
             init();
         }
+    }
+
+    public RepeatMode getRepeatMode() {
+        return repeatMode;
+    }
+
+    public void setRepeatMode(RepeatMode repeatMode) {
+        this.repeatMode = repeatMode;
     }
 
     public boolean setRootFolders(String rootFolders) {

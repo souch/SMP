@@ -62,6 +62,11 @@ public class ParametersStub implements Parameters {
     }
     public void setFilter(Filter filter) {}
 
+    public RepeatMode getRepeatMode() {
+        return RepeatMode.REPEAT_ALL;
+    }
+    public void setRepeatMode(RepeatMode repeatMode) {}
+
     public String getRootFolders() {
         return "";
     }

@@ -19,10 +19,26 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
+
+    <CheckBoxPreference
+        android:key="SHUFFLE"
+        android:title="@string/settings_shuffle_title"
+        android:summary="@string/settings_shuffle"
+        android:icon="@drawable/ic_menu_shuffle"
+        android:defaultValue="false"/>
+
+    <CheckBoxPreference
+        android:key="ENABLE_SHAKE"
+        android:title="@string/settings_accelerometer"
+        android:summary="@string/settings_accelerometer_summary"
+        android:icon="@drawable/ic_menu_shake_checked"
+        android:defaultValue="false"/>
+
     <PreferenceScreen
         android:key="button_help"
         android:title="@string/settings_help"
         android:summary="@string/settings_help_summary"
+        android:icon="@drawable/ic_menu_help"
         android:persistent="false">
 
         <Preference
@@ -49,8 +65,7 @@
 
         <Preference
             android:title="@string/help_root_folders"
-            android:summary="@string/help_root_folders_summary"
-            android:icon="@drawable/ic_menu_folder"/>
+            android:summary="@string/help_root_folders_summary"/>
 
         <Preference
             android:title="@string/help_mediabutton"
@@ -74,193 +89,184 @@
 
     </PreferenceScreen>
 
+    <PreferenceScreen
+        android:key="button_about"
+        android:title="@string/settings_about"
+        android:summary="@string/settings_about_summary"
+        android:icon="@drawable/ic_menu_skull"
+        android:persistent="false">
 
-    <PreferenceCategory android:title="@string/settings_song_view_font">
+        <PreferenceCategory android:title="@string/settings_about">
 
-        <CheckBoxPreference
-            android:key="TEXT_SIZE_CHOOSED"
-            android:title="@string/settings_text_size_choosed"
-            android:summary=""
-            android:defaultValue="false"
-            />
+            <Preference
+                android:title="@string/settings_author_title"
+                android:summary="@string/settings_author"/>
 
-        <EditTextPreference
-            android:key="TEXT_SIZE_NORMAL"
-            android:title="@string/settings_text_size_regular"
-            android:numeric="integer"
-            android:icon="@drawable/ic_menu_text_regular"
-            android:summary=""
-            android:defaultValue="@string/settings_text_size_regular_default"
-            />
+            <Preference
+                android:title="@string/settings_version_title"
+                android:summary="@string/settings_version"/>
 
-        <EditTextPreference
-            android:key="TEXT_SIZE_BIG"
-            android:title="@string/settings_text_size_big"
-            android:numeric="integer"
-            android:summary=""
-            android:icon="@drawable/ic_menu_text_big"
-            android:defaultValue="@string/settings_text_size_big_default"
-            />
+            <Preference
+                android:title="@string/settings_source_title"
+                android:summary="@string/settings_source"/>
 
-        <EditTextPreference
-            android:key="TEXT_SIZE_RATIO"
-            android:title="@string/settings_text_size_ratio"
-            android:digits="0123456789."
-            android:summary=""
-            android:defaultValue="@string/settings_text_size_ratio_default"
-            />
+            <Preference
+                android:title="@string/settings_licence_title"
+                android:summary="@string/settings_licence"/>
 
-    </PreferenceCategory>
+            <Preference
+                android:key="@string/settings_donate_key"
+                android:title="@string/settings_donate_title"
+                android:summary="@string/settings_donate_summary"/>
 
+        </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/settings_accelerometer">
+        <PreferenceCategory android:title="@string/settings_thanks">
 
-        <CheckBoxPreference
-            android:key="ENABLE_SHAKE"
-            android:title="@string/settings_accelerometer"
-            android:summary="@string/settings_accelerometer_summary"
-            android:icon="@drawable/ic_menu_shake_checked"
-            android:defaultValue="false"/>
+            <Preference
+                android:title="@string/settings_thanks_icons"
+                android:summary="@string/settings_thanks_icons_summary">
+            </Preference>
 
-        <!-- todo: improve this with a number picker or slider or shake force counter... -->
-        <EditTextPreference
-            android:key="SHAKE_THRESHOLD"
-            android:title="@string/settings_accelerometer_threshold"
-            android:summary="@string/settings_default_shake_threshold"
-            android:numeric="integer"
-            android:defaultValue="@string/settings_default_shake_threshold"/>
+            <Preference
+                android:title="@string/settings_thanks_doc"
+                android:summary="@string/settings_thanks_doc_summary">
+            </Preference>
 
-    </PreferenceCategory>
+            <Preference
+                android:title="@string/settings_thanks_i15n"
+                android:summary="@string/settings_thanks_i15n_summary">
+            </Preference>
 
+        </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/settings_song_view">
+    </PreferenceScreen>
+    -
+    <PreferenceScreen
+        android:key="button_settings"
+        android:title="@string/advanced_settings_title"
+        android:persistent="false"
+        android:icon="@drawable/ic_menu_settings">
 
-        <ListPreference
-            android:key="DEFAULT_FOLD"
-            android:title="@string/settings_fold_title"
-            android:entryValues="@array/settings_fold_values"
-            android:entries="@array/settings_fold_entries"
-            android:defaultValue="0"
-            />
+        <PreferenceCategory android:title="@string/settings_song_view_font">
 
-        <CheckBoxPreference
-            android:key="UNFOLD_SUBGROUP"
-            android:title="@string/settings_unfold_subgroup"
-            android:summary="@string/settings_unfold_subgroup_summary"
-            android:defaultValue="false"
-            />
+            <EditTextPreference
+                android:key="TEXT_SIZE_NORMAL"
+                android:title="@string/settings_text_size_regular"
+                android:numeric="integer"
+                android:icon="@drawable/ic_menu_text_regular"
+                android:summary=""
+                android:defaultValue="@string/settings_text_size_regular_default"
+                />
 
-        <EditTextPreference
-            android:key="UNFOLD_SUBGROUP_THRESHOLD"
-            android:title="@string/settings_unfold_subgroup_threshold"
-            android:numeric="integer"
-            android:defaultValue="@string/settings_unfold_subgroup_threshold_default"
-            />
+            <EditTextPreference
+                android:key="TEXT_SIZE_BIG"
+                android:title="@string/settings_text_size_big"
+                android:numeric="integer"
+                android:summary=""
+                android:icon="@drawable/ic_menu_text_big"
+                android:defaultValue="@string/settings_text_size_big_default"
+                />
 
-        <CheckBoxPreference
-            android:key="FOLLOW_SONG"
-            android:title="@string/settings_autoscroll"
-            android:summary="@string/settings_autoscroll_summary"
-            android:defaultValue="true"
-            />
+            <EditTextPreference
+                android:key="TEXT_SIZE_RATIO"
+                android:title="@string/settings_text_size_ratio"
+                android:digits="0123456789."
+                android:summary=""
+                android:defaultValue="@string/settings_text_size_ratio_default"
+                />
 
-        <EditTextPreference
-            android:key="ROOT_FOLDERS"
-            android:title="@string/settings_root_folder"
-            />
-
-    </PreferenceCategory>
+        </PreferenceCategory>
 
 
-    <PreferenceCategory android:title="@string/settings_misc">
-        <CheckBoxPreference
-            android:key="SAVE_SONG_POS"
-            android:title="@string/settings_songpos_title"
-            android:summary="@string/settings_songpos"
-            android:defaultValue="false"/>
+        <PreferenceCategory android:title="@string/settings_accelerometer">
 
-        <CheckBoxPreference
-            android:key="SHUFFLE"
-            android:title="@string/settings_shuffle_title"
-            android:summary="@string/settings_shuffle"
-            android:defaultValue="false"/>
 
-        <CheckBoxPreference
-            android:key="VIBRATE"
-            android:title="@string/settings_vibrate_title"
-            android:summary="@string/settings_vibrate"
-            android:defaultValue="true"/>
+            <!-- todo: improve this with a number picker or slider or shake force counter... -->
+            <EditTextPreference
+                android:key="SHAKE_THRESHOLD"
+                android:title="@string/settings_accelerometer_threshold"
+                android:summary="@string/settings_default_shake_threshold"
+                android:numeric="integer"
+                android:defaultValue="@string/settings_default_shake_threshold"/>
 
-        <CheckBoxPreference
-            android:key="SCROBBLE"
-            android:title="@string/settings_scrobble_title"
-            android:summary="@string/settings_scrobble"
-            android:defaultValue="false"/>
+        </PreferenceCategory>
 
-        <Preference
-            android:key="@string/settings_rescan_key"
-            android:title="@string/settings_rescan_title"
-            android:summary="@string/settings_rescan"/>
 
-        <CheckBoxPreference
-            android:key="MEDIA_BUTTON_START_APP"
-            android:title="@string/settings_media_button_start_app_title"
-            android:summary="@string/settings_media_button_start_app"
-            android:defaultValue="true"/>
+        <PreferenceCategory android:title="@string/settings_song_view">
 
-        <PreferenceScreen
-            android:key="button_about"
-            android:title="@string/settings_about"
-            android:summary="@string/settings_about_summary"
-            android:persistent="false">
+            <ListPreference
+                android:key="DEFAULT_FOLD"
+                android:title="@string/settings_fold_title"
+                android:entryValues="@array/settings_fold_values"
+                android:entries="@array/settings_fold_entries"
+                android:defaultValue="0"
+                />
 
-            <PreferenceCategory android:title="@string/settings_about">
+            <CheckBoxPreference
+                android:key="UNFOLD_SUBGROUP"
+                android:title="@string/settings_unfold_subgroup"
+                android:summary="@string/settings_unfold_subgroup_summary"
+                android:defaultValue="false"
+                />
 
-                <Preference
-                    android:title="@string/settings_author_title"
-                    android:summary="@string/settings_author"/>
+            <EditTextPreference
+                android:key="UNFOLD_SUBGROUP_THRESHOLD"
+                android:title="@string/settings_unfold_subgroup_threshold"
+                android:numeric="integer"
+                android:defaultValue="@string/settings_unfold_subgroup_threshold_default"
+                />
 
-                <Preference
-                    android:title="@string/settings_version_title"
-                    android:summary="@string/settings_version"/>
+            <CheckBoxPreference
+                android:key="FOLLOW_SONG"
+                android:title="@string/settings_autoscroll"
+                android:summary="@string/settings_autoscroll_summary"
+                android:defaultValue="true"
+                />
 
-                <Preference
-                    android:title="@string/settings_source_title"
-                    android:summary="@string/settings_source"/>
+            <EditTextPreference
+                android:key="ROOT_FOLDERS"
+                android:title="@string/settings_root_folder"
+                />
 
-                <Preference
-                    android:title="@string/settings_licence_title"
-                    android:summary="@string/settings_licence"/>
+        </PreferenceCategory>
 
-                <Preference
-                    android:key="@string/settings_donate_key"
-                    android:title="@string/settings_donate_title"
-                    android:summary="@string/settings_donate_summary"/>
 
-            </PreferenceCategory>
+        <PreferenceCategory android:title="@string/settings_misc">
+            <CheckBoxPreference
+                android:key="SAVE_SONG_POS"
+                android:title="@string/settings_songpos_title"
+                android:summary="@string/settings_songpos"
+                android:defaultValue="false"/>
 
-            <PreferenceCategory android:title="@string/settings_thanks">
+            <CheckBoxPreference
+                android:key="VIBRATE"
+                android:title="@string/settings_vibrate_title"
+                android:summary="@string/settings_vibrate"
+                android:icon="@drawable/ic_menu_shake_checked"
+                android:defaultValue="true"/>
 
-                <Preference
-                    android:title="@string/settings_thanks_icons"
-                    android:summary="@string/settings_thanks_icons_summary">
-                </Preference>
+            <CheckBoxPreference
+                android:key="SCROBBLE"
+                android:title="@string/settings_scrobble_title"
+                android:summary="@string/settings_scrobble"
+                android:defaultValue="false"/>
 
-                <Preference
-                    android:title="@string/settings_thanks_doc"
-                    android:summary="@string/settings_thanks_doc_summary">
-                </Preference>
+            <Preference
+                android:key="@string/settings_rescan_key"
+                android:title="@string/settings_rescan_title"
+                android:summary="@string/settings_rescan"/>
 
-                <Preference
-                    android:title="@string/settings_thanks_i15n"
-                    android:summary="@string/settings_thanks_i15n_summary">
-                </Preference>
+            <CheckBoxPreference
+                android:key="MEDIA_BUTTON_START_APP"
+                android:title="@string/settings_media_button_start_app_title"
+                android:summary="@string/settings_media_button_start_app"
+                android:defaultValue="true"/>
 
-            </PreferenceCategory>
 
-        </PreferenceScreen>
+        </PreferenceCategory>
 
-    </PreferenceCategory>
-
+    </PreferenceScreen>
 
 </PreferenceScreen>
+

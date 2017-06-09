@@ -24,25 +24,22 @@
     done by WPZOOM (Creative Commons (Attribution-Share Alike 3.0 Unported))
     found on iconfinder.com. Color and dimension has been changed.
     -->
-    <item android:id="@+id/action_shake"
-        android:icon="@drawable/ic_menu_shake"
-        android:title="@string/action_shake_disabled"/>
 
-    <item android:id="@+id/action_fold"
-        android:title="@string/action_fold"
-        android:icon="@drawable/ic_menu_folded" />
 
-    <item android:id="@+id/action_unfold"
-        android:title="@string/action_unfold"
-        android:icon="@drawable/ic_menu_unfolded" />
+    <item android:id="@+id/action_edit"
+        android:title="@string/action_music_mode"
+        android:icon="@drawable/ic_menu_music" />
+
+    <item android:id="@+id/action_text_size"/>
+
+    <item android:id="@+id/action_lock_unlock"/>
 
     <item android:id="@+id/action_settings"
         android:title="@string/action_settings"
         android:icon="@drawable/ic_menu_settings" />
 
-    <item android:id="@+id/action_text_size"/>
+    <item android:id="@+id/action_repeat"/>
 
     <!-- icon ic_menu_folder done by ionicons (MIT license) found on iconfinder.com -->
     <item android:id="@+id/action_sort"/>
-
 </menu>

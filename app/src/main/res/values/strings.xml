@@ -21,12 +21,15 @@
     <string name="app_name">SicMu Player</string>
 
     <string name="action_settings">Settings</string>
+    <string name="advanced_settings_title">Advanced settings</string>
     <string name="action_shake_disabled">Shake off</string>
     <string name="action_shake_enabled">Shake on</string>
 
-    <string name="action_sort_folder">Sort by folder</string>
-    <string name="action_sort_artist">Sort by artist</string>
-    <string name="action_sort_tree">Sort by tree</string>
+    <string name="action_sort_folder">folder</string>
+    <string name="action_sort_artist">artist</string>
+    <string name="action_sort_tree">tree</string>
+    <string name="action_sort_by">Sort by</string>
+    <string name="action_sort">Sort songs by:</string>
 
     <string name="app_playing">SicMu playing</string>
 
@@ -57,10 +60,10 @@
     <string name="settings_song_view_font">Song view font</string>
     <string name="settings_text_size_choosed">Choose font size</string>
     <string name="settings_text_size_choosed_default">false</string>
-    <string name="settings_text_size_regular">Regular font</string>
-    <string name="settings_text_size_regular_default">14</string>
-    <string name="settings_text_size_big">Big font</string>
-    <string name="settings_text_size_big_default">17</string>
+    <string name="settings_text_size_regular">Small font</string>
+    <string name="settings_text_size_regular_default">15</string>
+    <string name="settings_text_size_big">Bold font</string>
+    <string name="settings_text_size_big_default">19</string>
     <string name="settings_text_size_ratio">Group/song ratio text size</string>
     <string name="settings_text_size_ratio_default">1.1</string>
 
@@ -111,11 +114,11 @@
     <string name="help_unfold_group">Fold / unfold group</string>
     <string name="help_unfold_group_summary">Tap on a group to fold / unfold it.</string>
     <string name="help_scroll">Scroll to current song</string>
-    <string name="help_scroll_summary">Press the button to the right of \'next button\' to scroll the list to current playing song.</string>
+    <string name="help_scroll_summary">Press the button to the right of \'next button\' to scroll the list to current playing song. Long tap fold everything except current song.</string>
     <string name="help_lock">Disable lock screen</string>
     <string name="help_lock_summary">Open the padlock button to disable the lock screen (it prevents locking only when the app is on foreground; do not work on some device).</string>
     <string name="help_root_folders">Root folders</string>
-    <string name="help_root_folders_summary">Root folders can be customized: it is used only for hiding the first portion of folders path when songs are sorted by folder. To put several root folders, separate path using a semi-colon.</string>
+    <string name="help_root_folders_summary">Root folders can be customized from advanced settings: it is used only for hiding the first portion of folders path when songs are sorted by folder. To put several root folders, separate path using a semi-colon.</string>
     <string name="help_background">Background</string>
     <string name="help_background_summary">While playing music, press on home button or back button to close the song list and keep the music playing in background.</string>
     <string name="help_quit">Quit</string>
@@ -153,5 +156,19 @@
     <string name="settings_thanks_doc_summary">Sue Smith (tutorials on creating a Music Player on Android)</string>
     <string name="settings_thanks_i15n">Translation</string>
     <string name="settings_thanks_i15n_summary">Mladen Pejaković (Serbian)</string>
+    <string name="settings_locked">Locked</string>
+    <string name="settings_unlocked">Unlocked</string>
+
+    <string name="action_repeat_title">Repeat</string>
+    <string name="action_repeat_all">All</string>
+    <string name="action_repeat_one">Track</string>
+    <string name="action_repeat_group">Group</string>
+    <string name="state_repeat_all">Repeat all</string>
+    <string name="state_repeat_one">Repeat track</string>
+    <string name="state_repeat_group">Repeat group</string>
+
+    <string name="action_music_mode">Music mode</string>
+    <string name="action_edit_mode">Edit mode</string>
+
 
 </resources>

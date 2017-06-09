@@ -402,7 +402,12 @@ public class MusicService extends Service implements
     public void onCompletion(MediaPlayer mp) {
         state.setState(PlayerState.PlaybackCompleted);
         changed = true;
-        playNext();
+
+        // loop only to same track if not asked to change track (i.e. loop only on completion)
+        if (rows.getRepeatMode() == RepeatMode.REPEAT_ONE)
+            playSame();
+        else
+            playNext();
     }
 
     @Override
@@ -514,6 +519,12 @@ public class MusicService extends Service implements
     }
 
 
+    public void playSame() {
+        if(foreground)
+            startNotification();
+
+        playSong();
+    }
 
     /*** STATE ***/
 

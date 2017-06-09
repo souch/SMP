@@ -41,6 +41,9 @@ public interface Parameters {
     Filter getFilter();
     void setFilter(Filter filter);
 
+    RepeatMode getRepeatMode();
+    void setRepeatMode(RepeatMode repeatMode);
+
     String getRootFolders();
 
     int getDefaultFold();

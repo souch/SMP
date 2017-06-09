@@ -84,7 +84,6 @@ public class Settings extends PreferenceActivity
         findPreference(PrefKeys.TEXT_SIZE_NORMAL.name()).setSummary(String.valueOf(params.getNormalTextSize()));
         findPreference(PrefKeys.TEXT_SIZE_BIG.name()).setSummary(String.valueOf(params.getBigTextSize()));
         findPreference(PrefKeys.TEXT_SIZE_RATIO.name()).setSummary(String.valueOf(params.getTextSizeRatio()));
-        setChoosedTextSizeSummary();
 
         Preference rescan = findPreference(getResources().getString(R.string.settings_rescan_key));
         rescan.setOnPreferenceClickListener(this);
@@ -116,12 +115,6 @@ public class Settings extends PreferenceActivity
 
         if(key.equals(PrefKeys.DEFAULT_FOLD.name())) {
             setFoldSummary();
-        }
-        else if(key.equals(PrefKeys.TEXT_SIZE_CHOOSED.name())) {
-            setChoosedTextSizeSummary();
-            Main.applyTextSize(params);
-            // todo a bit dirty? we actually just need to call Adapter.notifyDataSetChanged
-            musicSrv.setChanged();
         }
         else if(key.equals(PrefKeys.TEXT_SIZE_NORMAL.name())) {
             findPreference(key).setSummary(String.valueOf(params.getNormalTextSize()));
@@ -195,17 +188,6 @@ public class Settings extends PreferenceActivity
         webIntent.setData(Uri.parse(getString(R.string.settings_donate_www)));
         this.startActivity(webIntent);
     }
-
-    private void setChoosedTextSizeSummary() {
-        int r;
-        if (!params.getChoosedTextSize())
-            r = R.string.settings_text_size_regular;
-        else
-            r = R.string.settings_text_size_big;
-        findPreference(PrefKeys.TEXT_SIZE_CHOOSED.name()).setSummary(getResources().getString(r));
-    }
-
-
 
     private ServiceConnection musicConnection = new ServiceConnection() {
 
