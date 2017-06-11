@@ -17,10 +17,10 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="4dp"
-    android:id="@+id/main_layout">
+    android:padding="0dp">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/action_bar"
@@ -77,32 +77,33 @@
             android:layout_gravity="center_vertical|right"
             android:onClick="settings"
             android:paddingLeft="20dp"
-            android:paddingRight="16dp"
+            android:paddingRight="20dp"
             android:src="@drawable/ic_actionbar_overflow" />
 
     </LinearLayout>
 
 
     <ListView
+        android:id="@+id/song_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/song_list"
+        android:layout_above="@+id/action_button"
         android:layout_alignParentLeft="true"
+        android:layout_below="@+id/action_bar"
         android:choiceMode="singleChoice"
         android:fastScrollEnabled="true"
-        android:scrollbars="vertical"
         android:hapticFeedbackEnabled="false"
         android:scrollbarThumbVertical="@drawable/fastscroll_thumb_holo"
-        android:layout_below="@+id/action_bar"
-        android:layout_above="@+id/action_button"/>
+        android:scrollbars="vertical" />
 
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="horizontal"
+        android:id="@+id/action_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:id="@+id/action_button">
+        android:orientation="horizontal"
+        android:weightSum="251">
 
         <!--
         icon ic_action_prev, ic_action_play, ic_action_pause, ic_action_next
@@ -110,39 +111,40 @@
         found on iconfinder.com. Color and dimension has been changed.
         -->
         <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/action_play"
-            style="@style/BottomButton"
-            android:onClick="playOrPause"
             android:id="@+id/play_button"
-            android:layout_weight="1" />
+            style="@style/BottomButton"
+            android:layout_width="fill_parent"
+            android:layout_height="60dp"
+            android:layout_weight="48"
+            android:onClick="playOrPause"
+            android:scaleType="centerCrop"
+            android:src="@drawable/action_play" />
 
         <souch.smp.RepeatingImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/action_prev"
-            style="@style/BottomButton"
-            android:onClick="playPrev"
-            android:longClickable="true"
             android:id="@+id/prev_button"
-            android:layout_weight="1" />
+            style="@style/BottomButton"
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="51"
+            android:longClickable="true"
+            android:onClick="playPrev"
+            android:src="@drawable/action_prev" />
 
         <souch.smp.RepeatingImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/action_next"
-            style="@style/BottomButton"
-            android:onClick="playNext"
             android:id="@+id/next_button"
-            android:layout_weight="1" />
+            style="@style/BottomButton"
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="51"
+            android:onClick="playNext"
+            android:src="@drawable/action_next" />
 
         <ImageButton
             android:id="@+id/goto_button"
             style="@style/BottomButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="50"
             android:longClickable="true"
             android:onClick="gotoCurrSong"
             android:src="@drawable/action_goto_play" />
@@ -152,14 +154,57 @@
         done by WPZOOM (Creative Commons (Attribution-Share Alike 3.0 Unported))
         found on iconfinder.com. Color and dimension has been changed.
         -->
-        <ImageButton
-            android:id="@+id/lock_button"
-            style="@style/BottomButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="51"
             android:onClick="settings"
-            android:src="@drawable/ic_action_locked" />
+            android:orientation="horizontal"
+            android:paddingLeft="16dp">
+
+            <LinearLayout
+                android:layout_width="20dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/view_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="20dp"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_menu_text_big" />
+
+                <ImageView
+                    android:id="@+id/view_repeat"
+                    android:layout_width="match_parent"
+                    android:layout_height="20dp"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_menu_repeat_all" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="20dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/view_lock"
+                    android:layout_width="match_parent"
+                    android:layout_height="20dp"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_action_locked" />
+
+                <ImageView
+                    android:id="@+id/view_sort"
+                    android:layout_width="match_parent"
+                    android:layout_height="20dp"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_menu_tree" />
+            </LinearLayout>
+        </LinearLayout>
 
     </LinearLayout>
 

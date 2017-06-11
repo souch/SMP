@@ -101,8 +101,8 @@ public class Main extends Activity {
         ImageButton gotoButton = (ImageButton) findViewById(R.id.goto_button);
         gotoButton.setOnTouchListener(touchListener);
         gotoButton.setOnLongClickListener(gotoSongLongListener);
-        ImageButton lockButton = (ImageButton) findViewById(R.id.lock_button);
-        lockButton.setOnTouchListener(touchListener);
+//        ImageButton lockButton = (ImageButton) findViewById(R.id.lock_button);
+//        lockButton.setOnTouchListener(touchListener);
 
         final int repeatDelta = 260;
         RepeatingImageButton prevButton = (RepeatingImageButton) findViewById(R.id.prev_button);
@@ -218,6 +218,8 @@ public class Main extends Activity {
                     runOnUiThread(firstScroll);
                 }
             }, 100);
+
+            setImagesState();
         }
 
         @Override
@@ -430,134 +432,6 @@ public class Main extends Activity {
     }
 
 
-    public void onSortClick(View view) {
-        if (musicSrv != null) {
-            Filter oldFilter = rows.getFilter();
-            switch (((RadioGroup) view).getCheckedRadioButtonId()) {
-                case R.id.tree:
-                    rows.setFilter(Filter.TREE);
-                    break;
-                case R.id.artist:
-                    rows.setFilter(Filter.ARTIST);
-                    break;
-                case R.id.folder:
-                    rows.setFilter(Filter.FOLDER);
-                    break;
-            }
-
-//            setFilterItem(item);
-//            Toast.makeText(getApplicationContext(), item.getTitle(), Toast.LENGTH_LONG).show();
-            if (oldFilter != rows.getFilter()) {
-                songAdt.notifyDataSetChanged();
-                unfoldAndscrollToCurrSong();
-            }
-        }
-    }
-
-//    @Override
-//    public boolean onMenuItemClick(MenuItem item) {
-//        if (musicSrv != null) {
-//            Filter oldFilter = rows.getFilter();
-//            switch (item.getItemId()) {
-//                case R.id.tree:
-//                    rows.setFilter(Filter.TREE);
-//                    break;
-//                case R.id.artist:
-//                    rows.setFilter(Filter.ARTIST);
-//                    break;
-//                case R.id.folder:
-//                    rows.setFilter(Filter.FOLDER);
-//                    break;
-//                default:
-//                    return false;
-//            }
-//
-////            setFilterItem(item);
-////            Toast.makeText(getApplicationContext(), item.getTitle(), Toast.LENGTH_LONG).show();
-//            if (oldFilter != rows.getFilter()) {
-//                songAdt.notifyDataSetChanged();
-//                unfoldAndscrollToCurrSong();
-//            }
-//        }
-//        return true;
-//    }
-
-    // context sub menu
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v,
-                                    ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        MenuInflater inflater = getMenuInflater();
-        switch (menuToOpen) {
-            case R.id.action_sort:
-                inflater.inflate(R.menu.menu_sort, menu);
-                menu.setHeaderTitle(getResources().getString(R.string.action_sort));
-                if (rows.getFilter() == Filter.FOLDER)
-                    menu.findItem(R.id.folder).setChecked(true);
-                else if (rows.getFilter() == Filter.ARTIST)
-                    menu.findItem(R.id.artist).setChecked(true);
-                else
-                    menu.findItem(R.id.tree).setChecked(true);
-                break;
-            case R.id.action_repeat:
-                inflater.inflate(R.menu.menu_repeat, menu);
-                menu.setHeaderTitle(getResources().getString(R.string.action_repeat_title));
-                if (rows.getRepeatMode() == RepeatMode.REPEAT_ALL)
-                    menu.findItem(R.id.repeat_all).setChecked(true);
-                else if (rows.getRepeatMode() == RepeatMode.REPEAT_GROUP)
-                    menu.findItem(R.id.repeat_group).setChecked(true);
-                else
-                    menu.findItem(R.id.repeat_one).setChecked(true);
-                break;
-        }
-    }
-
-    // sub menu selected
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        if (musicSrv != null) {
-            Filter oldFilter = rows.getFilter();
-            switch (item.getItemId()) {
-                case R.id.tree:
-                    rows.setFilter(Filter.TREE);
-                    break;
-                case R.id.artist:
-                    rows.setFilter(Filter.ARTIST);
-                    break;
-                case R.id.folder:
-                    rows.setFilter(Filter.FOLDER);
-                    break;
-                case R.id.repeat_all:
-                    rows.setRepeatMode(RepeatMode.REPEAT_ALL);
-                    break;
-                case R.id.repeat_group:
-                    rows.setRepeatMode(RepeatMode.REPEAT_GROUP);
-                    break;
-                case R.id.repeat_one:
-                    rows.setRepeatMode(RepeatMode.REPEAT_ONE);
-                    break;
-                default:
-                    return super.onContextItemSelected(item);
-            }
-
-//            setFilterItem(item);
-//            Toast.makeText(getApplicationContext(), item.getTitle(), Toast.LENGTH_LONG).show();
-            if (oldFilter != rows.getFilter()) {
-                songAdt.notifyDataSetChanged();
-                unfoldAndscrollToCurrSong();
-            }
-        }
-        return true;
-    }
-
-    private void openMenu(int menuToOpen) {
-        this.menuToOpen = menuToOpen;
-        View view = findViewById(R.id.song_list);
-        registerForContextMenu(view);
-        openContextMenu(view);
-        unregisterForContextMenu(view);
-    }
-
     private void openSortMenu() {
         AlertDialog.Builder altBld = new AlertDialog.Builder(this);
         //altBld.setIcon(R.drawable.ic_menu_tree);
@@ -597,6 +471,7 @@ public class Main extends Activity {
                     if (oldFilter != rows.getFilter()) {
                         songAdt.notifyDataSetChanged();
                         unfoldAndscrollToCurrSong();
+                        setImagesState();
                     }
                     dialog.dismiss(); // dismiss the alertbox after chose option
                 }
@@ -643,6 +518,7 @@ public class Main extends Activity {
                             break;
                     }
                     dialog.dismiss(); // dismiss the alertbox after chose option
+                    setImagesState();
                 }
             }
         });
@@ -659,59 +535,12 @@ public class Main extends Activity {
                 startActivity(intent);
                 return true;
 
-//            case R.id.action_fold:
-//                if(musicSrv != null) {
-//                    rows.fold();
-//                    songAdt.notifyDataSetChanged();
-//                    scrollToCurrSong();
-//                }
-//                return true;
-//            case R.id.action_unfold:
-//                if(musicSrv != null) {
-//                    rows.unfold();
-//                    songAdt.notifyDataSetChanged();
-//                    scrollToCurrSong();
-//                }
-//                return true;
-//            case R.id.action_shake:
-//                if(musicSrv != null) {
-//                    if(getPackageManager().hasSystemFeature(PackageManager.FEATURE_SENSOR_ACCELEROMETER)) {
-//                        musicSrv.setEnableShake(!musicSrv.getEnableShake());
-//                        // todo: only useful for item.getTitle() as the item is not changed, it just disapear
-//                        setShakeItem(item);
-//                        Toast.makeText(getApplicationContext(), item.getTitle(),
-//                                Toast.LENGTH_LONG).show();
-//                    }
-//                    else {
-//                        Toast.makeText(getApplicationContext(),
-//                                getResources().getString(R.string.settings_no_accelerometer),
-//                                Toast.LENGTH_LONG).show();
-//                    }
-//                }
-//                return false;
-
             case R.id.action_repeat:
-//                openMenu(R.id.action_repeat);
                 openRepeatMenu();
                 return true;
 
             case R.id.action_sort:
                 openSortMenu();
-//                Dialog dialog = new Dialog(this);
-//                dialog.setContentView(R.layout.dialog_sort);
-//                dialog.setTitle(getString(R.string.action_sort));
-//                dialog.setCancelable(true);
-//                RadioButton rd;
-//                if (rows.getFilter() == Filter.FOLDER)
-//                    rd = (RadioButton) dialog.findViewById(R.id.folder);
-//                else if (rows.getFilter() == Filter.ARTIST)
-//                    rd = (RadioButton) dialog.findViewById(R.id.artist);
-//                else
-//                    rd = (RadioButton) dialog.findViewById(R.id.tree);
-//                rd.setChecked(true);
-//                dialog.show();
-
-//                openMenu(R.id.action_sort);
                 return true;
 
             case R.id.action_text_size:
@@ -721,6 +550,7 @@ public class Main extends Activity {
                     applyTextSize(params);
                     Toast.makeText(getApplicationContext(), item.getTitle(), Toast.LENGTH_LONG).show();
                     songAdt.notifyDataSetChanged();
+                    setImagesState();
                 }
                 return true;
 
@@ -734,8 +564,10 @@ public class Main extends Activity {
                 noLock = !noLock;
                 applyLock();
                 setLockItem(item);
+                setImagesState();
                 return true;
         }
+
 
         openOptionsMenu();
 
@@ -745,6 +577,7 @@ public class Main extends Activity {
     private void setFilterItem(MenuItem item) {
         if (item == null)
             return;
+
         String sortBy = getString(R.string.action_sort_by) + " ";
         switch (rows.getFilter()) {
             case ARTIST:
@@ -765,6 +598,7 @@ public class Main extends Activity {
     private void setRepeatItem(MenuItem item) {
         if (item == null)
             return;
+
         switch (rows.getRepeatMode()) {
             case REPEAT_ALL:
                 item.setIcon(R.drawable.ic_menu_repeat_all);
@@ -777,6 +611,52 @@ public class Main extends Activity {
             case REPEAT_GROUP:
                 item.setIcon(R.drawable.ic_menu_repeat_group);
                 item.setTitle(getString(R.string.state_repeat_group));
+                break;
+        }
+    }
+
+    private void setImagesState() {
+        ImageView img;
+
+        img = (ImageView) findViewById(R.id.view_repeat);
+        switch (rows.getRepeatMode()) {
+            case REPEAT_ALL:
+                img.setImageResource(R.drawable.ic_menu_repeat_all);
+                break;
+            case REPEAT_ONE:
+                img.setImageResource(R.drawable.ic_menu_repeat_one);
+                break;
+            case REPEAT_GROUP:
+                img.setImageResource(R.drawable.ic_menu_repeat_group);
+                break;
+        }
+
+        img = (ImageView) findViewById(R.id.view_text);
+        if (params.getChoosedTextSize()) {
+            img.setImageResource(R.drawable.ic_menu_text_big);
+        }
+        else {
+            img.setImageResource(R.drawable.ic_menu_text_regular);
+        }
+
+        img = (ImageView) findViewById(R.id.view_lock);
+        if(noLock) {
+            img.setImageResource(R.drawable.ic_action_unlocked);
+        }
+        else {
+            img.setImageResource(R.drawable.ic_action_locked);
+        }
+
+        img = (ImageView) findViewById(R.id.view_sort);
+        switch (rows.getFilter()) {
+            case ARTIST:
+                img.setImageResource(R.drawable.ic_menu_artist);
+                break;
+            case FOLDER:
+                img.setImageResource(R.drawable.ic_menu_folder);
+                break;
+            case TREE:
+                img.setImageResource(R.drawable.ic_menu_tree);
                 break;
         }
     }
@@ -813,7 +693,6 @@ public class Main extends Activity {
         if (item == null)
             return;
 
-        noLock = !noLock;
         if(noLock) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
             item.setIcon(R.drawable.ic_action_unlocked);
