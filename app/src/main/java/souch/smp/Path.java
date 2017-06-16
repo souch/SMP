@@ -19,6 +19,7 @@
 package souch.smp;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
 
@@ -188,11 +189,13 @@ public class Path {
 
         dirsToScan.add(Environment.getExternalStorageDirectory());
 
-        // hack. Don't know if it work well on other devices!
-        String userPathToRemove = "Android/data/souch.smp/files";
-        for (File dir: context.getExternalFilesDirs(null)) {
-            if (dir.getAbsolutePath().endsWith(userPathToRemove)) {
-                dirsToScan.add(dir.getParentFile().getParentFile().getParentFile().getParentFile());
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            // hack. Don't know if it work well on other devices!
+            String userPathToRemove = "Android/data/souch.smp/files";
+            for (File dir : context.getExternalFilesDirs(null)) {
+                if (dir.getAbsolutePath().endsWith(userPathToRemove)) {
+                    dirsToScan.add(dir.getParentFile().getParentFile().getParentFile().getParentFile());
+                }
             }
         }
 
