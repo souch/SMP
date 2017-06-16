@@ -147,7 +147,6 @@
     <string name="settings_thanks_doc">Başvuru</string>
     <string name="settings_thanks_doc_summary">Sue Smith (Android için müzikçalar hazırlama üzerine dersler)</string>
     <string name="settings_thanks_i15n">Çeviri</string>
-    <string name="settings_thanks_i15n_summary1">Mladen Pejaković (Sırpça)</string>
-	<string name="settings_thanks_i15n_summary2">Mehmet Gülmen (Türkçe)</string>
+    <string name="settings_thanks_i15n_summary">Mladen Pejaković (Sırpça), Mehmet Gülmen (Türkçe)</string>
 
 </resources>

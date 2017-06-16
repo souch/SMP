@@ -115,7 +115,7 @@
     <string name="settings_author">Mathieu Souchaud</string>
     <string name="settings_source_title">Изворни кôд</string>
     <string name="settings_licence_title">Лиценца</string>
-    <string name="settings_opensource">ГПЛв3</string>
+    <string name="settings_licence">ГПЛв3</string>
     <string name="settings_donate_title">Донација</string>
     <string name="settings_donate_summary">Кликните овде ако би вам живот био тежак без ове апликације.</string>
 
