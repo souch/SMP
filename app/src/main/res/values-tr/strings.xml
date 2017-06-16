@@ -130,7 +130,6 @@
     <string name="settings_about_summary">Uygulama ve hazırlayan hakkında biraz bilgi</string>
 
     <string name="settings_version_title">Sürüm numarası</string>
-    <string name="settings_version">1.0</string>
     <string name="settings_author_title">Hazırlayan</string>
     <string name="settings_author">Mathieu Souchaud</string>
     <string name="settings_source_title">Kaynak</string>
