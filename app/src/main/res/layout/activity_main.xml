@@ -17,6 +17,7 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -28,8 +29,8 @@
         android:layout_height="wrap_content"
         android:background="#ff242424"
         android:orientation="horizontal"
-        android:paddingBottom="4dp"
-        android:paddingTop="4dp">
+        android:paddingBottom="2dp"
+        android:paddingTop="2dp">
 
         <ImageView
             android:id="@+id/app_button"
@@ -55,33 +56,130 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
+            android:layout_marginBottom="2dp"
+            android:layout_marginTop="2dp"
             android:layout_weight="10"
             android:onClick="playOrPause"
             android:visibility="invisible" />
 
-        <TextView
-            android:id="@+id/duration"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|right"
-            android:text="00:00"
-            android:textSize="16sp"
-            android:visibility="invisible" />
+            android:layout_gravity="bottom"
+            android:onClick="openPos"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/duration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center_horizontal"
+                android:text="00:00"
+                android:textSize="16sp"
+                android:visibility="invisible" />
 
 
-        <ImageButton
-            android:id="@+id/settings"
-            style="@style/BottomButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|right"
-            android:onClick="settings"
-            android:paddingLeft="20dp"
-            android:paddingRight="20dp"
-            android:src="@drawable/ic_actionbar_overflow" />
+            <ImageButton
+                android:id="@+id/pos_button"
+                style="@style/BottomButton"
+                android:layout_width="40dp"
+                android:layout_height="9dp"
+                android:scaleType="centerCrop" />
+
+        </LinearLayout>
 
     </LinearLayout>
 
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/pos_layout"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:background="#ff242424"
+        android:orientation="horizontal"
+        android:layout_below="@+id/action_bar"
+        android:paddingBottom="2dp"
+        android:paddingTop="2dp">
+
+        <souch.smp.RepeatingImageButton
+            android:id="@+id/m20_button"
+            style="@style/BottomButton"
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="51"
+            android:onClick="seek"
+            android:paddingBottom="0dp"
+            android:paddingRight="5dp"
+            android:paddingTop="0dp"
+            android:scaleType="fitEnd"
+            android:src="@drawable/action_prev" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:id="@+id/m20_text"
+            android:clickable="true"
+            android:text="20s"
+            android:onClick="seek"
+            android:textColor="@color/apptheme_color"></TextView>
+
+        <souch.smp.RepeatingImageButton
+            android:id="@+id/m5_button"
+            style="@style/BottomButton"
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="51"
+            android:onClick="seek"
+            android:paddingBottom="0dp"
+            android:paddingRight="13dp"
+            android:paddingTop="0dp"
+            android:scaleType="fitEnd"
+            android:src="@drawable/action_prev" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:clickable="false"
+            android:text="5s"
+            android:textColor="@color/apptheme_color"></TextView>
+
+        <souch.smp.RepeatingImageButton
+            android:id="@+id/p5_button"
+            style="@style/BottomButton"
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="51"
+            android:onClick="seek"
+            android:paddingBottom="0dp"
+            android:paddingLeft="13dp"
+            android:paddingTop="0dp"
+            android:scaleType="fitStart"
+            android:src="@drawable/action_next" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:clickable="true"
+            android:onClick="seek"
+            android:text="20s"
+            android:id="@+id/p20_text"
+            android:textColor="@color/apptheme_color"></TextView>
+
+        <souch.smp.RepeatingImageButton
+            android:id="@+id/p20_button"
+            style="@style/BottomButton"
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="51"
+            android:onClick="seek"
+            android:paddingBottom="0dp"
+            android:paddingLeft="5dp"
+            android:paddingTop="0dp"
+            android:scaleType="fitStart"
+            android:src="@drawable/action_next" />
+    </LinearLayout>
 
     <ListView
         android:id="@+id/song_list"
@@ -89,7 +187,7 @@
         android:layout_height="match_parent"
         android:layout_above="@+id/action_button"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/action_bar"
+        android:layout_below="@+id/pos_layout"
         android:choiceMode="singleChoice"
         android:fastScrollEnabled="true"
         android:hapticFeedbackEnabled="false"

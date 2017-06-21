@@ -41,8 +41,10 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -70,11 +72,15 @@ public class Main extends Activity {
     private TextView duration;
     private TextView currDuration;
 
+    private ImageButton posButton;
+
     // true if the user want to disable lockscreen
     private boolean noLock;
 
     // true if you want to keep the current song played visible
     private boolean followSong;
+
+    private boolean posOpened;
 
     private int menuToOpen;
 
@@ -83,6 +89,8 @@ public class Main extends Activity {
     private Vibrator vibrator;
 
     private AnimationDrawable appAnimation;
+
+    private LinearLayout posLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +112,12 @@ public class Main extends Activity {
 //        ImageButton lockButton = (ImageButton) findViewById(R.id.lock_button);
 //        lockButton.setOnTouchListener(touchListener);
 
+        posButton = (ImageButton) findViewById(R.id.pos_button);
+        posOpened = false;
+        posButton.setImageDrawable(null);
+        posLayout = (LinearLayout) findViewById(R.id.pos_layout);
+        posLayout.setVisibility(View.GONE);
+
         final int repeatDelta = 260;
         RepeatingImageButton prevButton = (RepeatingImageButton) findViewById(R.id.prev_button);
         prevButton.setRepeatListener(rewindListener, repeatDelta);
@@ -111,6 +125,20 @@ public class Main extends Activity {
         RepeatingImageButton nextButton = (RepeatingImageButton) findViewById(R.id.next_button);
         nextButton.setRepeatListener(forwardListener, repeatDelta);
         nextButton.setOnTouchListener(touchListener);
+
+        RepeatingImageButton seekButton;
+        seekButton = (RepeatingImageButton) findViewById(R.id.m20_button);
+        seekButton.setRepeatListener(rewindListener, repeatDelta);
+        seekButton.setOnTouchListener(touchListener);
+        seekButton = (RepeatingImageButton) findViewById(R.id.p20_button);
+        seekButton.setRepeatListener(forwardListener, repeatDelta);
+        seekButton.setOnTouchListener(touchListener);
+        seekButton = (RepeatingImageButton) findViewById(R.id.m5_button);
+        seekButton.setRepeatListener(rewindListener, repeatDelta);
+        seekButton.setOnTouchListener(touchListener);
+        seekButton = (RepeatingImageButton) findViewById(R.id.p5_button);
+        seekButton.setRepeatListener(forwardListener, repeatDelta);
+        seekButton.setOnTouchListener(touchListener);
 
         playIntent = new Intent(this, MusicService.class);
         startService(playIntent);
@@ -145,7 +173,6 @@ public class Main extends Activity {
         ImageView appButton = (ImageView) findViewById(R.id.app_button);
         appButton.setBackgroundResource(R.drawable.ic_actionbar_launcher_anim);
         appAnimation = (AnimationDrawable) appButton.getBackground();
-
     }
 
 
@@ -371,6 +398,7 @@ public class Main extends Activity {
             // MediaPlayer has been destroyed or first start
             stopPlayButton();
         } else {
+            setPosButtonImg();
             if (!musicSrv.playingPaused()) {
                 playButton.setImageResource(R.drawable.ic_action_pause);
                 playButton.setTag(R.drawable.ic_action_pause);
@@ -405,6 +433,22 @@ public class Main extends Activity {
         playButton.setTag(R.drawable.ic_action_play);
     }
 
+
+    private void setPosButtonImg() {
+        if (posOpened) {
+            posButton.setImageResource(R.drawable.ic_action_close_pos);
+            posLayout.setVisibility(View.VISIBLE);
+        }
+        else {
+            posButton.setImageResource(R.drawable.ic_action_open_pos);
+            posLayout.setVisibility(View.GONE);
+        }
+    }
+
+    public void openPos(View view) {
+        posOpened = !posOpened;
+        setPosButtonImg();
+    }
 
     public void settings(View view) {
         openOptionsMenu();
@@ -776,6 +820,34 @@ public class Main extends Activity {
             unfoldAndscrollToCurrSong();
     }
 
+    public void seek(View view){
+        if(!serviceBound)
+            return;
+        int newPos = musicSrv.getCurrentPosition();
+        switch (view.getId()) {
+            case R.id.m5_button:
+                newPos -= 5;
+                break;
+            case R.id.p5_button:
+                newPos += 5;
+                break;
+            case R.id.m20_button:
+            case R.id.m20_text:
+                newPos -= 20;
+                break;
+            case R.id.p20_button:
+            case R.id.p20_text:
+                newPos += 20;
+                break;
+        }
+
+        newPos = newPos < 0 ? 0 : newPos;
+
+        if (newPos >= musicSrv.getDuration())
+            playNext(null);
+        else
+            musicSrv.seekTo(newPos);
+    }
 
     private View.OnTouchListener touchListener = new View.OnTouchListener() {
         @Override
