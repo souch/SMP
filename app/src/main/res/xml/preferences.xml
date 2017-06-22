@@ -50,6 +50,11 @@
             android:summary="@string/help_start_group_summary"/>
 
         <Preference
+            android:title="@string/help_next_group"
+            android:summary="@string/help_next_group_summary"
+            android:icon="@drawable/ic_action_next"/>
+
+        <Preference
             android:title="@string/help_unfold_group"
             android:summary="@string/help_unfold_group_summary"/>
 

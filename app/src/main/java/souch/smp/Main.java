@@ -115,11 +115,11 @@ public class Main extends Activity {
         posLayout.setVisibility(View.GONE);
 
         final int repeatDelta = 260;
-        RepeatingImageButton prevButton = (RepeatingImageButton) findViewById(R.id.prev_button);
-        prevButton.setRepeatListener(rewindListener, repeatDelta);
+        ImageButton prevButton = (ImageButton) findViewById(R.id.prev_button);
+        prevButton.setOnLongClickListener(prevGroupLongListener);
         prevButton.setOnTouchListener(touchListener);
-        RepeatingImageButton nextButton = (RepeatingImageButton) findViewById(R.id.next_button);
-        nextButton.setRepeatListener(forwardListener, repeatDelta);
+        ImageButton nextButton = (ImageButton) findViewById(R.id.next_button);
+        nextButton.setOnLongClickListener(nextGroupLongListener);
         nextButton.setOnTouchListener(touchListener);
 
         RepeatingImageButton seekButton;
@@ -859,6 +859,36 @@ public class Main extends Activity {
         @Override
         public boolean onLongClick(View v) {
             fold();
+            return true;
+        }
+    };
+
+    private View.OnLongClickListener nextGroupLongListener = new View.OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View v) {
+            if(!serviceBound)
+                return false;
+
+            musicSrv.playNextGroup();
+            updatePlayButton();
+            if(followSong)
+                unfoldAndscrollToCurrSong();
+
+            return true;
+        }
+    };
+
+    private View.OnLongClickListener prevGroupLongListener = new View.OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View v) {
+            if(!serviceBound)
+                return false;
+
+            musicSrv.playPrevGroup();
+            updatePlayButton();
+            if(followSong)
+                unfoldAndscrollToCurrSong();
+
             return true;
         }
     };

@@ -113,6 +113,8 @@
     <string name="help_start_song_summary">Tap on a song to start it.</string>
     <string name="help_start_group">Start playing from a group</string>
     <string name="help_start_group_summary">Long tap on a group to start the first song it contains.</string>
+    <string name="help_next_group">Long tap on next</string>
+    <string name="help_next_group_summary">Long click on next will start playing next group (same for previous group)</string>
     <string name="help_unfold_group">Fold / unfold group</string>
     <string name="help_unfold_group_summary">Tap on a group to fold / unfold it.</string>
     <string name="help_scroll">Scroll to current song</string>

@@ -283,6 +283,68 @@ public class Rows {
         }
     }
 
+    public void moveToPrevGroup() {
+        if (repeatMode == RepeatMode.REPEAT_GROUP) {
+            int firstSongPos = getFirstSongPosInGroup(currPos);
+            if (currPos == firstSongPos)
+                currPos = getLastSongPosInGroup(currPos);
+            else
+                currPos--;
+        }
+        else {
+            setGroupSelectedState(currPos, false);
+
+            currPos = getFirstSongPosInGroup(currPos);
+            currPos--;
+
+            if (currPos < 0)
+                currPos = rowsUnfolded.size() - 1;
+
+            while (currPos >= 0 && rowsUnfolded.get(currPos).getClass() != RowSong.class) {
+                currPos--;
+                if (currPos < 0)
+                    currPos = rowsUnfolded.size() - 1;
+            }
+
+            if (currPos < 0)
+                currPos = rowsUnfolded.size() - 1;
+
+            setGroupSelectedState(currPos, true);
+        }
+    }
+
+    public void moveToNextGroup() {
+        if (repeatMode == RepeatMode.REPEAT_GROUP) {
+            int lastSongPos = getLastSongPosInGroup(currPos);
+            if (currPos == lastSongPos)
+                currPos = getFirstSongPosInGroup(currPos);
+            else
+                currPos++;
+        }
+        else {
+            setGroupSelectedState(currPos, false);
+
+            currPos = getLastSongPosInGroup(currPos);
+            currPos++;
+
+            // if last song go to beginning
+            if (currPos == rowsUnfolded.size()) {
+                currPos = 0;
+            }
+
+            // skip RowGroups
+            while (currPos < rowsUnfolded.size() &&
+                    rowsUnfolded.get(currPos).getClass() != RowSong.class)
+                currPos++;
+
+            if (currPos == rowsUnfolded.size()) {
+                currPos = -1;
+            }
+
+            setGroupSelectedState(currPos, true);
+        }
+    }
+
     // fold everything
     public void fold() {
         // todo: better to recopy first level from unfolded?
