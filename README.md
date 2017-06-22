@@ -28,6 +28,7 @@ Works on old slow small devices (from Android froyo 2.2).
 - or sorted by folder tree, useful for big music list
 - or sorted by folders, artists, albums and track number, flattening folder hierarchy
 - groups can be folded / unfolded
+- repeat mode (all, group, one track)
 - shake the phone to go to next song
 - show current playing song in the list
 - notification when playing
