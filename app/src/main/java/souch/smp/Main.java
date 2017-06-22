@@ -31,9 +31,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Vibrator;
 import android.util.Log;
-import android.view.ContextMenu;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -43,8 +41,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RadioGroup;
-import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -874,51 +870,62 @@ public class Main extends Activity {
              * specified in setRepeatListener(), for as long as the button
              * is pressed.
              *
-             * @param v           The button as a View.
+             * @param view           The button as a View.
              * @param duration    The number of milliseconds the button has been pressed so far.
              * @param repeatcount The number of previous calls in this sequence.
              *                    If this is going to be the last call in this sequence (i.e. the user
              *                    just stopped pressing the button), the value will be -1.
              */
-            public void onRepeat(View v, long duration, int repeatcount) {
+            public void onRepeat(View view, long duration, int repeatcount) {
                 Log.d("Main", "-- repeatcount: " + repeatcount + " duration: " + duration);
-                if (repeatcount > 0) {
-                    if (duration < 5000) {
-                        // seek at 10x speed for the first 5 seconds
-                        duration = duration * 10;
-                    } else {
-                        // seek at 40x after that
-                        duration = 50000 + (duration - 5000) * 40;
-                    }
-                    int newPos = musicSrv.getCurrentPosition() - (int) (duration / 1000);
-                    Log.d("Main", "<-- currpos: " + musicSrv.getCurrentPosition() + " seekto: " + newPos);
-                    newPos = newPos < 0 ? 0 : newPos;
-                    musicSrv.seekTo(newPos);
-                }
+                if (repeatcount <= 0)
+                    return;
+
+                int newPos = musicSrv.getCurrentPosition() - getSeekOffsetSec(view, duration);
+                Log.d("Main", "<-- currpos: " + musicSrv.getCurrentPosition() + " seekto: " + newPos);
+                newPos = newPos < 0 ? 0 : newPos;
+                musicSrv.seekTo(newPos);
             }
         };
 
-    private RepeatingImageButton.RepeatListener forwardListener =
-        new RepeatingImageButton.RepeatListener() {
-            public void onRepeat(View v, long duration, int repeatcount) {
-                Log.d("Main", "-- repeatcount: " + repeatcount + " duration: " + duration);
-                if (repeatcount > 0) {
+        private int getSeekOffsetSec(View view, long duration) {
+            long offsetMs = 0;
+            switch (view.getId()) {
+                case R.id.m5_button:
+                case R.id.p5_button:
+                    offsetMs = 5000;
+                    break;
+                case R.id.m20_button:
+                case R.id.m20_text:
+                case R.id.p20_button:
+                case R.id.p20_text:
                     if (duration < 5000) {
                         // seek at 10x speed for the first 5 seconds
-                        duration = duration * 10;
+                        offsetMs = duration * 10;
                     } else {
                         // seek at 40x after that
-                        duration = 50000 + (duration - 5000) * 40;
+                        offsetMs = 50000 + (duration - 5000) * 40;
                     }
-
-                    int newPos = musicSrv.getCurrentPosition() + (int) (duration / 1000);
-                    Log.d("Main", "--> currpos: " + musicSrv.getCurrentPosition() + " seekto: " + newPos);
-                    if (newPos >= musicSrv.getDuration())
-                        playNext(null);
-                    else
-                        musicSrv.seekTo(newPos);
-                }
+                    break;
             }
+            return (int) offsetMs / 1000;
+        }
+
+    private RepeatingImageButton.RepeatListener forwardListener =
+        new RepeatingImageButton.RepeatListener() {
+            public void onRepeat(View view, long duration, int repeatcount) {
+                Log.d("Main", "-- repeatcount: " + repeatcount + " duration: " + duration);
+
+                if (repeatcount <= 0)
+                    return;
+
+                int newPos = musicSrv.getCurrentPosition() + getSeekOffsetSec(view, duration);
+                Log.d("Main", "--> currpos: " + musicSrv.getCurrentPosition() + " seekto: " + newPos);
+                if (newPos >= musicSrv.getDuration())
+                    playNext(null);
+                else
+                    musicSrv.seekTo(newPos);
+        }
     };
 
     public void gotoCurrSong(View view) {
