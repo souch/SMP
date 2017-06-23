@@ -64,6 +64,11 @@
             android:icon="@drawable/ic_action_goto_play"/>
 
         <Preference
+            android:title="@string/help_seek_menu"
+            android:summary="@string/help_seek_menu_summary"
+            android:icon="@drawable/ic_action_open_pos"/>
+
+        <Preference
             android:title="@string/help_lock"
             android:summary="@string/help_lock_summary"
             android:icon="@drawable/ic_action_unlocked"/>

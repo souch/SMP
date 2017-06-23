@@ -133,6 +133,8 @@
     <string name="help_mediabutton_summary">Media buttons (like in bluetooth headphones) can control the app (next, prev, pause/play).</string>
     <string name="help_mediabutton_autostart">Media buttons auto start</string>
     <string name="help_mediabutton_autostart_summary">If the app is closed media button will start it. To disable media button ability to start the app automatically uncheck settings->media buttons auto start.</string>
+    <string name="help_seek_menu">Seek menu</string>
+    <string name="help_seek_menu_summary">Click at the top right to open seek menu. Long tap on next/prev will seek forward or backward continuously.</string>
 
 
     <string name="settings_misc">Miscellaneous</string>
