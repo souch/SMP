@@ -28,8 +28,8 @@
         android:layout_height="wrap_content"
         android:background="#ff242424"
         android:orientation="horizontal"
-        android:paddingBottom="2dp"
-        android:paddingTop="2dp">
+        android:paddingBottom="3dp"
+        android:paddingTop="3dp">
 
         <ImageView
             android:id="@+id/app_button"
@@ -66,7 +66,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:onClick="openPos"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingRight="5dp">
 
             <TextView
                 android:id="@+id/duration"
@@ -92,10 +93,10 @@
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/pos_layout"
         android:layout_width="match_parent"
-        android:layout_height="32dp"
+        android:layout_height="40dp"
+        android:layout_below="@+id/action_bar"
         android:background="#ff242424"
         android:orientation="horizontal"
-        android:layout_below="@+id/action_bar"
         android:paddingBottom="2dp"
         android:paddingTop="2dp">
 
@@ -113,13 +114,13 @@
             android:src="@drawable/action_prev" />
 
         <TextView
+            android:id="@+id/m20_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:id="@+id/m20_text"
             android:clickable="true"
-            android:text="20s"
             android:onClick="seek"
+            android:text="20s"
             android:textColor="@color/apptheme_color"></TextView>
 
         <souch.smp.RepeatingImageButton
@@ -157,13 +158,13 @@
             android:src="@drawable/action_next" />
 
         <TextView
+            android:id="@+id/p20_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:clickable="true"
             android:onClick="seek"
             android:text="20s"
-            android:id="@+id/p20_text"
             android:textColor="@color/apptheme_color"></TextView>
 
         <souch.smp.RepeatingImageButton
