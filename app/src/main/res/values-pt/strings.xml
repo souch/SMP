@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  SicMu Player - Lightweight music player for Android
+  Copyright (C) 2015  Mathieu Souchaud
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<resources tools:ignore="MissingTranslation" xmlns:tools="http://schemas.android.com/tools">
+
+    <string name="app_name">SicMu Player</string>
+
+    <string name="settings_version">1.2</string>
+
+    <string name="action_settings">Confgurações</string>
+    <string name="advanced_settings_title">Configurações avançadas</string>
+    <string name="action_shake_disabled">Ação de sacudir desligada</string>
+    <string name="action_shake_enabled">Ação de sacudir ligada</string>
+
+    <string name="action_sort_folder">pasta</string>
+    <string name="action_sort_artist">artista</string>
+    <string name="action_sort_tree">árvore</string>
+    <string name="action_sort_by">Ordem: por</string>
+    <string name="action_sort">Ordenar músics por:</string>
+
+    <string name="app_playing">SicMu tocando</string>
+
+    <string name="focus_error">Não consegui foco do áudio! Reinicie o app!</string>
+
+    <string name="settings_title">Configurações</string>
+
+    <string name="action_fold">Colapsar (fechar)</string>
+    <string name="action_unfold">Abrir</string>
+
+    <string name="settings_song_view">Visão das músicas</string>
+    <string name="settings_fold_title">Estado das pastas ao iniciar</string>
+    <string-array name="settings_fold_entries">
+        <item>Fechadas</item>
+        <item>Abertas</item>
+    </string-array>
+    <string-array name="settings_fold_values">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+    <string name="settings_unfold_subgroup">Abrir subgrupos</string>
+    <string name="settings_unfold_subgroup_summary">Se marcado: clicar no grupo abrirá todos os subgrupos.</string>
+    <string name="settings_unfold_subgroup_threshold">Abrir subgrupos se grupo</string>
+    <string name="settings_unfold_subgroup_threshold_default">18</string>
+    <string name="settings_unfold_subgroup_threshold_summary">tem menos que %d músicas</string>
+
+
+    <string name="settings_song_view_font">Fonte para visão das músicas</string>
+    <string name="settings_text_size_choosed">Escolha o tamanho da fonte</string>
+    <string name="settings_text_size_choosed_default">false</string>
+    <string name="settings_text_size_regular">Fonte pequena</string>
+    <string name="settings_text_size_regular_default">15</string>
+    <string name="settings_text_size_big">Fonte grande</string>
+    <string name="settings_text_size_big_default">19</string>
+    <string name="settings_text_size_ratio">Proporção entre tamnho de texto grupo/música</string>
+    <string name="settings_text_size_ratio_default">1.1</string>
+
+    <string name="settings_rescan_title">Procurar músicas</string>
+    <string name="settings_rescan">Iniciar busca por arquivos de mídia no dispositivo.</string>
+    <string name="settings_rescan_key">RESCAN</string>
+    <string name="settings_rescan_disabled">Broadcast de busca desabilitado por Android KitKat.</string>
+    <string name="settings_rescan_triggered">Buscador de Mídia Iniciado...</string>
+    <string name="settings_rescan_storage">Procurando em armazenamento: %s</string>
+    <string name="settings_rescan_finished">Busca de mídia terminada. Pode levar algum tempo até que os novos arquivos apareçam.</string>
+
+
+    <string name="settings_media_button_start_app_title">Botões de mídia iniciam app</string>
+    <string name="settings_media_button_start_app">Botões de mídia iniciam o app se já não estiver rodando.</string>
+
+    <string name="settings_autoscroll">Rolar até a próxima música</string>
+    <string name="settings_autoscroll_summary">Quando uma música começar a tocar, role até ela.</string>
+
+    <string name="settings_songpos_title">Gravar posição na música</string>
+    <string name="settings_songpos">Ao iniciar a música começará da posição em que estava tocando anteriormente.</string>
+
+    <string name="settings_shuffle_title">Embaralhar</string>
+    <string name="settings_shuffle">A próxima música é escolhida aleatoriamente</string>
+
+    <string name="settings_scrobble_title">Scrobble</string>
+    <string name="settings_scrobble">Mandar detalhes das faixas tocadas para Last.FM ou Libre.FM (requer Scrobble Droid ou Simple Last.fm Scrobbler instalado)</string>
+
+    <string name="settings_vibrate_title">Vibrar com toque</string>
+    <string name="settings_vibrate">Vibrar brevemente quando botões ou a lista de músicas forem pressionados.</string>
+
+    <string name="settings_root_folder">Pastas raiz</string>
+    <string name="settings_root_folder_summary">O caminho %s não existe neste dispositivo!</string>
+
+    <string name="settings_accelerometer">Ação de sacudir</string>
+    <string name="settings_accelerometer_summary">Sacudir faz ir para a próxima música.</string>
+    <string name="settings_accelerometer_threshold">Limiar de força para sacudir</string>
+    <string name="settings_default_shake_threshold">100</string>
+    <string name="settings_no_accelerometer">Seu dispositivo não tem acelerômetro. A funcionalidade de sacudir ficará desabilitada.</string>
+
+
+    <string name="settings_help">Ajuda</string>
+    <string name="settings_help_summary">Se você estiver um pouco/a perdido/a.</string>
+
+    <string name="help_start_song">Começar a tocar</string>
+    <string name="help_start_song_summary">Clique em uma música para começar a tocá-la.</string>
+    <string name="help_start_group">Começar a tocar um grupo</string>
+    <string name="help_start_group_summary">Toque longo em um grupo começa a tocar a primeira música dele.</string>
+    <string name="help_next_group">Toque longo em \'próximo\'</string>
+    <string name="help_next_group_summary">Toque longo em \'próximo\' começa a tocar o próximo grupo (semelhante para \'anterior\')</string>
+    <string name="help_unfold_group">Colapsar (fechar) / abrir grupo</string>
+    <string name="help_unfold_group_summary">Toque em um grupo para colapsar (fechar) ou abrir.</string>
+    <string name="help_scroll">Rolar até a música atual</string>
+    <string name="help_scroll_summary">Pressione o botão à direita do botão \'próximo\' para rolar a lista até a música atual. Um toque longo fecha tudo exceto a música atual.</string>
+    <string name="help_lock">Desabilitar travamento da tela</string>
+    <string name="help_lock_summary">Abra o botão com ícone de cadeado para impedir que o Android trave a tela (só funciona quando o app está com sua tela aberta; não funciona em aguns disositivos).</string>
+    <string name="help_root_folders">Pastas Raiz</string>
+    <string name="help_root_folders_summary">As pastas raíz podem ser modificadas nas configuações avançadas: só são usadas para esconder a primeira parte das pastas quando as músicas são ordenadas por pasta (não interfere nos caminhos de busca de músicas). Para incluir várias pastas raiz, separe os caminhos com ponto-e-ivírgula.</string>
+    <string name="help_background">Música em background</string>
+    <string name="help_background_summary">Enquanto tocado música, toque no botão home ou no botão voltar para fechar a interface e continuar tocando em background.</string>
+    <string name="help_quit">Sair</string>
+    <string name="help_quit_summary">O app deverá morrer se nenhuma música estiver sendo tocada e o botão de voltar for pressionado. Se não, o Android o matará se necessitar de mais memória.</string>
+    <string name="help_stop">Parar</string>
+    <string name="help_stop_summary">O app ficará na memóra se nenhuma música estiver sendo tocada e o botão home for tocado, mas o Android o matará se houver pouca memória disponível.</string>
+    <string name="help_mediabutton">Botões de mídia</string>
+    <string name="help_mediabutton_summary">Botões de mídia (como em headphones bluetooth) podem controlar o app (próxima, anterior, pausa/tocar).</string>
+    <string name="help_mediabutton_autostart">Botões de mídia iniciam app</string>
+    <string name="help_mediabutton_autostart_summary">Se o app estiver fechado os botões de mídia o iniciarão. Para desabilitar desmarque esta opção em configurações->Botões de mídia iniciam app.</string>
+    <string name="help_seek_menu">Busca dentro da músia</string>
+    <string name="help_seek_menu_summary">Clique no canto superior direito para abrir o menu para busca dentro da música. Um toque longo em próximo/anterior fará busca contínua.</string>
+
+
+    <string name="settings_misc">Miscelânea</string>
+
+    <string name="settings_about">Sobre</string>
+    <string name="settings_about_summary">Alguma informação sobre o app e o autor.</string>
+
+    <string name="settings_version_title">Versão</string>
+    <string name="settings_author_title">Autor</string>
+    <string name="settings_author">Mathieu Souchaud</string>
+    <string name="settings_source_title">Código fonte</string>
+    <string name="settings_source">https://github.com/souch/SMP</string>
+    <string name="settings_licence_title">Licença</string>
+    <string name="settings_licence">GPLv3</string>
+    <string name="settings_donate_key">doar</string>
+    <string name="settings_donate_title">Doar</string>
+    <string name="settings_donate_summary">Clique aqui se a vida for difícil para você sem este app.</string>
+    <string name="settings_donate_www">http://rodolphe.souchaud.free.fr/donate</string>
+
+    <string name="settings_thanks">Agradecimentos espciais</string>
+    <string name="settings_thanks_icons">Ícones</string>
+    <string name="settings_thanks_icons_summary">Daniele De Santis &amp; WPZOOM (ícones achados em iconfinder.com)</string>
+    <string name="settings_thanks_doc">Tutorial</string>
+    <string name="settings_thanks_doc_summary">Sue Smith (tutorial sobre como criar um tocador de música para Android)</string>
+    <string name="settings_thanks_i15n">Tradução</string>
+    <string name="settings_thanks_i15n_summary">Jerônimo Cordoni Pellegrini (Português)</string>
+    <string name="settings_locked">Travado</string>
+    <string name="settings_unlocked">Destravado</string>
+
+    <string name="action_repeat_title">Repetir</string>
+    <string name="action_repeat_all">Tudo</string>
+    <string name="action_repeat_one">Faixa</string>
+    <string name="action_repeat_group">Grupo</string>
+    <string name="state_repeat_all">Repetir tudo</string>
+    <string name="state_repeat_one">Repetir faixa</string>
+    <string name="state_repeat_group">Repetir grupo</string>
+
+    <string name="action_music_mode">Modo de música</string>
+    <string name="action_edit_mode">Modo de edição</string>
+
+
+</resources>
