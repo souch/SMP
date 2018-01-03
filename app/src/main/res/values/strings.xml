@@ -160,7 +160,7 @@
     <string name="settings_thanks_doc">Tutorial</string>
     <string name="settings_thanks_doc_summary">Sue Smith (tutorials on creating a Music Player on Android)</string>
     <string name="settings_thanks_i15n">Translation</string>
-    <string name="settings_thanks_i15n_summary">Mladen Pejaković (Serbian)</string>
+    <string name="settings_thanks_i15n_summary">Mladen Pejaković (Serbian), Jerônimo Cordoni Pellegrini (Portuguese), Mehmet Gülmen (Turkish)</string>
     <string name="settings_locked">Locked</string>
     <string name="settings_unlocked">Unlocked</string>
 

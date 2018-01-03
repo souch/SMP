@@ -125,6 +125,6 @@
     <string name="settings_thanks_doc">Упутства</string>
     <string name="settings_thanks_doc_summary">Sue Smith (упутства за прављење музичког плејера за Андроид)</string>
     <string name="settings_thanks_i15n">Превод</string>
-    <string name="settings_thanks_i15n_summary">Младен Пејаковић (српски)</string>
+    <string name="settings_thanks_i15n_summary">Младен Пејаковић (српски), Mehmet Gülmen (Türkçe), Jerônimo Cordoni Pellegrini (Português)</string>
 
 </resources>
