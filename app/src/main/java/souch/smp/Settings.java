@@ -276,13 +276,10 @@ public class Settings extends PreferenceActivity
 
         // add Music folder in first to speedup music folder discovery
         for (File dir: dirsToScan) {
-            File f = new File(dir, "Music");
-            if (f.exists()) {
-                Log.d("Settings", "Music folder: " + f.getAbsolutePath());
-                 Path.listFiles(new File(dir, "Music"), filesToScan);
-                 Log.d("Settings", "fileToScan: " + (new File(dir, "Music")).getAbsolutePath());
-            } else {
-                 Log.d("Settings", "fileToScan: " + (new File(dir, "Music")).getAbsolutePath() + " does not exist.");
+            File musicDir = new File(dir, "Music");
+            if (musicDir.exists()) {
+                Path.listFiles(musicDir, filesToScan);
+                Log.d("Settings", "fileToScan: " + musicDir.getAbsolutePath());
             }
         }
         scanMediaFiles(filesToScan);
