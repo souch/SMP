@@ -256,7 +256,7 @@ public class MusicService extends Service implements
         handleCommand(intent);
 
         // show the notification if MusicService has been started from the MediaButtonIntentReceiver
-        if (!mainIsVisible && !foreground && changed)
+        if (!mainIsVisible && !foreground && changed && isInState(PlayerState.Started))
             startNotification();
 
         return super.onStartCommand(intent, flags, startId);
@@ -492,6 +492,9 @@ public class MusicService extends Service implements
         state.setState(PlayerState.Paused);
         stopSensor();
         scrobble.send(Scrobble.SCROBBLE_PAUSE);
+
+        if(foreground)
+            stopNotification();
     }
 
     public void playPrev() {
