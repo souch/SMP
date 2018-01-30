@@ -60,6 +60,7 @@ public interface Parameters {
 
     boolean getVibrate();
 
+    void setShuffle(boolean shuffle);
     boolean getShuffle();
 
     boolean getScrobble();

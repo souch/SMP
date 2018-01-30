@@ -462,6 +462,7 @@ public class Main extends Activity {
     public boolean onPrepareOptionsMenu(Menu menu) {
         if (musicSrv != null) {
             setFilterItem(menu.findItem(R.id.action_sort));
+            setShuffleItem(menu.findItem(R.id.action_shuffle));
 //            setShakeItem(menu.findItem(R.id.action_shake));
             setChoosedTextSizeItem(menu.findItem(R.id.action_text_size));
             setLockItem(menu.findItem(R.id.action_lock_unlock));
@@ -575,6 +576,12 @@ public class Main extends Activity {
                 startActivity(intent);
                 return true;
 
+            case R.id.action_shuffle:
+                params.setShuffle(!params.getShuffle());
+                setShuffleItem(item);
+                Toast.makeText(getApplicationContext(), item.getTitle(), Toast.LENGTH_LONG).show();
+                return true;
+
             case R.id.action_repeat:
                 openRepeatMenu();
                 return true;
@@ -591,12 +598,6 @@ public class Main extends Activity {
                     Toast.makeText(getApplicationContext(), item.getTitle(), Toast.LENGTH_LONG).show();
                     songAdt.notifyDataSetChanged();
                     setImagesState();
-                }
-                return true;
-
-            case R.id.action_edit:
-                if(musicSrv != null) {
-                    Toast.makeText(getApplicationContext(), "not implemented", Toast.LENGTH_LONG).show();
                 }
                 return true;
 
@@ -698,6 +699,20 @@ public class Main extends Activity {
             case TREE:
                 img.setImageResource(R.drawable.ic_menu_tree);
                 break;
+        }
+    }
+
+    private void setShuffleItem(MenuItem item) {
+        if (item == null)
+            return;
+
+        if (params.getShuffle()) {
+            item.setIcon(R.drawable.ic_menu_shuffle);
+            item.setTitle(getString(R.string.action_shuffle));
+        }
+        else {
+            item.setIcon(R.drawable.ic_menu_no_shuffle);
+            item.setTitle(getString(R.string.action_no_shuffle));
         }
     }
 

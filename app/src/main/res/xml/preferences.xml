@@ -19,14 +19,6 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-
-    <CheckBoxPreference
-        android:key="SHUFFLE"
-        android:title="@string/settings_shuffle_title"
-        android:summary="@string/settings_shuffle"
-        android:icon="@drawable/ic_menu_shuffle"
-        android:defaultValue="false"/>
-
     <CheckBoxPreference
         android:key="ENABLE_SHAKE"
         android:title="@string/settings_accelerometer"

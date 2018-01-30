@@ -33,6 +33,12 @@
     <string name="action_sort_by">Sort by</string>
     <string name="action_sort">Sort songs by:</string>
 
+    <string name="action_shuffle">Shuffle</string>
+    <string name="action_no_shuffle">No shuffle</string>
+
+    <string name="action_music_mode">Music mode</string>
+    <string name="action_edit_mode">Edit mode</string>
+
     <string name="app_playing">SicMu playing</string>
 
     <string name="focus_error">Could not get audio focus! Restart the app!</string>
@@ -167,13 +173,11 @@
     <string name="action_repeat_title">Repeat</string>
     <string name="action_repeat_all">All</string>
     <string name="action_repeat_one">Track</string>
+    <string name="action_repeat_first_group">First group</string>
     <string name="action_repeat_group">Group</string>
     <string name="state_repeat_all">Repeat all</string>
     <string name="state_repeat_one">Repeat track</string>
     <string name="state_repeat_group">Repeat group</string>
-
-    <string name="action_music_mode">Music mode</string>
-    <string name="action_edit_mode">Edit mode</string>
 
 
 </resources>

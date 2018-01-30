@@ -26,9 +26,9 @@
     -->
 
 
-    <item android:id="@+id/action_edit"
-        android:title="@string/action_music_mode"
-        android:icon="@drawable/ic_menu_music" />
+    <item android:id="@+id/action_shuffle"
+        android:title="@string/action_no_shuffle"
+        android:icon="@drawable/ic_menu_no_shuffle" />
 
     <item android:id="@+id/action_text_size"/>
 

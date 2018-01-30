@@ -143,6 +143,10 @@ public class ParametersImpl implements Parameters {
         return getPref().getBoolean(PrefKeys.SHUFFLE.name(), false);
     }
 
+    public void setShuffle(boolean shuffle) {
+        getEditor().putBoolean(PrefKeys.SHUFFLE.name(), shuffle).commit();
+    }
+
     public boolean getScrobble() {
         return getPref().getBoolean(PrefKeys.SCROBBLE.name(), false);
     }
