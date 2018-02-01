@@ -19,13 +19,18 @@
 package souch.smp;
 
 import android.content.Context;
+import android.content.Intent;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Formatter;
 import java.util.HashSet;
 
 public class Path {
@@ -216,4 +221,79 @@ public class Path {
             }
         }
     }
+
+
+    public static void rescanWhole(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            scanMediaFiles(context);
+        }
+        else {
+            if (android.os.Environment.getExternalStorageState().equals(
+                    android.os.Environment.MEDIA_MOUNTED))
+                // Broadcast the Media Scanner Intent to trigger it
+                context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED,
+                        Uri.parse("file://" + Environment.getExternalStorageDirectory())));
+
+            Toast.makeText(context,
+                    context.getResources().getString(R.string.settings_rescan_triggered), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private static void scanMediaFiles(Context context) {
+        // http://stackoverflow.com/questions/13270789/how-to-run-media-scanner-in-android
+        Toast.makeText(context,
+                context.getString(R.string.settings_rescan_triggered),
+                Toast.LENGTH_LONG).show();
+
+        Collection<File> dirsToScan = Path.getStorages(context); // getBaseContext()
+
+        for (File dir: dirsToScan) {
+            Toast.makeText(context,
+                    (new Formatter()).format(context.getResources()
+                            .getString(R.string.settings_rescan_storage), dir)
+                            .toString(),
+                    Toast.LENGTH_LONG).show();
+        }
+
+        ArrayList<File> filesToScan = new ArrayList<>();
+
+        // add Music folder in first to speedup music folder discovery
+        for (File dir: dirsToScan) {
+            File musicDir = new File(dir, "Music");
+            if (musicDir.exists()) {
+                Path.listFiles(musicDir, filesToScan);
+                Log.d("Settings", "fileToScan: " + musicDir.getAbsolutePath());
+            }
+        }
+        scanMediaFiles(context, filesToScan);
+
+        // add whole storage at the end
+        filesToScan.clear();
+        for (File dir: dirsToScan) {
+            Path.listFiles(dir, filesToScan);
+        }
+        scanMediaFiles(context, filesToScan);
+
+        Toast.makeText(context,
+                context.getResources().getString(R.string.settings_rescan_finished),
+                Toast.LENGTH_SHORT).show();
+    }
+
+    private static void scanMediaFiles(Context context, Collection<File> filesToScan) {
+        String[] filesToScanArray = new String[filesToScan.size()];
+        int i = 0;
+        for (File file : filesToScan) {
+            filesToScanArray[i] = file.getAbsolutePath();
+            //if (filesToScanArray[i].contains("emulated/0"))
+                Log.d("Settings", "fileToScan: " + filesToScanArray[i]);
+            i++;
+        }
+
+        if (filesToScanArray.length != 0) {
+            MediaScannerConnection.scanFile(context, filesToScanArray, null, null);
+        } else {
+            Log.e("Settings", "Media scan requested when nothing to scan");
+        }
+    }
+
 }

@@ -33,7 +33,7 @@ public class RowSong extends Row {
     private int track;
     // full filename
     private String path;
-    // folder of the path
+    // folder of the path (i.e. last folder containing the file's song)
     private String folder;
 
     protected static int textSize = 15;

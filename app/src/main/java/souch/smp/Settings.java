@@ -24,11 +24,8 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.media.MediaScannerConnection;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.IBinder;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
@@ -39,8 +36,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Formatter;
 
 public class Settings extends PreferenceActivity
@@ -241,79 +236,7 @@ public class Settings extends PreferenceActivity
     }
 
     public void rescan() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            scanMediaFiles();
-        }
-        else {
-            if (android.os.Environment.getExternalStorageState().equals(
-                    android.os.Environment.MEDIA_MOUNTED))
-                // Broadcast the Media Scanner Intent to trigger it
-                sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED,
-                        Uri.parse("file://" + Environment.getExternalStorageDirectory())));
-
-            Toast.makeText(getApplicationContext(),
-                    getResources().getString(R.string.settings_rescan_triggered), Toast.LENGTH_SHORT).show();
-        }
+        Path.rescanWhole(getBaseContext());
     }
-
-    private void scanMediaFiles() {
-        // http://stackoverflow.com/questions/13270789/how-to-run-media-scanner-in-android
-        Toast.makeText(getApplicationContext(),
-                getResources().getString(R.string.settings_rescan_triggered),
-                Toast.LENGTH_LONG).show();
-
-        Collection<File> dirsToScan = Path.getStorages(getBaseContext());
-
-        for (File dir: dirsToScan) {
-            Toast.makeText(getApplicationContext(),
-                    (new Formatter()).format(getResources()
-                            .getString(R.string.settings_rescan_storage), dir)
-                            .toString(),
-                    Toast.LENGTH_LONG).show();
-        }
-
-        ArrayList<File> filesToScan = new ArrayList<>();
-
-        // add Music folder in first to speedup music folder discovery
-        for (File dir: dirsToScan) {
-            File musicDir = new File(dir, "Music");
-            if (musicDir.exists()) {
-                Path.listFiles(musicDir, filesToScan);
-                Log.d("Settings", "fileToScan: " + musicDir.getAbsolutePath());
-            }
-        }
-        scanMediaFiles(filesToScan);
-
-        // add whole storage at the end
-        filesToScan.clear();
-        for (File dir: dirsToScan) {
-            Path.listFiles(dir, filesToScan);
-        }
-        scanMediaFiles(filesToScan);
-
-        Toast.makeText(getApplicationContext(),
-                getResources().getString(R.string.settings_rescan_finished),
-                Toast.LENGTH_SHORT).show();
-    }
-
-    private void scanMediaFiles(Collection<File> filesToScan) {
-        String[] filesToScanArray = new String[filesToScan.size()];
-        int i = 0;
-        for (File file : filesToScan) {
-            filesToScanArray[i] = file.getAbsolutePath();
-            //if (filesToScanArray[i].contains("emulated/0"))
-            //    Log.d("Settings", "fileToScan: " + filesToScanArray[i]);
-            i++;
-        }
-
-        if (filesToScanArray.length != 0) {
-            MediaScannerConnection.scanFile(this, filesToScanArray, null, null);
-        } else {
-            Log.e("Settings", "Media scan requested when nothing to scan");
-        }
-    }
-
-
-
 
 }
