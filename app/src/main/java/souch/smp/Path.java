@@ -27,8 +27,13 @@ import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
 
-import java.io.File;
+
+import android.content.ContentUris;
+import android.database.Cursor;
+import android.provider.MediaStore;
+
 import java.util.ArrayList;
+import java.io.File;
 import java.util.Collection;
 import java.util.Formatter;
 import java.util.HashSet;
@@ -225,6 +230,7 @@ public class Path {
 
     public static void rescanWhole(Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            purgeFiles(context);
             scanMediaFiles(context);
         }
         else {
@@ -239,11 +245,52 @@ public class Path {
         }
     }
 
+
+    public static boolean rescanDir(Context context, File dir) {
+        if (!dir.exists())
+            return false;
+        Log.d("Settings", "fileToScan: " + dir.getAbsolutePath());
+        ArrayList<File> filesToScan = new ArrayList<>();
+        Path.listFiles(dir, filesToScan);
+        scanMediaFiles(context, filesToScan);
+        return true;
+    }
+
+
+    public static void purgeFiles(Context context)
+    {
+        final String [] projection = {MediaStore.Audio.Media._ID, MediaStore.Audio.Media.DATA};
+        Uri playlist_uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        Cursor cursor = context.getContentResolver().query(playlist_uri, projection, null,null,null);
+        cursor.moveToFirst();
+        for (int r = 0; r < cursor.getCount(); r++, cursor.moveToNext()){
+            int id = cursor.getInt(0);
+            String filePath = cursor.getString(1);
+            Boolean delIt = true;
+            if (filePath.length() > 0) {
+                File file = new File(filePath);
+                if (file.exists())
+                    delIt = false;
+            }
+            if (delIt) {
+                // TODO: confirm it (yes, yes to all, no, no to all) rather than toast it
+                Toast.makeText(context,
+                        (new Formatter()).format(context.getResources()
+                                .getString(R.string.settings_rescan_purge), filePath)
+                                .toString(),
+                        Toast.LENGTH_SHORT).show();
+                Uri uri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id);
+                context.getContentResolver().delete(uri, null, null);
+            }
+        }
+        cursor.close();
+    }
+
     private static void scanMediaFiles(Context context) {
         // http://stackoverflow.com/questions/13270789/how-to-run-media-scanner-in-android
         Toast.makeText(context,
                 context.getString(R.string.settings_rescan_triggered),
-                Toast.LENGTH_LONG).show();
+                Toast.LENGTH_SHORT).show();
 
         Collection<File> dirsToScan = Path.getStorages(context); // getBaseContext()
 
@@ -255,29 +302,22 @@ public class Path {
                     Toast.LENGTH_LONG).show();
         }
 
-        ArrayList<File> filesToScan = new ArrayList<>();
-
         // add Music folder in first to speedup music folder discovery
         for (File dir: dirsToScan) {
             File musicDir = new File(dir, "Music");
-            if (musicDir.exists()) {
-                Path.listFiles(musicDir, filesToScan);
-                Log.d("Settings", "fileToScan: " + musicDir.getAbsolutePath());
-            }
+            rescanDir(context, musicDir);
         }
-        scanMediaFiles(context, filesToScan);
 
         // add whole storage at the end
-        filesToScan.clear();
         for (File dir: dirsToScan) {
-            Path.listFiles(dir, filesToScan);
+            rescanDir(context, dir);
         }
-        scanMediaFiles(context, filesToScan);
 
         Toast.makeText(context,
                 context.getResources().getString(R.string.settings_rescan_finished),
-                Toast.LENGTH_SHORT).show();
+                Toast.LENGTH_LONG).show();
     }
+
 
     private static void scanMediaFiles(Context context, Collection<File> filesToScan) {
         String[] filesToScanArray = new String[filesToScan.size()];
