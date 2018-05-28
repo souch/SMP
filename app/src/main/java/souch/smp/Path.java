@@ -218,13 +218,14 @@ public class Path {
     public static void listFiles(File directory, ArrayList<File> files) {
         // get all the files from a directory
         File[] fList = directory.listFiles();
-        for (File file : fList) {
-            if (file.isFile()) {
-                files.add(file);
-            } else if (file.isDirectory()) {
-                listFiles(file, files);
+        if (fList != null)
+            for (File file : fList) {
+                if (file.isFile()) {
+                    files.add(file);
+                } else if (file.isDirectory()) {
+                    listFiles(file, files);
+                }
             }
-        }
     }
 
 
