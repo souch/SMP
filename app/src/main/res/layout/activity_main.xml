@@ -26,18 +26,22 @@
         android:id="@+id/action_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
         android:background="#ff242424"
         android:orientation="horizontal"
         android:paddingBottom="3dp"
         android:paddingTop="3dp">
 
-        <ImageView
+        <ImageButton
             android:id="@+id/app_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
             android:layout_gravity="left|center_vertical"
             android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp" />
+            android:layout_marginRight="5dp"
+            android:onClick="toggleDetails"
+            android:scaleType="fitXY" />
 
         <!--style="@style/BottomButton"
         android:src="@drawable/ic_actionbar_launcher"-->
@@ -47,7 +51,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="left|center_vertical"
             android:text="@string/app_name"
-            android:textSize="16sp"
+            android:textSize="18sp"
+            android:onClick="toggleDetails"
             android:visibility="visible" />
 
         <SeekBar
@@ -66,7 +71,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:onClick="openPos"
+            android:layout_marginBottom="2dp"
+            android:onClick="toggleSeekButtons"
             android:orientation="vertical"
             android:paddingRight="5dp">
 
@@ -76,12 +82,12 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|center_horizontal"
                 android:text="00:00"
-                android:textSize="16sp"
+                android:textSize="18sp"
                 android:visibility="invisible" />
 
 
             <ImageButton
-                android:id="@+id/pos_button"
+                android:id="@+id/toggle_seek_buttons"
                 style="@style/BottomButton"
                 android:layout_width="40dp"
                 android:layout_height="9dp"
@@ -92,10 +98,10 @@
     </LinearLayout>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/pos_layout"
+        android:id="@+id/seek_buttons_layout"
+        android:layout_below="@+id/action_bar"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:layout_below="@+id/action_bar"
         android:background="#ff242424"
         android:orientation="horizontal"
         android:paddingBottom="2dp"
@@ -182,13 +188,65 @@
             android:src="@drawable/action_next" />
     </LinearLayout>
 
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/details_layout"
+        android:layout_width="match_parent"
+        android:layout_height="175dp"
+        android:layout_below="@id/seek_buttons_layout"
+        android:background="#ff242424"
+        android:gravity="left"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/album_image"
+            style="@style/BottomButton"
+            android:layout_width="185dp"
+            android:layout_height="match_parent"
+            android:onClick="toggleDetails"
+            android:scaleType="fitCenter" />
+
+        <TextView
+            android:id="@+id/detail_artist"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="2dp"
+            android:layout_toRightOf="@+id/album_image"
+            android:maxHeight="40dp"
+            android:maxLines="2"
+            android:text=""
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/detail_album"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/detail_artist"
+            android:layout_marginLeft="2dp"
+            android:layout_toRightOf="@+id/album_image"
+            android:maxHeight="40dp"
+            android:maxLines="2"
+            android:text="" />
+
+        <TextView
+            android:id="@+id/detail_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/detail_album"
+            android:layout_marginLeft="2dp"
+            android:layout_toRightOf="@+id/album_image"
+            android:maxHeight="40dp"
+            android:maxLines="3"
+            android:text="" />
+    </RelativeLayout>
+
+
     <ListView
         android:id="@+id/song_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/action_button"
+        android:layout_below="@+id/details_layout"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/pos_layout"
         android:choiceMode="singleChoice"
         android:fastScrollEnabled="true"
         android:hapticFeedbackEnabled="false"

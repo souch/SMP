@@ -56,6 +56,11 @@
             android:icon="@drawable/ic_action_goto_play"/>
 
         <Preference
+            android:title="@string/help_details_menu"
+            android:summary="@string/help_details_menu_summary"
+            android:icon="@drawable/ic_launcher"/>
+
+        <Preference
             android:title="@string/help_seek_menu"
             android:summary="@string/help_seek_menu_summary"
             android:icon="@drawable/ic_action_open_pos"/>

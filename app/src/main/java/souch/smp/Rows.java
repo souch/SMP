@@ -500,7 +500,9 @@ public class Rows {
                 MediaStore.Audio.Media.ALBUM,
                 MediaStore.Audio.Media.DURATION,
                 MediaStore.MediaColumns.DATA,
-                MediaStore.Audio.Media.TRACK
+                MediaStore.Audio.Media.TRACK,
+                MediaStore.Audio.Media.ALBUM_ID,
+                MediaStore.Audio.Media.YEAR
         };
         String where = MediaStore.Audio.Media.IS_MUSIC + "=1";
 
@@ -601,6 +603,8 @@ public class Rows {
             int albumCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM);
             int durationCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
             int trackCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.TRACK);
+            int albumIdCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID);
+            int yearCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.YEAR);
 
             int RowGroupArtistBackground = 0;
             int RowGroupArtistAlbumBackground = 0;
@@ -618,6 +622,8 @@ public class Rows {
                 String album = getDefaultStrIfNull(musicCursor.getString(albumCol));
                 int duration = musicCursor.getInt(durationCol);
                 int track = musicCursor.getInt(trackCol);
+                long albumId = musicCursor.getLong(albumIdCol);
+                int year = musicCursor.getInt(yearCol);
 
                 if (prevArtistGroup == null || artist.compareToIgnoreCase(prevArtistGroup.getName()) != 0) {
                     RowGroup artistGroup = new RowGroup(rowsUnfolded.size(), 0, artist,
@@ -636,7 +642,7 @@ public class Rows {
                 }
 
                 RowSong rowSong = new RowSong(rowsUnfolded.size(), 2, id, title, artist, album,
-                        duration / 1000, track, null);
+                        duration / 1000, track, null, albumId, year);
                 rowSong.setParent(prevAlbumGroup);
 
                 if(id == savedID)
@@ -662,6 +668,8 @@ public class Rows {
             int durationCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
             int pathCol = musicCursor.getColumnIndex(MediaStore.MediaColumns.DATA);
             int trackCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.TRACK);
+            int albumIdCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID);
+            int yearCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.YEAR);
 
             do {
                 long id = musicCursor.getLong(idCol);
@@ -671,8 +679,10 @@ public class Rows {
                 int duration = musicCursor.getInt(durationCol);
                 int track = musicCursor.getInt(trackCol);
                 String path = getDefaultStrIfNull(musicCursor.getString(pathCol));
+                long albumId = musicCursor.getLong(albumIdCol);
+                int year = musicCursor.getInt(yearCol);
 
-                RowSong rowSong = new RowSong(-1, 2, id, title, artist, album, duration / 1000, track, path);
+                RowSong rowSong = new RowSong(-1, 2, id, title, artist, album, duration / 1000, track, path, albumId, year);
                 rowsUnfolded.add(rowSong);
                 //Log.d("Rows", "song added: " + rowSong.toString());
             }
@@ -755,6 +765,8 @@ public class Rows {
             int durationCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
             int pathCol = musicCursor.getColumnIndex(MediaStore.MediaColumns.DATA);
             int trackCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.TRACK);
+            int albumIdCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID);
+            int yearCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.YEAR);
 
             do {
                 long id = musicCursor.getLong(idCol);
@@ -764,10 +776,12 @@ public class Rows {
                 int duration = musicCursor.getInt(durationCol);
                 int track = musicCursor.getInt(trackCol);
                 String path = getDefaultStrIfNull(musicCursor.getString(pathCol));
+                long albumId = musicCursor.getLong(albumIdCol);
+                int year = musicCursor.getInt(yearCol);
 
                 final int pos = -1, level = 2;
                 RowSong rowSong = new RowSong(pos, level, id, title, artist, album, duration / 1000,
-                        track, path);
+                        track, path, albumId, year);
                 rowsUnfolded.add(rowSong);
                 //Log.d("Rows", "song added: " + rowSong.toString());
             }

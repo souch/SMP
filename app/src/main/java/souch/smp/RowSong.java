@@ -18,19 +18,28 @@
 
 package souch.smp;
 
+import android.content.ContentUris;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.util.TypedValue;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.database.Cursor;
 
 
 public class RowSong extends Row {
     private long id;
+    private long albumId;
     private String title;
     private String artist;
     private String album;
     private int duration;
     private int track;
+    private int year;
     // full filename
     private String path;
     // folder of the path (i.e. last folder containing the file's song)
@@ -43,7 +52,7 @@ public class RowSong extends Row {
     public static int normalSongDurationTextColor;
 
     public RowSong(int pos, int level, long songID, String songTitle, String songArtist, String songAlbum,
-                   int dur, int songTrack, String songPath) {
+                   int dur, int songTrack, String songPath, long albumId, int year) {
         super(pos, level, Typeface.NORMAL);
         id = songID;
         title = songTitle;
@@ -52,6 +61,8 @@ public class RowSong extends Row {
         duration = dur;
         track = songTrack;
         path = songPath;
+        this.albumId = albumId;
+        this.year = year;
         if(path != null) {
             folder = Path.getFolder(path);
         }
@@ -59,12 +70,15 @@ public class RowSong extends Row {
 
     public long getID(){return id;}
     public String getTitle(){return title;}
+    public int getYear(){return year;}
     public String getArtist(){return artist;}
     public String getAlbum(){return album;}
     public int getDuration(){return duration;}
     public int getTrack(){return track;}
     public String getPath(){return path;}
     public String getFolder(){return folder;}
+    public long getAlbumId(){return albumId;}
+
 
     public void setView(RowViewHolder holder, Main main, int position) {
         super.setView(holder, main, position);
@@ -121,5 +135,31 @@ public class RowSong extends Row {
         long minutes = seconds / 60;
         seconds = seconds % 60;
         return String.valueOf(minutes) + (seconds < 10 ? ":0" : ":") + String.valueOf(seconds);
+    }
+
+
+    public void delete(Context context) {
+        Uri uri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id);
+        context.getContentResolver().delete(uri, null, null);
+    }
+
+
+    public Bitmap getAlbumBmp(Context context) {
+        Bitmap bmp = null;
+        try {
+            Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                    new String[] {MediaStore.Audio.Albums._ID, MediaStore.Audio.Albums.ALBUM_ART},
+                    MediaStore.Audio.Albums._ID+ "=?",
+                    new String[] {String.valueOf(albumId)},
+                    null);
+            if (cursor.moveToFirst()) {
+                String path = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART));
+                    bmp = BitmapFactory.decodeFile(path);
+                }
+            }
+        catch(Exception e) {
+            bmp = null;
+        }
+        return bmp;
     }
 }

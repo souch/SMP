@@ -25,6 +25,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
 import android.graphics.drawable.AnimationDrawable;
 import android.media.AudioManager;
 import android.os.Bundle;
@@ -41,6 +42,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -76,7 +78,8 @@ public class Main extends Activity {
     // true if you want to keep the current song played visible
     private boolean followSong;
 
-    private boolean posOpened;
+    private boolean seekButtonsOpened;
+    private boolean detailsOpened;
 
     private int menuToOpen;
 
@@ -86,7 +89,11 @@ public class Main extends Activity {
 
     private AnimationDrawable appAnimation;
 
-    private LinearLayout posLayout;
+    private RelativeLayout detailsLayout;
+    private LinearLayout seekButtonsLayout;
+
+    ImageButton albumImage;
+    TextView songTitle, songAlbum, songArtist;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,6 +103,7 @@ public class Main extends Activity {
         finishing = false;
 
         songView = (ListView) findViewById(R.id.song_list);
+
 
         playButton = (ImageButton) findViewById(R.id.play_button);
         // useful only for testing
@@ -108,11 +116,13 @@ public class Main extends Activity {
 //        ImageButton lockButton = (ImageButton) findViewById(R.id.lock_button);
 //        lockButton.setOnTouchListener(touchListener);
 
-        posButton = (ImageButton) findViewById(R.id.pos_button);
-        posOpened = false;
+        posButton = (ImageButton) findViewById(R.id.toggle_seek_buttons);
+        seekButtonsOpened = false;
         posButton.setImageDrawable(null);
-        posLayout = (LinearLayout) findViewById(R.id.pos_layout);
-        posLayout.setVisibility(View.GONE);
+        seekButtonsLayout = (LinearLayout) findViewById(R.id.seek_buttons_layout);
+        seekButtonsLayout.setVisibility(View.GONE);
+        detailsLayout = (RelativeLayout) findViewById(R.id.details_layout);
+        detailsLayout.setVisibility(View.GONE);
 
         final int repeatDelta = 260;
         ImageButton prevButton = (ImageButton) findViewById(R.id.prev_button);
@@ -169,6 +179,12 @@ public class Main extends Activity {
         ImageView appButton = (ImageView) findViewById(R.id.app_button);
         appButton.setBackgroundResource(R.drawable.ic_actionbar_launcher_anim);
         appAnimation = (AnimationDrawable) appButton.getBackground();
+
+        albumImage = (ImageButton) findViewById(R.id.album_image);
+        albumImage.setVisibility(View.VISIBLE);
+        songTitle = (TextView) findViewById(R.id.detail_title);
+        songAlbum = (TextView) findViewById(R.id.detail_album);
+        songArtist = (TextView) findViewById(R.id.detail_artist);
     }
 
 
@@ -251,6 +267,56 @@ public class Main extends Activity {
             serviceBound = false;
         }
     };
+
+
+    public boolean setAlbumImg() {
+        Bitmap albumBmp = null;
+        RowSong rowSong = rows.getCurrSong();
+        if (rowSong != null) {
+            albumBmp = rowSong.getAlbumBmp(getApplicationContext());
+
+            String title = rowSong.getTitle();
+            songTitle.setText(title);
+
+            songArtist.setText(rowSong.getArtist());
+            
+            String album = rowSong.getAlbum();
+            if (rowSong.getYear() > 1000)
+                album += " - " + rowSong.getYear();
+            songAlbum.setText(album);
+        }
+        if (albumBmp != null) {
+            albumImage.setImageBitmap(albumBmp);
+//            albumImage.setVisibility(View.VISIBLE);
+        } else {
+            albumImage.setImageResource(R.drawable.ic_default_album);
+//            albumImage.setVisibility(View.GONE);
+        }
+
+        return albumBmp != null;
+    }
+
+
+    public void openAutoDetails() {
+        if (setAlbumImg()) {
+            detailsLayout.setVisibility(View.VISIBLE);
+//            // auto hide it
+//            timer = new Timer();
+//            timer.schedule(new TimerTask() {
+//                @Override
+//                public void run() {
+//                    runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//
+//                            detailsLayout.setVisibility(View.GONE);
+//                        }
+//                    });
+//                }
+//            }, 6000);
+        }
+    }
+
 
     private SeekBar.OnSeekBarChangeListener seekBarChangeListener
             = new SeekBar.OnSeekBarChangeListener() {
@@ -394,7 +460,7 @@ public class Main extends Activity {
             // MediaPlayer has been destroyed or first start
             stopPlayButton();
         } else {
-            setPosButtonImg();
+            openSeekButtons(seekButtonsOpened);
             if (!musicSrv.playingPaused()) {
                 playButton.setImageResource(R.drawable.ic_action_pause);
                 playButton.setTag(R.drawable.ic_action_pause);
@@ -416,6 +482,7 @@ public class Main extends Activity {
                 currDuration.setText(RowSong.secondsToMinutes(musicSrv.getCurrentPosition()));
             }
         }
+        openAutoDetails();
 
         songAdt.notifyDataSetChanged();
     }
@@ -430,20 +497,35 @@ public class Main extends Activity {
     }
 
 
-    private void setPosButtonImg() {
-        if (posOpened) {
+    private void openSeekButtons(boolean open) {
+        seekButtonsOpened = open;
+        if (open) {
             posButton.setImageResource(R.drawable.ic_action_close_pos);
-            posLayout.setVisibility(View.VISIBLE);
+            seekButtonsLayout.setVisibility(View.VISIBLE);
         }
         else {
             posButton.setImageResource(R.drawable.ic_action_open_pos);
-            posLayout.setVisibility(View.GONE);
+            seekButtonsLayout.setVisibility(View.GONE);
         }
     }
 
-    public void openPos(View view) {
-        posOpened = !posOpened;
-        setPosButtonImg();
+    public void toggleSeekButtons(View view) {
+        openSeekButtons(!seekButtonsOpened);
+    }
+
+
+    private void openDetails(boolean open) {
+        detailsOpened = open;
+        if (open) {
+            detailsLayout.setVisibility(View.VISIBLE);
+        }
+        else {
+            detailsLayout.setVisibility(View.GONE);
+        }
+    }
+
+    public void toggleDetails(View view) {
+        openDetails(!detailsOpened);
     }
 
     public void settings(View view) {
