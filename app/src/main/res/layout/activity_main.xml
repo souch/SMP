@@ -225,7 +225,8 @@
             android:layout_toRightOf="@+id/album_image"
             android:maxHeight="40dp"
             android:maxLines="2"
-            android:text="" />
+            android:text=""
+            android:textStyle="italic" />
 
         <TextView
             android:id="@+id/detail_title"

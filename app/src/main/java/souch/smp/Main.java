@@ -80,6 +80,8 @@ public class Main extends Activity {
 
     private boolean seekButtonsOpened;
     private boolean detailsOpened;
+    private boolean detailsToggledFollowAuto;
+    private boolean hasCoverArt;
 
     private int menuToOpen;
 
@@ -123,6 +125,7 @@ public class Main extends Activity {
         seekButtonsLayout.setVisibility(View.GONE);
         detailsLayout = (RelativeLayout) findViewById(R.id.details_layout);
         detailsLayout.setVisibility(View.GONE);
+        detailsToggledFollowAuto = true;
 
         final int repeatDelta = 260;
         ImageButton prevButton = (ImageButton) findViewById(R.id.prev_button);
@@ -267,55 +270,6 @@ public class Main extends Activity {
             serviceBound = false;
         }
     };
-
-
-    public boolean setAlbumImg() {
-        Bitmap albumBmp = null;
-        RowSong rowSong = rows.getCurrSong();
-        if (rowSong != null) {
-            albumBmp = rowSong.getAlbumBmp(getApplicationContext());
-
-            String title = rowSong.getTitle();
-            songTitle.setText(title);
-
-            songArtist.setText(rowSong.getArtist());
-            
-            String album = rowSong.getAlbum();
-            if (rowSong.getYear() > 1000)
-                album += " - " + rowSong.getYear();
-            songAlbum.setText(album);
-        }
-        if (albumBmp != null) {
-            albumImage.setImageBitmap(albumBmp);
-//            albumImage.setVisibility(View.VISIBLE);
-        } else {
-            albumImage.setImageResource(R.drawable.ic_default_album);
-//            albumImage.setVisibility(View.GONE);
-        }
-
-        return albumBmp != null;
-    }
-
-
-    public void openAutoDetails() {
-        if (setAlbumImg()) {
-            detailsLayout.setVisibility(View.VISIBLE);
-//            // auto hide it
-//            timer = new Timer();
-//            timer.schedule(new TimerTask() {
-//                @Override
-//                public void run() {
-//                    runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//
-//                            detailsLayout.setVisibility(View.GONE);
-//                        }
-//                    });
-//                }
-//            }, 6000);
-        }
-    }
 
 
     private SeekBar.OnSeekBarChangeListener seekBarChangeListener
@@ -482,7 +436,7 @@ public class Main extends Activity {
                 currDuration.setText(RowSong.secondsToMinutes(musicSrv.getCurrentPosition()));
             }
         }
-        openAutoDetails();
+        autoOpenCloseDetails();
 
         songAdt.notifyDataSetChanged();
     }
@@ -526,7 +480,61 @@ public class Main extends Activity {
 
     public void toggleDetails(View view) {
         openDetails(!detailsOpened);
+        detailsToggledFollowAuto = hasCoverArt == detailsOpened;
     }
+
+
+    public boolean setAlbumImg() {
+        Bitmap albumBmp = null;
+        RowSong rowSong = rows.getCurrSong();
+        if (rowSong != null) {
+            albumBmp = rowSong.getAlbumBmp(getApplicationContext());
+
+            String title = rowSong.getTitle();
+            songTitle.setText(title);
+
+            songArtist.setText(rowSong.getArtist());
+
+            String album = rowSong.getAlbum();
+            if (rowSong.getYear() > 1000)
+                album += " - " + rowSong.getYear();
+            songAlbum.setText(album);
+        }
+        if (albumBmp != null) {
+            albumImage.setImageBitmap(albumBmp);
+//            albumImage.setVisibility(View.VISIBLE);
+        } else {
+            albumImage.setImageResource(R.drawable.ic_default_album);
+//            albumImage.setVisibility(View.GONE);
+        }
+
+        return albumBmp != null;
+    }
+
+
+    public void autoOpenCloseDetails() {
+        hasCoverArt = setAlbumImg();
+        // the concept of detailsToggledFollowAuto (this is a bit not useful && fishy):
+        //   - auto mode is enable if details view state (opened or closed) is the same has
+        //     auto mode would have done.
+        if (detailsToggledFollowAuto)
+            openDetails(hasCoverArt);
+//            // auto hide it
+//            timer = new Timer();
+//            timer.schedule(new TimerTask() {
+//                @Override
+//                public void run() {
+//                    runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//
+//                            detailsLayout.setVisibility(View.GONE);
+//                        }
+//                    });
+//                }
+//            }, 6000);
+    }
+
 
     public void settings(View view) {
         openOptionsMenu();
