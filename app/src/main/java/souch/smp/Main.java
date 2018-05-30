@@ -483,8 +483,16 @@ public class Main extends Activity {
         detailsToggledFollowAuto = hasCoverArt == detailsOpened;
     }
 
+    public boolean hasCoverArt() {
+        Bitmap albumBmp = null;
+        RowSong rowSong = rows.getCurrSong();
+        if (rowSong != null)
+            albumBmp = rowSong.getAlbumBmp(getApplicationContext());
 
-    public boolean setAlbumImg() {
+        return albumBmp != null;
+    }
+
+    public boolean setDetails() {
         Bitmap albumBmp = null;
         RowSong rowSong = rows.getCurrSong();
         if (rowSong != null) {
@@ -513,12 +521,30 @@ public class Main extends Activity {
 
 
     public void autoOpenCloseDetails() {
-        hasCoverArt = setAlbumImg();
+        hasCoverArt = hasCoverArt();
         // the concept of detailsToggledFollowAuto (this is a bit not useful && fishy):
         //   - auto mode is enable if details view state (opened or closed) is the same has
         //     auto mode would have done.
         if (detailsToggledFollowAuto)
             openDetails(hasCoverArt);
+
+        if (detailsToggledFollowAuto && !hasCoverArt) {
+            // set details later in order to not disturb details layouts close animation
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            setDetails();
+                        }
+                    });
+                }
+            }, 500);
+        }
+        else
+            setDetails();
+
 //            // auto hide it
 //            timer = new Timer();
 //            timer.schedule(new TimerTask() {
