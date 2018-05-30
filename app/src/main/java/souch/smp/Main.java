@@ -504,7 +504,7 @@ public class Main extends Activity {
             albumImage.setImageBitmap(albumBmp);
 //            albumImage.setVisibility(View.VISIBLE);
         } else {
-            albumImage.setImageResource(R.drawable.ic_default_album);
+            albumImage.setImageResource(R.drawable.ic_default_coverart);
 //            albumImage.setVisibility(View.GONE);
         }
 
