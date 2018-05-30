@@ -337,4 +337,15 @@ public class Path {
         }
     }
 
+
+
+    static private final String[] imageFileExtensions =  new String[] {"jpg", "png", "gif", "jpeg"};
+    static public boolean isImage(File file) {
+        if (file.isFile())
+            for (String extension : imageFileExtensions)
+                if (file.getName().toLowerCase().endsWith(extension))
+                    return true;
+        return false;
+    }
+
 }

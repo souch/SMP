@@ -30,6 +30,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.database.Cursor;
 
+import java.io.File;
 
 public class RowSong extends Row {
     private long id;
@@ -147,16 +148,32 @@ public class RowSong extends Row {
     public Bitmap getAlbumBmp(Context context) {
         Bitmap bmp = null;
         try {
+            // search using media store
             Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-                    new String[] {MediaStore.Audio.Albums._ID, MediaStore.Audio.Albums.ALBUM_ART},
-                    MediaStore.Audio.Albums._ID+ "=?",
-                    new String[] {String.valueOf(albumId)},
+                    new String[]{MediaStore.Audio.Albums._ID, MediaStore.Audio.Albums.ALBUM_ART},
+                    MediaStore.Audio.Albums._ID + "=?",
+                    new String[]{String.valueOf(albumId)},
                     null);
             if (cursor.moveToFirst()) {
                 String path = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART));
-                    bmp = BitmapFactory.decodeFile(path);
+                bmp = BitmapFactory.decodeFile(path);
+            }
+
+            // search manually in song's path
+            if (bmp == null && path != null) {
+                File dir = new File(path).getParentFile();
+                if (dir.exists() && dir.isDirectory()) {
+                    File[] files = dir.listFiles();
+                    if (files != null)
+                        for (File file : files)
+                            if (Path.isImage(file)) {
+                                // found
+                                bmp = BitmapFactory.decodeFile(file.getAbsolutePath());
+                                break;
+                            }
                 }
             }
+        }
         catch(Exception e) {
             bmp = null;
         }
