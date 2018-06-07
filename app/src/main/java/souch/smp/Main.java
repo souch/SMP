@@ -28,6 +28,7 @@ import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.drawable.AnimationDrawable;
 import android.media.AudioManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Vibrator;
@@ -36,6 +37,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
@@ -47,6 +49,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -91,11 +94,14 @@ public class Main extends Activity {
 
     private AnimationDrawable appAnimation;
 
-    private RelativeLayout detailsLayout;
+    private LinearLayout detailsLayout;
     private LinearLayout seekButtonsLayout;
 
-    ImageButton albumImage;
-    TextView songTitle, songAlbum, songArtist;
+    private ImageButton albumImage;
+    private TextView songTitle, songAlbum, songArtist;
+    private LinearLayout details_right_layout;
+    private boolean detailsBigCoverArt;
+    private int coverArtNum = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,7 +129,7 @@ public class Main extends Activity {
         posButton.setImageDrawable(null);
         seekButtonsLayout = (LinearLayout) findViewById(R.id.seek_buttons_layout);
         seekButtonsLayout.setVisibility(View.GONE);
-        detailsLayout = (RelativeLayout) findViewById(R.id.details_layout);
+        detailsLayout = (LinearLayout) findViewById(R.id.details_layout);
         detailsLayout.setVisibility(View.GONE);
         detailsToggledFollowAuto = true;
 
@@ -185,9 +191,40 @@ public class Main extends Activity {
 
         albumImage = (ImageButton) findViewById(R.id.album_image);
         albumImage.setVisibility(View.VISIBLE);
+        albumImage.setOnTouchListener(new OnSwipeTouchListener(getApplicationContext()) {
+            public void onSwipeTop() {
+                if (detailsBigCoverArt == true) {
+                    detailsBigCoverArt = false;
+                    applyBiggerCoverArt();
+                }
+                else
+                    toggleDetails(null);
+            }
+            public void onSwipeRight() {
+                if (coverArtNum > 0) {
+                    coverArtNum--;
+                    setDetails();
+                }
+            }
+            public void onSwipeLeft() {
+                if (hasCoverArt(coverArtNum + 1)) {
+                    coverArtNum++;
+                    setDetails();
+                }
+            }
+            public void onSwipeBottom() {
+                detailsBigCoverArt = true;
+                applyBiggerCoverArt();
+            }
+            public void performClick() {
+                toggleBiggerCoverArt(null);
+            }
+        });
         songTitle = (TextView) findViewById(R.id.detail_title);
         songAlbum = (TextView) findViewById(R.id.detail_album);
         songArtist = (TextView) findViewById(R.id.detail_artist);
+        details_right_layout = (LinearLayout) findViewById(R.id.details_right_layout);
+        detailsBigCoverArt = false;
     }
 
 
@@ -212,6 +249,7 @@ public class Main extends Activity {
                     if (!serviceBound)
                         return;
 
+                    coverArtNum = 0;
                     Row row = rows.get(position);
                     if (row.getClass() == RowGroup.class) {
                         // vibrate when big font choosed
@@ -239,6 +277,7 @@ public class Main extends Activity {
 
                     vibrate();
 
+                    coverArtNum = 0;
                     rows.selectNearestSong(position);
                     musicSrv.playSong();
                     updatePlayButton();
@@ -483,20 +522,24 @@ public class Main extends Activity {
         detailsToggledFollowAuto = hasCoverArt == detailsOpened;
     }
 
-    public boolean hasCoverArt() {
+    public boolean hasCoverArt(int imageNum) {
         Bitmap albumBmp = null;
         RowSong rowSong = rows.getCurrSong();
         if (rowSong != null)
-            albumBmp = rowSong.getAlbumBmp(getApplicationContext());
+            albumBmp = rowSong.getAlbumBmp(getApplicationContext(), imageNum);
 
         return albumBmp != null;
+    }
+
+    public boolean hasCoverArt() {
+        return hasCoverArt(0);
     }
 
     public boolean setDetails() {
         Bitmap albumBmp = null;
         RowSong rowSong = rows.getCurrSong();
         if (rowSong != null) {
-            albumBmp = rowSong.getAlbumBmp(getApplicationContext());
+            albumBmp = rowSong.getAlbumBmp(getApplicationContext(), coverArtNum);
 
             String title = rowSong.getTitle();
             songTitle.setText(title);
@@ -559,6 +602,97 @@ public class Main extends Activity {
 //                    });
 //                }
 //            }, 6000);
+    }
+
+
+    public void toggleBiggerCoverArt(View view) {
+        detailsBigCoverArt = !detailsBigCoverArt;
+        applyBiggerCoverArt();
+    }
+
+    public void applyBiggerCoverArt() {
+        if (detailsBigCoverArt) {
+            // increase cover art size
+            ViewGroup.LayoutParams params = detailsLayout.getLayoutParams();
+            params.height = params.height * 2;
+            detailsLayout.setLayoutParams(params);
+
+            // hide text details
+            albumImage.setLayoutParams(
+                    new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT,
+                            LinearLayout.LayoutParams.FILL_PARENT, 0f));
+
+            // click on image go back to normal details
+            albumImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    toggleBiggerCoverArt(v);
+                }
+            });
+        } else {
+            // decrease cover art size
+            ViewGroup.LayoutParams params = detailsLayout.getLayoutParams();
+            params.height = params.height / 2;
+            detailsLayout.setLayoutParams(params);
+
+            // show text details
+            albumImage.setLayoutParams(
+                    new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT,
+                            LinearLayout.LayoutParams.FILL_PARENT, 1f));
+
+            // click on image hide details
+            albumImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    toggleDetails(v);
+                }
+            });
+        }
+    }
+
+
+    public void deleteSong(View view) {
+        final RowSong song = rows.getCurrSong();
+        if (song == null) {
+            // err msg ?
+            return;
+        }
+        new AlertDialog.Builder(this)
+                .setTitle("Delete ")
+                .setMessage("Do you really want to delete " + song.getPath() + " ?")
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        if (song.delete(getApplicationContext()))
+                            Toast.makeText(getApplicationContext(),
+                                    "del ok", Toast.LENGTH_SHORT).show();
+                        else
+                            Toast.makeText(getApplicationContext(),
+                                    "del NOK!", Toast.LENGTH_SHORT).show();
+                    }})
+                .setNegativeButton(android.R.string.no, null).show();
+    }
+
+
+    public void openSongFolder(View view) {
+        final RowSong song = rows.getCurrSong();
+        if (song == null) {
+            // err msg ?
+            return;
+        }
+
+        Uri selectedUri = Uri.fromFile(new File(song.getPath()).getParentFile());
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setDataAndType(selectedUri, "resource/folder");
+
+        if (intent.resolveActivityInfo(getPackageManager(), 0) != null) {
+            startActivity(intent);
+        }
+        else {
+            Toast.makeText(getApplicationContext(),
+                    "no file explorer app installed on your device", Toast.LENGTH_LONG).show();
+        }
     }
 
 
@@ -931,6 +1065,7 @@ public class Main extends Activity {
         if(!serviceBound)
             return;
 
+        coverArtNum = 0;
         musicSrv.playNext();
         updatePlayButton();
         if(followSong)
@@ -941,6 +1076,7 @@ public class Main extends Activity {
         if(!serviceBound)
             return;
 
+        coverArtNum = 0;
         musicSrv.playPrev();
         updatePlayButton();
         if(followSong)
@@ -1000,6 +1136,7 @@ public class Main extends Activity {
             if(!serviceBound)
                 return false;
 
+            coverArtNum = 0;
             musicSrv.playNextGroup();
             updatePlayButton();
             if(followSong)
@@ -1015,6 +1152,7 @@ public class Main extends Activity {
             if(!serviceBound)
                 return false;
 
+            coverArtNum = 0;
             musicSrv.playPrevGroup();
             updatePlayButton();
             if(followSong)

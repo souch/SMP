@@ -139,24 +139,38 @@ public class RowSong extends Row {
     }
 
 
-    public void delete(Context context) {
-        Uri uri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id);
-        context.getContentResolver().delete(uri, null, null);
+    public boolean delete(Context context) {
+        if ((new File(path)).delete()) {
+            // delete it from media store too
+            Uri uri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id);
+            context.getContentResolver().delete(uri, null, null);
+
+            return true;
+        }
+        return false;
     }
 
-
     public Bitmap getAlbumBmp(Context context) {
+        return getAlbumBmp(context, 0);
+    }
+
+    /** if imageNum > 0: try to get Nth bitmap from same folder
+     * @return null if bitmap not found
+     */
+    public Bitmap getAlbumBmp(Context context, int imageNum) {
         Bitmap bmp = null;
         try {
-            // search using media store
-            Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-                    new String[]{MediaStore.Audio.Albums._ID, MediaStore.Audio.Albums.ALBUM_ART},
-                    MediaStore.Audio.Albums._ID + "=?",
-                    new String[]{String.valueOf(albumId)},
-                    null);
-            if (cursor.moveToFirst()) {
-                String path = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART));
-                bmp = BitmapFactory.decodeFile(path);
+            if (imageNum == 0) {
+                // search using media store
+                Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                        new String[]{MediaStore.Audio.Albums._ID, MediaStore.Audio.Albums.ALBUM_ART},
+                        MediaStore.Audio.Albums._ID + "=?",
+                        new String[]{String.valueOf(albumId)},
+                        null);
+                if (cursor.moveToFirst()) {
+                    String path = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART));
+                    bmp = BitmapFactory.decodeFile(path);
+                }
             }
 
             // search manually in song's path
@@ -165,12 +179,17 @@ public class RowSong extends Row {
                 if (dir.exists() && dir.isDirectory()) {
                     File[] files = dir.listFiles();
                     if (files != null)
-                        for (File file : files)
+                        for (File file : files) {
                             if (Path.isImage(file)) {
-                                // found
-                                bmp = BitmapFactory.decodeFile(file.getAbsolutePath());
-                                break;
+                                if (imageNum == 0) {
+                                    // found
+                                    bmp = BitmapFactory.decodeFile(file.getAbsolutePath());
+                                    break;
+                                }
+                                imageNum--;
                             }
+
+                        }
                 }
             }
         }

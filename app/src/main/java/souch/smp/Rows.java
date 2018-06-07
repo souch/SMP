@@ -19,6 +19,7 @@
 package souch.smp;
 
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Typeface;
@@ -931,4 +932,10 @@ public class Rows {
         if(rowSong != null)
             savedID = rowSong.getID();
     }
+
+//    public void deleteCurSong(Context context) {
+//        RowSong rowSong = getCurrSong();
+//        if(rowSong != null)
+//            rowSong.delete(context);
+//    }
 }

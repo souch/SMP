@@ -6,7 +6,7 @@ android {
         }
     }
     compileSdkVersion 21
-    buildToolsVersion '25.0.2'
+    buildToolsVersion '27.0.3'
     defaultConfig {
         applicationId "souch.smp"
         minSdkVersion 8
