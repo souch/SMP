@@ -1,3 +1,6 @@
+# [migrated on gitlab!!!!!!!](https://gitlab.com/souch/SMP)
+
+
 ## SicMu Player for Android
 
 Every songs of the phone are put in a unique big song list.
