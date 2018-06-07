@@ -1,4 +1,4 @@
-# [migrated on gitlab!!!!!!!](https://gitlab.com/souch/SMP)
+# [Moved to gitlab](https://gitlab.com/souch/SMP)
 
 
 ## SicMu Player for Android
